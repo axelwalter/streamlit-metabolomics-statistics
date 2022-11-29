@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from src.utils import *
+from src.stats import *
 
 st.set_page_config(layout="wide")
 st.session_state.use_container_width = True
@@ -14,7 +15,7 @@ md = pd.DataFrame()
 # two column layout for file upload
 c1, c2 = st.columns(2)
 c1.markdown("##### Upload files or use example data")
-use_example = c2.checkbox("Use Example Data", True)
+use_example = c2.checkbox("Use Example Data", False)
 
 # try to load feature table
 featurematrix_file = c1.file_uploader("Feature Quantification Table")
@@ -54,11 +55,29 @@ if use_example:
 
 # display ft and md if they are selected
 if not ft.empty:
-    c1.markdown(f"##### Feature Quantification\n{ft.shape[0]} rows, {ft.shape[1]} columns")
+    table_title(ft, "Feature Quantification", c1)
     c1.dataframe(ft)
 if not md.empty:
-    c2.markdown(f"##### Meta Data\n{md.shape[0]} rows, {md.shape[1]} columns")
+    table_title(md, "Meta Data", c2)
     c2.dataframe(md)
 
 if not ft.empty and not md.empty:
     st.success("Files loaded successfully!")
+    v_space(3)
+
+    st.markdown("### Data Cleanup")
+    # check out different conditions in the meta data
+    table_title(inside_levels(md), "Different conditions in the meta data")
+    st.dataframe(inside_levels(md))
+
+    # clean up meta data table
+    new_md = clean_up_md(md)
+
+    # clean up feature table and remove unneccessary columns
+    new_ft = clean_up_ft(ft)
+    table_title(new_ft, "Cleaned up Quantification Table")
+    st.dataframe(new_ft)
+
+    # check if new_ft column names and md row names are the same
+    st.markdown("##### Integrity of sample names in meta data and feature table")
+    new_md, new_ft = check_columns(new_md, new_ft)
