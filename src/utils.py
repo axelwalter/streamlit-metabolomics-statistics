@@ -73,11 +73,11 @@ def get_new_index(df, patterns):
 def inside_levels(df):
     # get all the columns (equals all attributes) -> will be number of rows
     levels = []
-    types = []
+    # types = []
     count = []
     for col in df.columns:
-        types.append(type(df[col][0]))
+        # types.append(type(df[col][0]))
         levels.append(sorted(set(df[col].dropna())))
         tmp = df[col].value_counts()
         count.append([tmp[levels[-1][i]] for i in range(len(levels[-1]))])
-    return pd.DataFrame({"ATTRIBUTES": df.columns, "LEVELS": levels, "COUNT":count, "TYPES": types}, index=range(1, len(levels)+1))
+    return pd.DataFrame({"ATTRIBUTES": df.columns, "LEVELS": levels, "COUNT":count}, index=range(1, len(levels)+1))

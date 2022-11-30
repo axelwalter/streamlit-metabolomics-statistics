@@ -66,18 +66,55 @@ if not ft.empty and not md.empty:
     v_space(3)
 
     st.markdown("### Data Cleanup")
-    # check out different conditions in the meta data
-    table_title(inside_levels(md), "Different conditions in the meta data")
-    st.dataframe(inside_levels(md))
-
+    st.markdown("#### Sample selection")
     # clean up meta data table
     new_md = clean_up_md(md)
 
     # clean up feature table and remove unneccessary columns
     new_ft = clean_up_ft(ft)
-    table_title(new_ft, "Cleaned up Quantification Table")
-    st.dataframe(new_ft)
+    # table_title(new_ft, "Cleaned up Quantification Table")
+    # st.dataframe(new_ft)
 
     # check if new_ft column names and md row names are the same
-    st.markdown("##### Integrity of sample names in meta data and feature table")
+    st.markdown("##### Sanity check of sample names in meta data and feature table")
     new_md, new_ft = check_columns(new_md, new_ft)
+
+    # Select true sample files (excluding blank and pools)
+    c1, c2 = st.columns(2)
+    table_title(inside_levels(new_md), "Select samples (excluding blank and pools) based on the following table.", c1)
+    c1.dataframe(inside_levels(new_md))
+    v_space(3, c2)
+    sample_column = c2.selectbox("Choose attribute for sample selection", md.columns)
+    sample_row = c2.selectbox("Choose sample", set(md[sample_column]))
+    samples = new_ft[new_md[new_md[sample_column] == sample_row].index]
+    samples_md = new_md.loc[samples.columns]
+    table_title(samples, "Selected samples", c1)
+    c1.write(samples)
+    # table_title(samples_md, "Selected samples meta data", c2)
+    # c2.write(samples_md)
+
+    st.markdown("#### Blank removal")
+    # Ask if blank removal should be done
+    if st.checkbox("Would you like to remove blank features?", False):
+        non_samples_md = new_md.loc[[index for index in new_md.index if index not in samples.columns]]
+        c1, c2 = st.columns(2)
+        table_title(inside_levels(non_samples_md), "Select blanks (excluding samples and pools) based on the following table.", c1)
+        c1.dataframe(inside_levels(non_samples_md))
+        v_space(3, c2)
+        blank_column = c2.selectbox("Choose attribute for blank selection", non_samples_md.columns)
+        blank_row = c2.selectbox("Choose blank", set(non_samples_md[blank_column]))
+        blanks = new_ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
+        blanks_md = non_samples_md.loc[blanks.columns]
+        table_title(blanks, "Selected blanks", c1)
+        c1.write(blanks)
+        
+        # define a cutoff value for blank removal (ratio blank/avg(samples))
+        st.markdown("##### Define a cutoff value for blank removal")
+        cutoff = st.number_input("recommended cutoff range between 0.1 and 0.3", 0.1, 1.0, 0.3, 0.05)
+        blanks_removed, n_background_features, n_real_features = remove_blank_features(blanks, samples, cutoff)
+        c1, c2 = st.columns(2)
+        table_title(blanks_removed, "Feature table after removing blanks", c1)
+        c1.dataframe(blanks_removed)
+        v_space(10, c2)
+        c2.metric("background or noise features", n_background_features)
+        c2.metric("real features", n_real_features)
