@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 def clean_up_md(md):
     md = md.copy() #storing the files under different names to preserve the original files
@@ -61,3 +63,43 @@ def remove_blank_features(blanks, samples, cutoff):
     blank_removal = samples[is_real_feature.values]
 
     return blank_removal, n_background, n_real_features
+
+def get_cutoff_LOD(df):
+    # get the minimal value that is not zero (lowest measured intensity)
+    return round(df.replace(0, np.nan).min(numeric_only=True).min())
+
+def impute_missing_values(df, cutoff_LOD):
+    # impute missing values (0) with a random value between zero and lowest intensity (cutoff_LOD)
+    return df.apply(lambda x: [np.random.randint(0, cutoff_LOD) if v == 0 else v for v in x])
+
+def normalize_column_wise(df):
+    # normalize values column-wise (sample centric)
+    return df.apply(lambda x: x/np.sum(x), axis=0)
+
+def transpose_and_scale(feature_df, meta_data_df, cutoff_LOD):
+    # remove meta data rows that are not samples
+    md_rows_not_in_samples = [row for row in meta_data_df.index if row not in feature_df.index]
+    md_samples = meta_data_df.drop(md_rows_not_in_samples)
+
+    # put the rows in the feature table and metadata in the same order
+    feature_df.sort_index(inplace=True)
+    md_samples.sort_index(inplace=True)
+
+    try:
+        if not list(set(md_samples.index == feature_df.index))[0] == True:
+            st.warning("Sample names in feature and metadata table are NOT the same!")
+    except:
+        st.warning("Sample names in feature and metadata table can NOT be compared. Please check your tables!")
+
+    n_zeros = feature_df.apply(lambda x: sum(x<=cutoff_LOD))
+
+    c1, c2 = st.columns(2)
+    c1.metric(f"Total missing values in dataset (coded as <= {cutoff_LOD})", str(round(((feature_df<=cutoff_LOD).to_numpy()).mean(), 3)*100)+" %")
+    x = str(round((((n_zeros/feature_df.shape[0])<=0.5).mean()), 2))
+    c2.metric(f"\nMetabolites with measurements in at least 50 % of the samples", str(round((((n_zeros/feature_df.shape[0])<=0.5).mean()*100), 2))+" %")
+
+    # Deselect metabolites with more than 50 % missing values. This helps to get rid of features that are present in too few samples to conduct proper statistical tests
+    feature_df = feature_df[feature_df.columns[(n_zeros/feature_df.shape[0])<0.5]]
+    
+    # scale and return
+    return pd.DataFrame(StandardScaler().fit_transform(feature_df), index=feature_df.index, columns=feature_df.columns)

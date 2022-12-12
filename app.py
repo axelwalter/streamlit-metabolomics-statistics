@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from src.utils import *
 from src.stats import *
+from src.visualizations import *
 
 st.set_page_config(layout="wide")
 st.session_state.use_container_width = True
@@ -14,7 +15,8 @@ md = pd.DataFrame()
 
 # two column layout for file upload
 c1, c2 = st.columns(2)
-c1.markdown("##### Upload files or use example data")
+c1.markdown("### Upload files or use example data")
+v_space(1, c2)
 use_example = c2.checkbox("Use Example Data", False)
 
 # try to load feature table
@@ -63,8 +65,8 @@ if not md.empty:
 
 if not ft.empty and not md.empty:
     st.success("Files loaded successfully!")
-    v_space(3)
 
+    v_space(3)
     st.markdown("### Data Cleanup")
     st.markdown("#### Sample selection")
     # clean up meta data table
@@ -89,13 +91,13 @@ if not ft.empty and not md.empty:
     samples = new_ft[new_md[new_md[sample_column] == sample_row].index]
     samples_md = new_md.loc[samples.columns]
     table_title(samples, "Selected samples", c1)
-    c1.write(samples)
-    # table_title(samples_md, "Selected samples meta data", c2)
-    # c2.write(samples_md)
+    st.write(samples)
 
+    v_space(3)
     st.markdown("#### Blank removal")
     # Ask if blank removal should be done
-    if st.checkbox("Would you like to remove blank features?", False):
+    blank_removal = st.checkbox("Would you like to remove blank features?", False)
+    if blank_removal:
         non_samples_md = new_md.loc[[index for index in new_md.index if index not in samples.columns]]
         c1, c2 = st.columns(2)
         table_title(inside_levels(non_samples_md), "Select blanks (excluding samples and pools) based on the following table.", c1)
@@ -106,15 +108,71 @@ if not ft.empty and not md.empty:
         blanks = new_ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
         blanks_md = non_samples_md.loc[blanks.columns]
         table_title(blanks, "Selected blanks", c1)
-        c1.write(blanks)
+        st.write(blanks)
         
         # define a cutoff value for blank removal (ratio blank/avg(samples))
         st.markdown("##### Define a cutoff value for blank removal")
-        cutoff = st.number_input("recommended cutoff range between 0.1 and 0.3", 0.1, 1.0, 0.3, 0.05)
+        c1, c2 = st.columns([0.30, 0.70])
+        cutoff = c1.number_input("recommended cutoff range between 0.1 and 0.3", 0.1, 1.0, 0.3, 0.05)
         blanks_removed, n_background_features, n_real_features = remove_blank_features(blanks, samples, cutoff)
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         table_title(blanks_removed, "Feature table after removing blanks", c1)
-        c1.dataframe(blanks_removed)
-        v_space(10, c2)
         c2.metric("background or noise features", n_background_features)
-        c2.metric("real features", n_real_features)
+        c3.metric("real features", n_real_features)
+        st.dataframe(blanks_removed)
+        cutoff_LOD = get_cutoff_LOD(blanks_removed)
+    else:
+        cutoff_LOD = get_cutoff_LOD(samples)
+
+    v_space(3)
+    st.markdown("#### Plot feature intensity frequencies")
+    if blank_removal:
+        tmp_ft = blanks_removed
+    else:
+        tmp_ft = samples
+    fig = get_feature_frequency_fig(tmp_ft)
+    st.plotly_chart(fig)
+
+    v_space(3)
+    st.markdown("#### Imputation of missing values")
+    imputation = st.checkbox("Would you like to impute missing values?", False)
+    if imputation:
+        if blank_removal:
+            tmp_ft = blanks_removed
+        else:
+            tmp_ft = samples
+        table_title(tmp_ft, "Imputated data")
+        imputed = impute_missing_values(tmp_ft, get_cutoff_LOD(tmp_ft))
+        st.write(imputed)
+
+    v_space(3)
+    st.markdown("#### Normalization")
+    normalization = st.checkbox("Would you like to normalize values column-wise (sample centric)?", False)
+    if normalization:
+        if imputation:
+            tmp_ft = imputed
+        elif blank_removal:
+            tmp_ft = blanks_removed
+        else:
+            tmp_ft = samples
+        normalized = normalize_column_wise(tmp_ft)
+        table_title(tmp_ft, "Normalized data")
+        st.write(normalized)
+
+    v_space(3)
+    st.markdown("""#### Preparing data for statistical analysis
+For statistical analysis data needs to be transposed (samples as rows) as well as scaled and centered (around zero).
+Features with more then 50% missing values will be removed.
+""")
+    # transposing tables already
+    if imputation:
+        tmp_ft = imputed.T
+    elif blank_removal:
+        tmp_ft = blanks_removed.T
+    else:
+        tmp_ft = new_ft.T
+    
+    scaled = transpose_and_scale(tmp_ft, new_md, cutoff_LOD)
+
+    table_title(scaled, "Scaled feature table for statistical analysis")
+    st.dataframe(scaled)

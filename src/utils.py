@@ -62,9 +62,9 @@ def get_new_index(df, patterns):
         # set metabolites column with index as default
         df["metabolites"] = df.index
         if len(column_names) == 2:
-            df["metabolite"] = df[column_names[0]].round(4).astype(str)
+            df["metabolite"] = df[column_names[0]].round(5).astype(str)
             if column_names[1]:
-                df["metabolite"] = df["metabolite"] + "@" + df[column_names[1]].round(1).astype(str)
+                df["metabolite"] = df["metabolite"] + "@" + df[column_names[1]].round(2).astype(str)
         df.set_index("metabolite", inplace=True)
     except:
         pass
