@@ -3,3 +3,8 @@ pandas
 numpy
 scikit-learn
 plotly
+sklearn
+scipy==1.8.1
+scikit-bio
+pingouin
+kaleido 

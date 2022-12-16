@@ -62,14 +62,6 @@ if not st.session_state.md.empty and not st.session_state.ft.empty:
     else:
         cutoff_LOD = get_cutoff_LOD(samples)
 
-    v_space(3)
-    st.markdown("#### Plot feature intensity frequencies")
-    if blank_removal:
-        tmp_ft = blanks_removed
-    else:
-        tmp_ft = samples
-    fig = get_feature_frequency_fig(tmp_ft)
-    st.plotly_chart(fig)
 
     v_space(3)
     st.markdown("#### Imputation of missing values")
@@ -98,22 +90,40 @@ if not st.session_state.md.empty and not st.session_state.ft.empty:
         st.write(normalized)
 
     v_space(3)
+    c1, c2 = st.columns(2)
+    if blank_removal:
+        c1.plotly_chart(get_feature_frequency_fig(blanks_removed))
+    else:
+        c1.plotly_chart(get_feature_frequency_fig(samples))
+
+    if imputation:
+        c2.plotly_chart(get_missing_values_per_feature_fig(imputed, cutoff_LOD))
+    elif blank_removal:
+        c2.plotly_chart(get_missing_values_per_feature_fig(blanks_removed, cutoff_LOD))
+    else:
+        c2.plotly_chart(get_missing_values_per_feature_fig(samples, cutoff_LOD))
+
+
+    v_space(3)
     st.markdown("""#### Preparing data for statistical analysis
 For statistical analysis data needs to be transposed (samples as rows) as well as scaled and centered (around zero).
 Features with more then 50% missing values will be removed.
 """)
-    if st.button("When you are happy with your data clean up prepare the data for statistical analysis now!"):
-        # transposing tables already
-        if imputation:
-            tmp_ft = imputed.T
-        elif blank_removal:
-            tmp_ft = blanks_removed.T
-        else:
-            tmp_ft = new_ft.T
+    _, c2, _ = st.columns(3)
+    if c2.button("Prepare data for statistical analysis now!"):
+        with st.spinner("Transposing and scaling data..."):
+            # transposing tables already
+            if imputation:
+                tmp_ft = imputed.T
+            elif blank_removal:
+                tmp_ft = blanks_removed.T
+            else:
+                tmp_ft = new_ft.T
 
-        st.session_state.scaled = transpose_and_scale(tmp_ft, new_md, cutoff_LOD)
+            st.session_state.scaled = transpose_and_scale(tmp_ft, new_md, cutoff_LOD)
 
-        table_title(st.session_state.scaled, "Scaled feature table for statistical analysis")
-        st.dataframe(st.session_state.scaled)
+            table_title(st.session_state.scaled, "Scaled feature table for statistical analysis")
+            st.dataframe(st.session_state.scaled)
+            st.success("Your data is now ready for statistical analysis!")
 else:
     st.warning("Please select files for data clean up first!")

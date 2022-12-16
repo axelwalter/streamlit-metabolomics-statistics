@@ -26,5 +26,15 @@ def get_feature_frequency_fig(df):
 
 
 
-     
-   
+def get_missing_values_per_feature_fig(df, cutoff_LOD):
+    # check the number of missing values per feature in a histogram
+    n_zeros = df.T.apply(lambda x: sum(x<=cutoff_LOD))
+
+    fig = px.histogram(n_zeros, template="plotly_white",  
+                    width=600, height=400)
+
+    fig.update_traces(marker_color="#696880")
+    fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
+                    title={"text":"MISSING VALUES PER FEATURE", 'x':0.5, "font_color":"#3E3D53"},
+                    xaxis_title="number of missing values", yaxis_title="count", showlegend=False)
+    return fig

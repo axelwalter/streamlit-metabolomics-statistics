@@ -53,22 +53,24 @@ patterns = [
         ["m/z", "mz", "mass over charge"],
         ["rt", "retention time", "retention-time", "retention_time"]
     ]
-def get_new_index(df, patterns):
+def get_new_index(df):
     # get m/z values (cols[0]) and rt values (cols[1]) column names
     cols = [[col for col in df.columns.tolist() if string_overlap(col.lower(), pattern)] for pattern in patterns]
     try:
         # select the first match for each
         column_names = [col[0] for col in cols if col]
+        if not column_names:
+            return df, "no matching columns"
         # set metabolites column with index as default
-        df["metabolites"] = df.index
+        df["metabolite"] = df.index
         if len(column_names) == 2:
             df["metabolite"] = df[column_names[0]].round(5).astype(str)
             if column_names[1]:
                 df["metabolite"] = df["metabolite"] + "@" + df[column_names[1]].round(2).astype(str)
         df.set_index("metabolite", inplace=True)
     except:
-        pass
-    return df
+        return df, "fail"
+    return df, "success"
 
 def inside_levels(df):
     # get all the columns (equals all attributes) -> will be number of rows

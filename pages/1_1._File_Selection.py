@@ -21,7 +21,17 @@ if featurematrix_file:
     if "Unnamed: 0" in ft.columns:
         ft.drop('Unnamed: 0', inplace=True, axis=1)
     # determining index with m/z, rt and adduct information
-    ft = get_new_index(ft, patterns)
+    if "metabolite" in ft.columns:
+        ft.index = ft["metabolite"]
+    else:
+        c1.warning("No 'metabolite' column for unique metabolite ID specified. Please select the correct one or try to automatically create an index based on RT and m/z values.")
+        metabolite_col =  c1.selectbox("Column to use for metabolite ID.", [col for col in ft.columns if not col.endswith("mzML")])
+        if metabolite_col:
+            ft.index = ft[metabolite_col]
+    if c1.button("Create index automatically"):
+        ft, msg = get_new_index(ft)
+        if msg == "no matching columns":
+            c1.error("Could not determine index automatically, missing m/z and/or RT information in column names.")
     if ft.empty:
         c1.error(f"Check feature quantification table!\n{allowed_formats}")
 
@@ -46,7 +56,7 @@ if metadata_file:
 # if example files are used, overwrite tables with example data
 if use_example:
     ft = open_df("example-data/FeatureMatrix.csv")
-    ft = get_new_index(ft, patterns)
+    ft, _ = get_new_index(ft)
     md = open_df("example-data/MetaData.txt").set_index("filename")
 
 # display ft and md if they are selected
