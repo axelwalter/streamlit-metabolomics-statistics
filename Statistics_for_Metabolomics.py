@@ -10,7 +10,10 @@ st.set_page_config(layout="wide")
 st.session_state.md = pd.DataFrame()
 st.session_state.ft = pd.DataFrame()
 st.session_state.scaled = pd.DataFrame()
-    
+st.session_state.data = pd.DataFrame()
+st.session_state.anova = pd.DataFrame()
+st.session_state.tukeys = pd.DataFrame()
+
 st.title("Statistics for Metabolomics")
 
 st.markdown(

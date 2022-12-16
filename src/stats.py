@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+import pingouin as pg
 
 def clean_up_md(md):
     md = md.copy() #storing the files under different names to preserve the original files
@@ -95,11 +96,47 @@ def transpose_and_scale(feature_df, meta_data_df, cutoff_LOD):
 
     c1, c2 = st.columns(2)
     c1.metric(f"Total missing values in dataset (coded as <= {cutoff_LOD})", str(round(((feature_df<=cutoff_LOD).to_numpy()).mean(), 3)*100)+" %")
-    x = str(round((((n_zeros/feature_df.shape[0])<=0.5).mean()), 2))
     c2.metric(f"\nMetabolites with measurements in at least 50 % of the samples", str(round((((n_zeros/feature_df.shape[0])<=0.5).mean()*100), 2))+" %")
 
     # Deselect metabolites with more than 50 % missing values. This helps to get rid of features that are present in too few samples to conduct proper statistical tests
     feature_df = feature_df[feature_df.columns[(n_zeros/feature_df.shape[0])<0.5]]
     
+    scaled = pd.DataFrame(StandardScaler().fit_transform(feature_df), index=feature_df.index, columns=feature_df.columns)
+    data = pd.merge(md_samples, scaled, left_index=True, right_index=True, how="inner")
     # scale and return
-    return pd.DataFrame(StandardScaler().fit_transform(feature_df), index=feature_df.index, columns=feature_df.columns)
+    return scaled, data 
+
+def gen_anova_data(df, columns, groups_col):
+    for col in columns:
+        result = pg.anova(data=df, dv=col, between=groups_col, detailed=True).set_index('Source')
+        p = result.loc[groups_col, 'p-unc']
+        f = result.loc[groups_col, 'F']
+        yield col, p, f
+
+def add_bonferroni_to_anova(anova):
+    # add Bonferroni corrected p-values for multiple testing correction
+    if 'p_bonferroni' not in anova.columns:
+        anova.insert(2, 'p_bonferroni', pg.multicomp(anova['p'], method='bonf')[1])
+    # add significance
+    if 'significant' not in anova.columns:
+        anova.insert(3, 'significant', anova['p_bonferroni'] < 0.05)
+    # sort by p-value
+    anova.sort_values('p', inplace=True)
+    return anova
+
+def gen_pairwise_tukey(df, time_points, metabolites):
+    """ Yield results for pairwise Tukey test for all metabolites between start and end time points."""
+    for metabolite in metabolites:
+        df_for_tukey = df.iloc[np.where(df['ATTRIBUTE_Time-Point'].isin([time_points[0], time_points[-1]]))][[metabolite, 'ATTRIBUTE_Time-Point']]
+        tukey = pg.pairwise_tukey(df_for_tukey, dv=metabolite, between='ATTRIBUTE_Time-Point')
+        yield metabolite, tukey['diff'], tukey['p-tukey']
+
+def add_bonferroni_to_tukeys(tukey):
+    if 'stats_p_bonferroni' not in tukey.columns:
+        # add Bonferroni corrected p-values
+        tukey.insert(3, 'stats_p_bonferroni', pg.multicomp(tukey['stats_p'], method='bonf')[1])
+        # add significance
+        tukey.insert(4, 'stats_significant', tukey['stats_p_bonferroni'] < 0.05)
+        # sort by p-value
+        tukey.sort_values('stats_p', inplace=True)
+    return tukey
