@@ -13,9 +13,6 @@ st.session_state.scaled = pd.DataFrame()
 st.session_state.data = pd.DataFrame()
 st.session_state.anova = pd.DataFrame()
 st.session_state.tukeys = pd.DataFrame()
-st.session_state.permanova = pd.DataFrame()
-st.session_state.pcoa_result = None
-
 st.title("Statistics for Metabolomics")
 
 st.markdown(

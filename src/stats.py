@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 import pingouin as pg
 import skbio # Don't import on Windows!!
 from scipy.spatial import distance
-
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 def clean_up_md(md):
     md = md.copy() #storing the files under different names to preserve the original files
@@ -162,3 +162,29 @@ def permanova_pcoa(scaled, distance_matrix, attribute):
     pcoa = skbio.stats.ordination.pcoa(distance_matrix)
 
     return permanova, pcoa
+
+def order_df_for_heatmap(scaled):
+    # SORT DATA TO CREATE HEATMAP
+
+    # Compute linkage matrix from distances for hierarchical clustering
+    linkage_data_ft = linkage(scaled, method='complete', metric='euclidean')
+    linkage_data_samples = linkage(scaled.T, method='complete', metric='euclidean')
+
+    # Create a dictionary of data structures computed to render the dendrogram. 
+    # We will use dict['leaves']
+    cluster_samples = dendrogram(linkage_data_ft, no_plot=True)
+    cluster_ft = dendrogram(linkage_data_samples, no_plot=True)
+
+    # Create dataframe with sorted samples
+    ord_samp = scaled.copy()
+    ord_samp.reset_index(inplace=True)
+    ord_samp = ord_samp.reindex(cluster_samples['leaves'])
+    ord_samp.rename(columns={'index': 'Filename'}, inplace=True)
+    ord_samp.set_index('Filename', inplace=True)
+
+    # Create dataframe with sorted features
+    ord_ft = ord_samp.T.reset_index()
+    ord_ft = ord_ft.reindex(cluster_ft['leaves'])
+    ord_ft.rename(columns={'index': 'metabolite'}, inplace=True)
+    ord_ft.set_index('metabolite', inplace=True)
+    return ord_ft

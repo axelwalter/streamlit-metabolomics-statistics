@@ -1,5 +1,6 @@
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 import pandas as pd
 import numpy as np
 
@@ -142,4 +143,24 @@ def get_pcoa_variance_plot(pcoa):
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                       title={"text":"PCoA - VARIANCE", 'x':0.5, "font_color":"#3E3D53"},
                       xaxis_title="principal component", yaxis_title="variance (%)")#
+    return fig
+
+def get_dendrogram(scaled, label_pos="bottom"):
+    fig = ff.create_dendrogram(scaled, labels=list(scaled.index))
+    fig.update_layout(template='plotly_white')
+    fig.update_xaxes(side=label_pos)
+    return fig
+
+def get_heatmap(ord_ft):
+    #Heatmap
+    fig = px.imshow(ord_ft,y=list(ord_ft.index), x=list(ord_ft.columns), text_auto=True, aspect="auto",
+                color_continuous_scale='PuOr_r', range_color=[-3,3])
+
+    fig.update_layout(
+        autosize=False,
+        width=700,
+        height=800)
+
+    fig.update_yaxes(visible=False)
+    fig.update_xaxes(tickangle = 35)
     return fig

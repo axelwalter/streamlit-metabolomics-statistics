@@ -19,14 +19,14 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     attribute = c1.selectbox("Attribute for multivariate analysis", [col for col in st.session_state.data.columns if (col.startswith("ATTRIBUTE_") and len(set(st.session_state.md.loc[st.session_state.scaled.index, col])) > 1)])
     matrix = c2.selectbox("distance matrix", ['canberra', 'chebyshev', 'correlation', 'cosine', 'euclidean', 'hamming', 'jaccard', 'matching', 'minkowski', 'seuclidean'])
-    st.session_state.permanova, st.session_state.pcoa_result = permanova_pcoa(st.session_state.scaled, matrix, st.session_state.md.loc[st.session_state.scaled.index, attribute])
+    permanova, pcoa_result = permanova_pcoa(st.session_state.scaled, matrix, st.session_state.md.loc[st.session_state.scaled.index, attribute])
     
-    if not st.session_state.permanova.empty:
+    if not permanova.empty:
         c1, c2 = st.columns(2)
         c1.markdown("#### PERMANOVA statistics:")
-        c1.dataframe(st.session_state.permanova)
-        c2.plotly_chart(get_pcoa_variance_plot(st.session_state.pcoa_result))
-        st.plotly_chart(get_pcoa_scatter_plot(st.session_state.pcoa_result, st.session_state.md.loc[st.session_state.scaled.index], attribute))
+        c1.dataframe(permanova)
+        c2.plotly_chart(get_pcoa_variance_plot(pcoa_result))
+        st.plotly_chart(get_pcoa_scatter_plot(pcoa_result, st.session_state.md.loc[st.session_state.scaled.index], attribute))
 
 else:
     st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")

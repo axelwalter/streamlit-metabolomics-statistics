@@ -11,7 +11,7 @@ md = pd.DataFrame()
 c1, c2 = st.columns(2)
 c1.markdown("### Upload files or use example data")
 v_space(1, c2)
-use_example = c2.button("Use Example Data")
+use_example = c2.checkbox("Use Example Data")
 featurematrix_file = c1.file_uploader("Feature Quantification Table")
 metadata_file = c2.file_uploader("Meta Data Table")
 
@@ -23,8 +23,9 @@ if use_example:
     st.session_state.md = open_df("example-data/MetaData.txt").set_index("filename")
 else:
     # try to load feature table
+    st.session_state.ft = pd.DataFrame()
+    st.session_state.md = pd.DataFrame()
     if featurematrix_file:
-        st.session_state.ft = pd.DataFrame()
         ft = open_df(featurematrix_file)
         # sometimes dataframes get saved with unnamed index, that needs to be removed
         if "Unnamed: 0" in ft.columns:
@@ -48,7 +49,6 @@ else:
 
     # try to load meta data table
     if metadata_file:
-        st.session_state.md = pd.DataFrame()
         md = open_df(metadata_file)
         # sometimes dataframes get saved with unnamed index, that needs to be removed
         if "Unnamed: 0" in md.columns:
