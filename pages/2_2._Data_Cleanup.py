@@ -5,7 +5,7 @@ from src.visualizations import *
 
 st.markdown("### Data Cleanup")
 
-if not st.session_state.md.empty and not st.session_state.ft.empty:
+if not st.session_state.ft.empty and not st.session_state.md.empty:
     st.markdown("#### Sample selection")
     # clean up meta data table
     new_md = clean_up_md(st.session_state.md)
