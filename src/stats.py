@@ -2,7 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 import pingouin as pg
+import skbio # Don't import on Windows!!
+from scipy.spatial import distance
+
 
 def clean_up_md(md):
     md = md.copy() #storing the files under different names to preserve the original files
@@ -140,3 +144,21 @@ def add_bonferroni_to_tukeys(tukey):
         # sort by p-value
         tukey.sort_values('stats_p', inplace=True)
     return tukey
+
+def get_pca_df(scaled, n=5):
+    #calculating Principal components
+    pca = PCA(n_components=n)
+    pca_df = pd.DataFrame(data = pca.fit_transform(scaled), columns = [f'PC{x}' for x in range(1, n+1)])
+    pca_df.index = scaled.index
+    return pca, pca_df
+
+def permanova_pcoa(scaled, distance_matrix, attribute):
+    # Create the distance matrix from the original data
+    distance_matrix = skbio.stats.distance.DistanceMatrix(distance.squareform(distance.pdist(scaled.values, distance_matrix)))
+    # perform PERMANOVA test
+    permanova = skbio.stats.distance.permanova(distance_matrix, attribute)
+    permanova['R2'] = 1 - 1 / (1 + permanova['test statistic'] * permanova['number of groups'] / (permanova['sample size'] - permanova['number of groups'] - 1))
+    # perfom PCoA
+    pcoa = skbio.stats.ordination.pcoa(distance_matrix)
+
+    return permanova, pcoa

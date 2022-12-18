@@ -24,6 +24,12 @@ if not st.session_state.data.empty:
         c1.plotly_chart(get_anova_plot(st.session_state.anova))
 
     v_space(2)
+    if not st.session_state.anova.empty:
+        st.markdown("##### Inspect single significant metabolites")
+        metabolite = st.selectbox("Select metabolite", sorted(list(st.session_state.anova["metabolite"][st.session_state.anova["significant"]==True])))
+        st.plotly_chart(get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite))
+
+    v_space(2)
     st.markdown("#### Tukey's post hoc test")
     st.markdown("Choose elements of the selected attribute for comparison.")
     c1, c2, c3 = st.columns(3)
@@ -46,12 +52,6 @@ if not st.session_state.data.empty:
         st.dataframe(st.session_state.tukeys)
         c1, c2 = st.columns([0.7, 0.3])
         c1.plotly_chart(get_tukey_volcano_plot(st.session_state.tukeys))
-
-    v_space(2)
-    st.markdown("#### Inspect single significant metabolites")
-    if not st.session_state.anova.empty:
-        metabolite = st.selectbox("Select metabolite", sorted(list(st.session_state.anova["metabolite"][st.session_state.anova["significant"]==True])))
-        st.plotly_chart(get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite))
 
 else:
     st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")

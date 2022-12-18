@@ -121,9 +121,10 @@ Features with more then 50% missing values will be removed.
                 tmp_ft = new_ft.T
 
             st.session_state.scaled, st.session_state.data = transpose_and_scale(tmp_ft, new_md, cutoff_LOD)
-
+            st.success("Your data is now ready for statistical analysis!")
+    
+    if not st.session_state.data.empty:
         table_title(st.session_state.data, "Scaled feature table for statistical analysis")
         st.dataframe(st.session_state.data)
-        st.success("Your data is now ready for statistical analysis!")
 else:
     st.warning("Please select files for data clean up first!")

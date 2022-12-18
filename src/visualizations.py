@@ -90,3 +90,56 @@ def get_metabolite_boxplot(anova, data, metabolite):
                       title={"text":title, 'x':0.5, "font_color":"#3E3D53"},
                       xaxis_title="time point", yaxis_title="intensity scales and centered")
     return fig
+
+def get_pca_scatter_plot(pca_df, pca, attribute, md):
+    title = f'PRINCIPLE COMPONENT ANALYSIS'
+    
+    df = pd.merge(pca_df[['PC1', 'PC2']], md[attribute].apply(str), left_index=True, right_index=True)
+    # display(df)
+    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute)
+
+    fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
+                      title={"text":title, 'x':0.2, "font_color":"#3E3D53"},
+                      xaxis_title=f'PC1 {round(pca.explained_variance_ratio_[0]*100, 1)}%',
+                      yaxis_title=f'PC2 {round(pca.explained_variance_ratio_[1]*100, 1)}%')
+    return fig
+
+def get_pca_scree_plot(pca_df, pca):
+    # To get a scree plot showing the variance of each PC in percentage:
+    percent_variance = np.round(pca.explained_variance_ratio_* 100, decimals =2)
+
+    fig = px.bar(x=pca_df.columns, y=percent_variance, template="plotly_white",  width=500, height=400)
+    fig.update_traces(marker_color="#696880", width=0.5)
+    fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
+                      title={"text":"PCA - VARIANCE", 'x':0.5, "font_color":"#3E3D53"},
+                      xaxis_title="principal component", yaxis_title="variance (%)")
+    return fig
+
+
+     #   st.plotly_chart(get_pcoa_scatter_plot(st.session_state.pcoa_result, st.session_state.md, attribute))
+
+def get_pcoa_scatter_plot(pcoa, md_samples, attribute):
+    df = pcoa.samples[['PC1', 'PC2']]
+    df = df.set_index(md_samples.index)
+    df = pd.merge(df[['PC1', 'PC2']], md_samples[attribute].apply(str), left_index=True, right_index=True)
+    
+    title = f'PRINCIPLE COORDINATE ANALYSIS'
+    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute)
+
+    fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
+                      title={"text":title, 'x':0.18, "font_color":"#3E3D53"},
+                      xaxis_title=f'PC1 {round(pcoa.proportion_explained[0]*100, 1)}%',
+                      yaxis_title=f'PC2 {round(pcoa.proportion_explained[1]*100, 1)}%')
+    return fig
+
+
+def get_pcoa_variance_plot(pcoa):
+    # To get a scree plot showing the variance of each PC in percentage:
+    percent_variance = np.round(pcoa.proportion_explained* 100, decimals =2)
+
+    fig = px.bar(x=[f'PC{x}' for x in range(1, len(pcoa.proportion_explained)+1)], y=percent_variance, template="plotly_white",  width=500, height=400)
+    fig.update_traces(marker_color="#696880", width=0.5)
+    fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
+                      title={"text":"PCoA - VARIANCE", 'x':0.5, "font_color":"#3E3D53"},
+                      xaxis_title="principal component", yaxis_title="variance (%)")#
+    return fig
