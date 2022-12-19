@@ -74,7 +74,7 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
         c1, c2 = st.columns(2)
         table_title(tmp_ft, "Imputated data", c1)
         imputed = impute_missing_values(tmp_ft, get_cutoff_LOD(tmp_ft))
-        st.write(imputed)
+        st.dataframe(imputed)
 
     v_space(3)
     st.markdown("#### Normalization")
@@ -87,8 +87,9 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
         else:
             tmp_ft = samples
         normalized = normalize_column_wise(tmp_ft)
-        table_title(tmp_ft, "Normalized data")
-        st.write(normalized)
+        c1, c2 = st.columns(2)
+        table_title(normalized, "Normalized data", c1)
+        st.dataframe(normalized)
 
     v_space(3)
     c1, c2 = st.columns(2)

@@ -45,7 +45,7 @@ def get_anova_plot(anova):
     # first plot insignificant features
     fig = px.scatter(x=anova[anova['significant'] == False]['F'].apply(np.log),
                     y=anova[anova['significant'] == False]['p'].apply(lambda x: -np.log(x)),
-                    template='plotly_white', width=600, height=600)
+                    template='plotly_white', width=400, height=600)
     fig.update_traces(marker_color="#696880")
 
     # plot significant features
@@ -142,7 +142,7 @@ def get_pcoa_variance_plot(pcoa):
     fig.update_traces(marker_color="#696880", width=0.5)
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                       title={"text":"PCoA - VARIANCE", 'x':0.5, "font_color":"#3E3D53"},
-                      xaxis_title="principal component", yaxis_title="variance (%)")#
+                      xaxis_title="principal component", yaxis_title="variance (%)")
     return fig
 
 def get_dendrogram(scaled, label_pos="bottom"):
@@ -159,8 +159,10 @@ def get_heatmap(ord_ft):
     fig.update_layout(
         autosize=False,
         width=700,
-        height=800)
+        height=1200,
+        xaxis_title="",
+        yaxis_title="")
 
-    fig.update_yaxes(visible=False)
+    # fig.update_yaxes(visible=False)
     fig.update_xaxes(tickangle = 35)
     return fig
