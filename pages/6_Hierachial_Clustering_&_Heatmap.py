@@ -15,6 +15,11 @@ The first step consists of calculating the distance between every pair of observ
 2. It merges the closest pairs of points according to their distances.
 3. It recomputes the distance between the new cluster and the old ones and stores them in a new distance matrix.
 4. It repeats steps 2 and 3 until all the clusters are merged into one single cluster.
+
+There are a lot of good videos and resources out there explaining very well the principle behind clustering. Some good ones are the following:
+- Hierarchical clustering and heatmaps: https://www.youtube.com/watch?v=7xHsRkOdVwo
+- K-means clustering: https://www.youtube.com/watch?v=4b5d3muPQmA
+- ComplexHeatmap R package: https://jokergoo.github.io/ComplexHeatmap-reference/book/ 
 """)
     label_pos = st.radio("dendrogram label position", ["bottom", "top"])
     st.plotly_chart(get_dendrogram(st.session_state.scaled, label_pos))

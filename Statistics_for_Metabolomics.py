@@ -17,33 +17,43 @@ st.title("Statistics for Metabolomics")
 
 st.markdown(
 """
-## **About the different sections:**
-### 1. File Selection
-### 2. Data Cleanup
+A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
 
-It involves cleaning the feature table, which contains all the features (metabolites) with their corresponding intensities. The data cleanup steps involved are: 1) Blank removal 2) Imputation 3) Normalisation 4) Scaling. Each step would be discussed in detail later. Once the data is cleaned, we can then use it for further statistical analyses.
+These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
 
-### 3. Univariate statistical analysis
+## Available Statistics
+- Univariate (ANOVA and Tukey's post hoc test)
+- Principle Component Analysis (PCA)
+- Multivariate analyses: (PERMANOVA & PCoA)
+- Hierachial Clustering & Heatmaps
 
-Here, we will use univariate statistical methods, such as ANOVA, to investigate whether there are differences in the levels of individual features between different time points in the dataset.
+## Quickstart
 
-### 4. Unsupervised multivariate analyses:
-#### i. PCoA and PERMANOVA
-Here, we will perform a Principal Coordinate Analysis (PCoA), also known as metric or classical Multidimensional Scaling (metric MDS) to explore and visualize patterns in an untargeted mass spectromtery-based metabolomics dataset. We will then assess statistical significance of the patterns and dispersion of different sample types using permutational multivariate analysis of variance (PERMANOVA).
+Mandatory steps:
+1. File Selection:
+- Two tables are required: **Feature Intensity** and **Meta Data**
+- if feature table has an optional `metabolite` column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
+- feature index can be automat<ically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
+- sample file names need to contain `mzML` file name extensions
+- feature table needs sample file names as column names
+- meta data table **requires** a `filename` column
+- meta data table can contain columns with attributes (prefixed with `ATTRIBUTE_`)
+- checkout the **example data** availabe in file selection
 
-#### ii. Cluster Analyses and Heatmaps
-We will also perform different cluster analyses to explore patterns in the data. This will help us to discover subgroups of samples or features that share a certain level of similarity. Clustering is an example of unsupervised learning where no labels are given to the learning algorithm which will try to find patterns/structures in the input data on its own. The goal of clustering is to find these hidden patterns.
+Example feature table:
+|metabolite|sample1.mzML|sample2.mzML|blank.mzML|
+|---|---|---|---|
+|1|1000|1100|100|
+|2|2000|2200|200|
 
-Some types of cluster analyses (e.g. hierarchical clustering) are often associated with heatmaps. Heatmaps are a visual representation of the data where columns are usually samples and rows are features (in our case, different metabolic features). The color scale of heatmaps indicates higher or lower intensity (for instance, blue is lower and red is higher intensity).
-
-There are a lot of good videos and resources out there explaining very well the principle behind clustering. Some good ones are the following:
-- Hierarchical clustering and heatmaps: https://www.youtube.com/watch?v=7xHsRkOdVwo<br>
-- K-means clustering: https://www.youtube.com/watch?v=4b5d3muPQmA
-- ComplexHeatmap R package: https://jokergoo.github.io/ComplexHeatmap-reference/book/ 
-
-### **5. Supervised multivariate analyses:**
-we will perform a supervised analysis using XGBoost ....
-
----
+Example meta data table:
+|filename|ATTRIBUTE_Sample_Type|ATTRIBUTE_Time_Point|
+|---|---|---|
+|sample1.mzML|Sample|1h|
+|sample2.mzML|Sample|2h|
+|blank.mzML|Blank|N/A|
+2. Data Cleanup:
+- here you can remove blank features and impute missing values
+- **important!** click the button at the end of data cleanup to prepare data for statistics!
 """
 )
