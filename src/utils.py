@@ -46,8 +46,11 @@ def string_overlap(string, options):
 def table_title(df, title, col=""):
     text = f"##### {title}\n{df.shape[0]} rows, {df.shape[1]} columns"
     if col:
-        return col.markdown(text)
-    return st.markdown(text)
+        col.markdown(text)
+        col.download_button("Download", df.to_csv(sep="\t").encode("utf-8"), title.replace(" ", "-")+".tsv")
+    else:
+        st.markdown(text)
+        # st.download_button("Download", df)
 
 patterns = [
         ["m/z", "mz", "mass over charge"],
@@ -67,6 +70,8 @@ def get_new_index(df):
             df["metabolite"] = df[column_names[0]].round(5).astype(str)
             if column_names[1]:
                 df["metabolite"] = df["metabolite"] + "@" + df[column_names[1]].round(2).astype(str)
+            if "row ID" in df.columns:
+                df["metabolite"] = df["row ID"].astype(str) + "_" + df["metabolite"]
         df.set_index("metabolite", inplace=True)
     except:
         return df, "fail"

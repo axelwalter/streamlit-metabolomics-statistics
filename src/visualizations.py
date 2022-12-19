@@ -52,8 +52,8 @@ def get_anova_plot(anova):
     fig.add_scatter(x=anova[anova['significant']]['F'].apply(np.log),
                     y=anova[anova['significant']]['p'].apply(lambda x: -np.log(x)),
                     mode='markers+text',
-                    text=anova['metabolite'].iloc[:4],
-                    textposition='top left', textfont=dict(color='#ef553b', size=7), name='significant')
+                    text=anova['metabolite'].iloc[:5],
+                    textposition='top left', textfont=dict(color='#ef553b', size=12), name='significant')
 
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                     title={"text":"ANOVA - FEATURE SIGNIFICANCE", 'x':0.5, "font_color":"#3E3D53"},
@@ -72,24 +72,24 @@ def get_tukey_volcano_plot(tukey):
     # plot significant values
     fig.add_trace(go.Scatter(x=tukey[tukey['stats_significant']]['stats_diff'],
                             y=tukey[tukey['stats_significant']]['stats_p'].apply(lambda x: -np.log(x)),
-                            mode='markers+text', text=tukey['stats_metabolite'].iloc[:4], textposition='top left', 
-                            textfont=dict(color='#ef553b', size=8), marker_color='#ef553b', name='significant'))
+                            mode='markers+text', text=tukey['stats_metabolite'].iloc[:5], textposition='top right', 
+                            textfont=dict(color='#ef553b', size=12), marker_color='#ef553b', name='significant'))
 
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                     title={"text":"TUKEY - FEATURE DIFFERENCE", 'x':0.5, "font_color":"#3E3D53"},
                     xaxis_title="stats_diff", yaxis_title="-log(p)")
     return fig
 
-def get_metabolite_boxplot(anova, data, metabolite):
+def get_metabolite_boxplot(anova, data, metabolite, attribute):
     p_value = anova.set_index('metabolite')._get_value(metabolite, "p")
-    df = data[['ATTRIBUTE_Time-Point', metabolite]]
+    df = data[[attribute, metabolite]]
     title = f"{metabolite}<br>p-value: {p_value}"
-    fig = px.box(df, x='ATTRIBUTE_Time-Point', y=metabolite, template='plotly_white',
-                 width=800, height=600, points='all', color='ATTRIBUTE_Time-Point')
+    fig = px.box(df, x=attribute, y=metabolite, template='plotly_white',
+                 width=800, height=600, points='all', color=attribute)
 
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                       title={"text":title, 'x':0.5, "font_color":"#3E3D53"},
-                      xaxis_title="time point", yaxis_title="intensity scales and centered")
+                      xaxis_title=attribute.replace("ATTRIBUTE_", ""), yaxis_title="intensity scales and centered")
     return fig
 
 def get_pca_scatter_plot(pca_df, pca, attribute, md):

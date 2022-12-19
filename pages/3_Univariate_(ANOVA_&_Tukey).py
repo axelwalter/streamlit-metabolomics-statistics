@@ -27,7 +27,7 @@ if not st.session_state.data.empty:
     if not st.session_state.anova.empty:
         st.markdown("##### Inspect single significant metabolites")
         metabolite = st.selectbox("Select metabolite", sorted(list(st.session_state.anova["metabolite"][st.session_state.anova["significant"]==True])))
-        st.plotly_chart(get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite))
+        st.plotly_chart(get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite, attribute))
 
     v_space(2)
     st.markdown("#### Tukey's post hoc test")
@@ -36,12 +36,14 @@ if not st.session_state.data.empty:
     e1 = c1.selectbox("Element 1", set(st.session_state.data[attribute]))
     e2 = c2.selectbox("Element 2", set(st.session_state.data[attribute]))
     elements = [e1, e2]
+    if e1 == e2:
+        st.warning("Please select different elements.")
     v_space(2, c3)
-    if c3.button("Run Tukey's"):
+    if c3.button("Run Tukey's") and e1 != e2:
         if not st.session_state.anova.empty:
             with st.spinner(f"Running Tukey's post hoc test between {attribute} {e1} and {e2}..."):
                 dtypes = [('stats_metabolite', 'U100'), ('stats_diff', 'f'), ('stats_p', 'f')]
-                tukey = pd.DataFrame(np.fromiter(gen_pairwise_tukey(st.session_state.data, elements, st.session_state.anova[st.session_state.anova['significant']]['metabolite']), dtype=dtypes))
+                tukey = pd.DataFrame(np.fromiter(gen_pairwise_tukey(st.session_state.data, elements, st.session_state.anova[st.session_state.anova['significant']]['metabolite'], attribute), dtype=dtypes))
 
                 st.session_state.tukeys = add_bonferroni_to_tukeys(tukey)
 

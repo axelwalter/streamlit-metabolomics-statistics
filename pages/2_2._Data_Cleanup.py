@@ -23,7 +23,7 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
     c1, c2 = st.columns(2)
     table_title(inside_levels(new_md), "Select samples (excluding blank and pools) based on the following table.", c1)
     c1.dataframe(inside_levels(new_md))
-    v_space(3, c2)
+    v_space(7, c2)
     sample_column = c2.selectbox("Choose attribute for sample selection", st.session_state.md.columns)
     sample_row = c2.selectbox("Choose sample", set(st.session_state.md[sample_column]))
     samples = new_ft[new_md[new_md[sample_column] == sample_row].index]
@@ -40,7 +40,7 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
         c1, c2 = st.columns(2)
         table_title(inside_levels(non_samples_md), "Select blanks (excluding samples and pools) based on the following table.", c1)
         c1.dataframe(inside_levels(non_samples_md))
-        v_space(3, c2)
+        v_space(7, c2)
         blank_column = c2.selectbox("Choose attribute for blank selection", non_samples_md.columns)
         blank_row = c2.selectbox("Choose blank", set(non_samples_md[blank_column]))
         blanks = new_ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
@@ -71,7 +71,8 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
             tmp_ft = blanks_removed
         else:
             tmp_ft = samples
-        table_title(tmp_ft, "Imputated data")
+        c1, c2 = st.columns(2)
+        table_title(tmp_ft, "Imputated data", c1)
         imputed = impute_missing_values(tmp_ft, get_cutoff_LOD(tmp_ft))
         st.write(imputed)
 
@@ -124,7 +125,8 @@ Features with more then 50% missing values will be removed.
             st.success("Your data is now ready for statistical analysis!")
     
     if not st.session_state.data.empty:
-        table_title(st.session_state.data, "Scaled feature table for statistical analysis")
+        c1, c2 = st.columns(2)
+        table_title(st.session_state.data, "Scaled feature table for statistical analysis", c1)
         st.dataframe(st.session_state.data)
 else:
     st.warning("Please select files for data clean up first!")

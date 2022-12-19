@@ -22,7 +22,7 @@ A web app implementation of the [statistics notebooks](https://github.com/Functi
 These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
 
 ## Available Statistics
-- Univariate (ANOVA and Tukey's post hoc test)
+- Univariate (ANOVA & Tukey's post hoc test)
 - Principle Component Analysis (PCA)
 - Multivariate analyses: (PERMANOVA & PCoA)
 - Hierachial Clustering & Heatmaps
@@ -31,7 +31,8 @@ These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmo
 
 Mandatory steps:
 1. File Selection:
-- Two tables are required: **Feature Intensity** and **Meta Data**
+- two tables are required: **Feature Intensity** and **Meta Data**
+- supported formats: `tsv` and `txt` (tab separated), `csv` (comma separated) and `xlsx` (Excel file)
 - if feature table has an optional `metabolite` column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
 - feature index can be automat<ically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
 - sample file names need to contain `mzML` file name extensions

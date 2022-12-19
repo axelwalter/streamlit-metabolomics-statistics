@@ -7,4 +7,5 @@ sklearn
 scipy==1.8.1
 scikit-bio
 pingouin
-kaleido 
+kaleido
+openpyxl

@@ -7,7 +7,7 @@ from src.visualizations import *
 st.markdown("#### Principle Component Analysis (PCA)")
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
-    n = c1.slider("number of components", 2, 10, 5)
+    n = c1.slider("number of components", 2, st.session_state.scaled.shape[0], 5)
     pca, pca_df = get_pca_df(st.session_state.scaled, n)
     st.dataframe(pca_df)
     st.plotly_chart(get_pca_scree_plot(pca_df, pca))

@@ -24,8 +24,8 @@ def clean_up_md(md):
 def clean_up_ft(ft):
     ft = ft.copy() #storing the files under different names to preserve the original files
     # drop all columns that are not mzML or mzXML file names
-    ft.drop(columns=[col for col in ft.columns if ".mz" not in col], inplace=True)
-    # remove " Peak area" from column names
+    ft.drop(columns=[col for col in ft.columns if ".mzML" not in col], inplace=True)
+    # remove " Peak area" from column names, contained after mzmine pre-processing
     ft.rename(columns={col: col.replace(" Peak area", "").strip() for col in ft.columns}, inplace=True)
     return ft
 
@@ -128,11 +128,11 @@ def add_bonferroni_to_anova(anova):
     anova.sort_values('p', inplace=True)
     return anova
 
-def gen_pairwise_tukey(df, time_points, metabolites):
+def gen_pairwise_tukey(df, elements, metabolites, attribute):
     """ Yield results for pairwise Tukey test for all metabolites between start and end time points."""
     for metabolite in metabolites:
-        df_for_tukey = df.iloc[np.where(df['ATTRIBUTE_Time-Point'].isin([time_points[0], time_points[-1]]))][[metabolite, 'ATTRIBUTE_Time-Point']]
-        tukey = pg.pairwise_tukey(df_for_tukey, dv=metabolite, between='ATTRIBUTE_Time-Point')
+        df_for_tukey = df.iloc[np.where(df[attribute].isin(elements))][[metabolite, attribute]]
+        tukey = pg.pairwise_tukey(df_for_tukey, dv=metabolite, between=attribute)
         yield metabolite, tukey['diff'], tukey['p-tukey']
 
 def add_bonferroni_to_tukeys(tukey):

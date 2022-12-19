@@ -9,9 +9,12 @@ md = pd.DataFrame()
 
 # two column layout for file upload
 c1, c2 = st.columns(2)
-c1.markdown("### Upload files or use example data")
-v_space(1, c2)
+c1.markdown("""
+### File Selection
+""")
+# v_space(1, c2)
 use_example = c2.checkbox("Use Example Data")
+v_space(1, c2)
 featurematrix_file = c1.file_uploader("Feature Quantification Table")
 metadata_file = c2.file_uploader("Meta Data Table")
 
@@ -23,8 +26,8 @@ if use_example:
     st.session_state.md = open_df("example-data/MetaData.txt").set_index("filename")
 else:
     # try to load feature table
-    st.session_state.ft = pd.DataFrame()
-    st.session_state.md = pd.DataFrame()
+    # st.session_state.ft = pd.DataFrame()
+    # st.session_state.md = pd.DataFrame()
     if featurematrix_file:
         ft = open_df(featurematrix_file)
         # sometimes dataframes get saved with unnamed index, that needs to be removed
@@ -38,10 +41,10 @@ else:
             metabolite_col =  c1.selectbox("Column to use for metabolite ID.", [col for col in ft.columns if not col.endswith("mzML")])
             if metabolite_col:
                 ft.index = ft[metabolite_col]
-        if c1.button("Create index automatically"):
-            ft, msg = get_new_index(ft)
-            if msg == "no matching columns":
-                c1.error("Could not determine index automatically, missing m/z and/or RT information in column names.")
+            if c1.button("Create index automatically"):
+                ft, msg = get_new_index(ft)
+                if msg == "no matching columns":
+                    c1.error("Could not determine index automatically, missing m/z and/or RT information in column names.")
         if ft.empty:
             c1.error(f"Check feature quantification table!\n{allowed_formats}")
         else:
@@ -64,7 +67,7 @@ else:
         if md.empty:
             c2.error(f"Check meta data table!\n{allowed_formats}")
         else:
-            st.session_state.md
+            st.session_state.md = md
 
 # display ft and md if they are selected
 if not st.session_state.ft.empty:

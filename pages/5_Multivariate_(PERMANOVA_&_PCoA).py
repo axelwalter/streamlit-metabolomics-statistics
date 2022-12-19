@@ -17,7 +17,9 @@ This [video tutorial](https://www.youtube.com/watch?v=GEn-_dAyYME) by StatQuest 
 
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
-    attribute = c1.selectbox("Attribute for multivariate analysis", [col for col in st.session_state.data.columns if (col.startswith("ATTRIBUTE_") and len(set(st.session_state.md.loc[st.session_state.scaled.index, col])) > 1)])
+    attribute = c1.selectbox("Attribute for multivariate analysis", [col for col in st.session_state.data.columns if (col.startswith("ATTRIBUTE_") and 
+                                                                    len(set(st.session_state.md.loc[st.session_state.scaled.index, col])) > 1 and
+                                                                    len(set(st.session_state.md.loc[st.session_state.scaled.index, col])) != st.session_state.scaled.shape[0])])
     matrix = c2.selectbox("distance matrix", ['canberra', 'chebyshev', 'correlation', 'cosine', 'euclidean', 'hamming', 'jaccard', 'matching', 'minkowski', 'seuclidean'])
     permanova, pcoa_result = permanova_pcoa(st.session_state.scaled, matrix, st.session_state.md.loc[st.session_state.scaled.index, attribute])
     
