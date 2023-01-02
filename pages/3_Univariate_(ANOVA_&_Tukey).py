@@ -20,25 +20,36 @@ if not st.session_state.data.empty:
         v_space(2)
         table_title(st.session_state.anova, "ANOVA results table")
         st.dataframe(st.session_state.anova) 
-        c1, c2 = st.columns([0.6, 0.4])
-        c1.plotly_chart(get_anova_plot(st.session_state.anova))
+        c1, c2 = st.columns(2)
+        fig = get_anova_plot(st.session_state.anova)
+        download_plotly_figure(fig, c1, filename="anova-plot.svg")
+        c1.plotly_chart(fig)
 
     v_space(2)
     if not st.session_state.anova.empty:
         st.markdown("##### Inspect single significant metabolites")
         metabolite = st.selectbox("Select metabolite", sorted(list(st.session_state.anova["metabolite"][st.session_state.anova["significant"]==True])))
-        st.plotly_chart(get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite, attribute))
+        fig = get_metabolite_boxplot(st.session_state.anova, st.session_state.data, metabolite, attribute)
+        download_plotly_figure(fig, filename=f"{attribute}-{metabolite}.svg")
+        st.plotly_chart(fig)
 
     v_space(2)
     st.markdown("#### Tukey's post hoc test")
     st.markdown("Choose elements of the selected attribute for comparison.")
+
+    attribute_points = list(set(st.session_state.data[attribute]))
+    attribute_points.sort()
+
     c1, c2, c3 = st.columns(3)
-    e1 = c1.selectbox("Element 1", set(st.session_state.data[attribute]))
-    e2 = c2.selectbox("Element 2", set(st.session_state.data[attribute]))
+
+    e1 = c1.selectbox("Element 1", attribute_points)
+    e2 = c2.selectbox("Element 2", attribute_points[::-1])
     elements = [e1, e2]
+
     if e1 == e2:
         st.warning("Please select different elements.")
     v_space(2, c3)
+
     if c3.button("Run Tukey's") and e1 != e2:
         if not st.session_state.anova.empty:
             with st.spinner(f"Running Tukey's post hoc test between {attribute} {e1} and {e2}..."):
@@ -52,8 +63,10 @@ if not st.session_state.data.empty:
 
     if not st.session_state.tukeys.empty:
         st.dataframe(st.session_state.tukeys)
-        c1, c2 = st.columns([0.7, 0.3])
-        c1.plotly_chart(get_tukey_volcano_plot(st.session_state.tukeys))
+        c1, c2 = st.columns(2)
+        fig = get_tukey_volcano_plot(st.session_state.tukeys)
+        download_plotly_figure(fig, c1, "tukey-plot.svg")
+        c1.plotly_chart(fig)
 
 else:
     st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")

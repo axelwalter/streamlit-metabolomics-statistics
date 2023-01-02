@@ -53,6 +53,7 @@ Example meta data table:
 |sample1.mzML|Sample|1h|
 |sample2.mzML|Sample|2h|
 |blank.mzML|Blank|N/A|
+
 2. Data Cleanup:
 - here you can remove blank features and impute missing values
 - **important!** click the button at the end of data cleanup to prepare data for statistics!

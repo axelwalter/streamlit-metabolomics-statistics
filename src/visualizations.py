@@ -45,7 +45,7 @@ def get_anova_plot(anova):
     # first plot insignificant features
     fig = px.scatter(x=anova[anova['significant'] == False]['F'].apply(np.log),
                     y=anova[anova['significant'] == False]['p'].apply(lambda x: -np.log(x)),
-                    template='plotly_white', width=400, height=600)
+                    template='plotly_white', width=600, height=600)
     fig.update_traces(marker_color="#696880")
 
     # plot significant features

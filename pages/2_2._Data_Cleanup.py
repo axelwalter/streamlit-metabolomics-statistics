@@ -94,16 +94,20 @@ if not st.session_state.ft.empty and not st.session_state.md.empty:
     v_space(3)
     c1, c2 = st.columns(2)
     if blank_removal:
-        c1.plotly_chart(get_feature_frequency_fig(blanks_removed))
+        fig = get_feature_frequency_fig(blanks_removed)
     else:
-        c1.plotly_chart(get_feature_frequency_fig(samples))
+        fig = get_feature_frequency_fig(samples)
+    download_plotly_figure(fig, c1, "frequency-plot.svg")
+    c1.plotly_chart(fig)
 
     if imputation:
-        c2.plotly_chart(get_missing_values_per_feature_fig(imputed, cutoff_LOD))
+        fig = get_missing_values_per_feature_fig(imputed, cutoff_LOD)
     elif blank_removal:
-        c2.plotly_chart(get_missing_values_per_feature_fig(blanks_removed, cutoff_LOD))
+        fig = get_missing_values_per_feature_fig(blanks_removed, cutoff_LOD)
     else:
-        c2.plotly_chart(get_missing_values_per_feature_fig(samples, cutoff_LOD))
+        fig = get_missing_values_per_feature_fig(samples, cutoff_LOD)
+    download_plotly_figure(fig, c2, "missing-values-plot.svg")
+    c2.plotly_chart(fig)
 
 
     v_space(3)

@@ -24,11 +24,15 @@ if not st.session_state.data.empty:
     permanova, pcoa_result = permanova_pcoa(st.session_state.scaled, matrix, st.session_state.md.loc[st.session_state.scaled.index, attribute])
     
     if not permanova.empty:
+        st.markdown("#### PERMANOVA statistics:")
+        st.dataframe(permanova)
         c1, c2 = st.columns(2)
-        c1.markdown("#### PERMANOVA statistics:")
-        c1.dataframe(permanova)
-        c2.plotly_chart(get_pcoa_variance_plot(pcoa_result))
-        st.plotly_chart(get_pcoa_scatter_plot(pcoa_result, st.session_state.md.loc[st.session_state.scaled.index], attribute))
+        fig = get_pcoa_variance_plot(pcoa_result)
+        download_plotly_figure(fig, c1, "pcoa-variance.svg")
+        c1.plotly_chart(fig)
+        fig = get_pcoa_scatter_plot(pcoa_result, st.session_state.md.loc[st.session_state.scaled.index], attribute)
+        download_plotly_figure(fig, c2, "pcoa.svg")
+        c2.plotly_chart(fig)
 
 else:
     st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")

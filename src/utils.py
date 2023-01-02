@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-
+import io
 ####################
 ### common text ####
 ####################
@@ -88,3 +88,12 @@ def inside_levels(df):
         tmp = df[col].value_counts()
         count.append([tmp[levels[-1][i]] for i in range(len(levels[-1]))])
     return pd.DataFrame({"ATTRIBUTES": df.columns, "LEVELS": levels, "COUNT":count}, index=range(1, len(levels)+1))
+
+def download_plotly_figure(fig, col=None, filename=""):
+    buffer = io.BytesIO()
+    fig.write_image(file=buffer, format="svg")
+
+    if col:
+        col.download_button(label=f"Download", data=buffer, file_name=filename, mime="application/svg")
+    else:
+        st.download_button(label=f"Download", data=buffer, file_name=filename, mime="application/svg")
