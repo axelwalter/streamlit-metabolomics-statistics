@@ -1,4 +1,4 @@
-# Statistics for Metabolomics [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://axelwalter-streamlit-metabol-statistics-for-metabolomics-3ornhb.streamlit.app/)
+# Statistics for Metabolomics [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://axelwalter-streamlit-metabol-statistics-for-metabolomics-3ornhb.streamlit.app/)
 
 A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
 
