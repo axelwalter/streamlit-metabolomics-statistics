@@ -96,8 +96,9 @@ def get_pca_scatter_plot(pca_df, pca, attribute, md):
     title = f'PRINCIPLE COMPONENT ANALYSIS'
     
     df = pd.merge(pca_df[['PC1', 'PC2']], md[attribute].apply(str), left_index=True, right_index=True)
-    # display(df)
-    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute)
+    import streamlit as st
+    st.dataframe(df)
+    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute, hover_name=df.index)
 
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                       title={"text":title, 'x':0.2, "font_color":"#3E3D53"},
@@ -125,7 +126,7 @@ def get_pcoa_scatter_plot(pcoa, md_samples, attribute):
     df = pd.merge(df[['PC1', 'PC2']], md_samples[attribute].apply(str), left_index=True, right_index=True)
     
     title = f'PRINCIPLE COORDINATE ANALYSIS'
-    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute)
+    fig = px.scatter(df, x='PC1', y='PC2', template='plotly_white', width=600, height=400, color=attribute, hover_name=df.index)
 
     fig.update_layout(font={"color":"grey", "size":12, "family":"Sans"},
                       title={"text":title, 'x':0.18, "font_color":"#3E3D53"},
