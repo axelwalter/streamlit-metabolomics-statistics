@@ -3,6 +3,8 @@ from src.stats import *
 from src.utils import *
 from src.visualizations import *
 
+st.set_page_config(page_title="Statistics for Metabolomics", page_icon="src/icon.png", layout="wide", initial_sidebar_state="auto", menu_items=None)
+
 try:
     st.markdown("### Multivariate Statistics")
     st.markdown("#### PERMANOVA & Principle Coordinate Analysis (PCoA)")
