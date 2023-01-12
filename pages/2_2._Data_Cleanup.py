@@ -116,7 +116,7 @@ For statistical analysis data needs to be transposed (samples as rows) as well a
 Features with more then 50% missing values will be removed.
 """)
     _, c2, _ = st.columns([0.3, 0.4, 0.3])
-    if c2.button("Prepare data for statistical analysis now!"):
+    if c2.button("**Prepare data for statistical analysis now!**"):
         with st.spinner("Transposing and scaling data..."):
             # transposing tables already
             if imputation:

@@ -4,8 +4,8 @@ from src.utils import *
 from src.stats import *
 from src.visualizations import *
 
+st.set_page_config(page_title="Statistics for Metabolomics", page_icon="src/icon.png", layout="wide", initial_sidebar_state="auto", menu_items=None)
 st.session_state.use_container_width = True
-st.set_page_config(layout="wide")
 
 st.session_state.md = pd.DataFrame()
 st.session_state.ft = pd.DataFrame()

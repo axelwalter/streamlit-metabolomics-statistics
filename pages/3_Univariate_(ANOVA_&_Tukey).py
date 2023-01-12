@@ -62,6 +62,7 @@ if not st.session_state.data.empty:
             st.warning("Run ANOVA before Tukey's post hoc test.")
 
     if not st.session_state.tukeys.empty:
+        table_title(st.session_state.tukeys, "Tukeys's post hoc test results")
         st.dataframe(st.session_state.tukeys)
         c1, c2 = st.columns(2)
         fig = get_tukey_volcano_plot(st.session_state.tukeys)

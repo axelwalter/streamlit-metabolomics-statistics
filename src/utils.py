@@ -47,10 +47,11 @@ def table_title(df, title, col=""):
     text = f"##### {title}\n{df.shape[0]} rows, {df.shape[1]} columns"
     if col:
         col.markdown(text)
-        col.download_button("Download", df.to_csv(sep="\t").encode("utf-8"), title.replace(" ", "-")+".tsv")
+        col.download_button("Download Table", df.to_csv(sep="\t").encode("utf-8"), title.replace(" ", "-")+".tsv")
     else:
         st.markdown(text)
-        # st.download_button("Download", df)
+        st.download_button("Download Table", df.to_csv(sep="\t").encode("utf-8"), title.replace(" ", "-")+".tsv")
+
 
 patterns = [
         ["m/z", "mz", "mass over charge"],
@@ -94,6 +95,6 @@ def download_plotly_figure(fig, col=None, filename=""):
     fig.write_image(file=buffer, format="svg")
 
     if col:
-        col.download_button(label=f"Download", data=buffer, file_name=filename, mime="application/svg")
+        col.download_button(label=f"Download Figure", data=buffer, file_name=filename, mime="application/svg")
     else:
-        st.download_button(label=f"Download", data=buffer, file_name=filename, mime="application/svg")
+        st.download_button(label=f"Download Figure", data=buffer, file_name=filename, mime="application/svg")

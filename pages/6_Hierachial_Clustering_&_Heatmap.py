@@ -21,13 +21,13 @@ There are a lot of good videos and resources out there explaining very well the 
 - K-means clustering: https://www.youtube.com/watch?v=4b5d3muPQmA
 - ComplexHeatmap R package: https://jokergoo.github.io/ComplexHeatmap-reference/book/ 
 """)
-    label_pos = st.radio("dendrogram label position", ["bottom", "top"])
-    fig = get_dendrogram(st.session_state.scaled, label_pos)
-    download_plotly_figure(fig, filename="dendrogram.svg")
-    st.plotly_chart(fig)
-    fig = get_heatmap(order_df_for_heatmap(st.session_state.scaled))
-    download_plotly_figure(fig, filename="heatmap.svg")
-    st.plotly_chart(fig, use_container_width=True)
+    with st.spinner("Generating dendrogram and heatmaps..."):
+        fig = get_dendrogram(st.session_state.scaled, "bottom")
+        download_plotly_figure(fig, filename="dendrogram.svg")
+        st.plotly_chart(fig)
+        fig = get_heatmap(order_df_for_heatmap(st.session_state.scaled))
+        download_plotly_figure(fig, filename="heatmap.svg")
+        st.plotly_chart(fig, use_container_width=True)
 
 else:
     st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")
