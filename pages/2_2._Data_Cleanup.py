@@ -115,8 +115,8 @@ try:
 
         v_space(3)
         st.markdown("""#### Preparing data for statistical analysis
-    For statistical analysis data needs to be transposed (samples as rows) as well as scaled and centered (around zero).
-    Features with more then 50% missing values will be removed.
+For statistical analysis data needs to be transposed (samples as rows) as well as scaled and centered (around zero).
+Features with more then 50% missing values will be removed.
     """)
         _, c2, _ = st.columns([0.3, 0.4, 0.3])
         if c2.button("**Prepare data for statistical analysis now!**"):
