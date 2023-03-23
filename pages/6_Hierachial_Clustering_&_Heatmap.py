@@ -3,14 +3,21 @@ from src.stats import *
 from src.utils import *
 from src.visualizations import *
 
-st.set_page_config(page_title="Statistics for Metabolomics", page_icon="src/icon.png", layout="wide", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(
+    page_title="Statistics for Metabolomics",
+    page_icon="assets/icon.png",
+    layout="wide",
+    initial_sidebar_state="auto",
+    menu_items=None,
+)
 
 try:
     st.markdown("### Hierachial Clustering & Heatmap")
 
     if not st.session_state.data.empty:
         with st.expander("Hierachial Clustering Algorithm"):
-            st.markdown("""
+            st.markdown(
+                """
     The concept behind hierarchical clustering is to repeatedly combine the two nearest clusters into a larger cluster.
 
     The first step consists of calculating the distance between every pair of observation points and stores it in a matrix.
@@ -23,7 +30,8 @@ try:
     - Hierarchical clustering and heatmaps: https://www.youtube.com/watch?v=7xHsRkOdVwo
     - K-means clustering: https://www.youtube.com/watch?v=4b5d3muPQmA
     - ComplexHeatmap R package: https://jokergoo.github.io/ComplexHeatmap-reference/book/ 
-    """)
+    """
+            )
         with st.spinner("Generating dendrogram and heatmaps..."):
             fig = get_dendrogram(st.session_state.scaled, "bottom")
             download_plotly_figure(fig, filename="dendrogram.svg")
@@ -33,7 +41,9 @@ try:
             st.plotly_chart(fig, use_container_width=True)
 
     else:
-        st.warning("Please complete data clean up step first! (Preparing data for statistical analysis)")
+        st.warning(
+            "Please complete data clean up step first! (Preparing data for statistical analysis)"
+        )
 
 except:
     st.warning("Something went wrong.")
