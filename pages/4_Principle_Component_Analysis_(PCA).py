@@ -1,15 +1,7 @@
 import streamlit as st
-from src.stats import *
-from src.utils import *
-from src.visualizations import *
+from src.common import *
 
-st.set_page_config(
-    page_title="Statistics for Metabolomics",
-    page_icon="assets/icon.png",
-    layout="wide",
-    initial_sidebar_state="auto",
-    menu_items=None,
-)
+page_setup()
 
 try:
     st.markdown("#### Principle Component Analysis (PCA)")

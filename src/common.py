@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import io
-
-import time
+import uuid
+from sklearn.preprocessing import StandardScaler
 
 
 def page_setup():
@@ -52,24 +52,20 @@ def open_df(file):
         return pd.DataFrame()
 
 
-def show_table(df, title, col=""):
-    text = f"##### {title}\n{df.shape[0]} rows, {df.shape[1]} columns"
+def show_table(df, title="", col=""):
     if col:
-        col.markdown(text)
-        col.download_button(
-            "Download Table",
-            df.to_csv(sep="\t").encode("utf-8"),
-            title.replace(" ", "-") + ".tsv",
-        )
-        col.dataframe(df)
+        col = col
     else:
-        st.markdown(text)
-        st.download_button(
-            "Download Table",
-            df.to_csv(sep="\t").encode("utf-8"),
-            title.replace(" ", "-") + ".tsv",
-        )
-        st.dataframe(df)
+        col = st
+    if title:
+        col.markdown(f"**{title}**")
+    col.download_button(
+        f"{df.shape[0]} rows, {df.shape[1]} columns",
+        df.to_csv(sep="\t").encode("utf-8"),
+        title.replace(" ", "-") + ".tsv",
+        key=uuid.uuid1(),
+    )
+    col.dataframe(df)
 
 
 def download_plotly_figure(fig, col=None, filename=""):
@@ -90,3 +86,33 @@ def download_plotly_figure(fig, col=None, filename=""):
             file_name=filename,
             mime="application/png",
         )
+
+
+@st.cache_data
+def transpose_and_scale(feature_df, meta_data_df, cutoff_LOD):
+    # remove meta data rows that are not samples
+    md_rows_not_in_samples = [
+        row for row in meta_data_df.index if row not in feature_df.index
+    ]
+    md_samples = meta_data_df.drop(md_rows_not_in_samples)
+
+    # put the rows in the feature table and metadata in the same order
+    feature_df.sort_index(inplace=True)
+    md_samples.sort_index(inplace=True)
+
+    try:
+        if not list(set(md_samples.index == feature_df.index))[0] == True:
+            st.warning("Sample names in feature and metadata table are NOT the same!")
+    except:
+        st.warning(
+            "Sample names in feature and metadata table can NOT be compared. Please check your tables!"
+        )
+
+    scaled = pd.DataFrame(
+        StandardScaler().fit_transform(feature_df),
+        index=feature_df.index,
+        columns=feature_df.columns,
+    )
+    data = pd.merge(md_samples, scaled, left_index=True, right_index=True, how="inner")
+    # scale and return
+    return data, scaled

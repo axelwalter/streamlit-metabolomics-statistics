@@ -6,13 +6,18 @@ page_setup()
 
 st.markdown("## File Selection")
 
-st.checkbox("**Load Example Data**", key="load_example")
 
-c1, c2 = st.columns(2)
-if st.session_state.load_example:
-    load_example()
-else:
-    clear()
+def example_data():
+    if st.session_state.example:
+        load_example()
+    else:
+        clear()
+
+
+st.checkbox("**Example Data**", key="example", on_change=example_data)
+
+if not st.session_state.example:
+    c1, c2 = st.columns(2)
     # Feature Quantification Table
     c1.file_uploader("Feature Quantification Table", key="ft_file")
     if st.session_state.ft_file:
