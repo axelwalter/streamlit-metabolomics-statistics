@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import io
 import uuid
-from sklearn.preprocessing import StandardScaler
+
+import time
 
 
 def page_setup():
@@ -16,7 +17,7 @@ def page_setup():
     )
     # initialize global session state variables if not already present
     # DataFrames
-    for key in ("ft", "md"):
+    for key in ("ft", "md", "scaled"):
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
 
@@ -86,33 +87,3 @@ def download_plotly_figure(fig, col=None, filename=""):
             file_name=filename,
             mime="application/png",
         )
-
-
-@st.cache_data
-def transpose_and_scale(feature_df, meta_data_df, cutoff_LOD):
-    # remove meta data rows that are not samples
-    md_rows_not_in_samples = [
-        row for row in meta_data_df.index if row not in feature_df.index
-    ]
-    md_samples = meta_data_df.drop(md_rows_not_in_samples)
-
-    # put the rows in the feature table and metadata in the same order
-    feature_df.sort_index(inplace=True)
-    md_samples.sort_index(inplace=True)
-
-    try:
-        if not list(set(md_samples.index == feature_df.index))[0] == True:
-            st.warning("Sample names in feature and metadata table are NOT the same!")
-    except:
-        st.warning(
-            "Sample names in feature and metadata table can NOT be compared. Please check your tables!"
-        )
-
-    scaled = pd.DataFrame(
-        StandardScaler().fit_transform(feature_df),
-        index=feature_df.index,
-        columns=feature_df.columns,
-    )
-    data = pd.merge(md_samples, scaled, left_index=True, right_index=True, how="inner")
-    # scale and return
-    return data, scaled

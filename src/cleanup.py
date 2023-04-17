@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+from sklearn.preprocessing import StandardScaler
+
+import time
 
 
 @st.cache_data
@@ -39,9 +42,7 @@ def clean_up_ft(ft):
 @st.cache_data
 def check_columns(md, ft):
     if sorted(ft.columns) == sorted(md.index):
-        st.success(
-            f"All {len(ft.columns)} files are present in both meta data & feature table."
-        )
+        pass
     else:
         st.warning("Not all files are present in both meta data & feature table.")
         # print the md rows / ft column which are not in ft columns / md rows and remove them
@@ -164,3 +165,36 @@ def get_missing_values_per_feature_fig(df, cutoff_LOD):
         bargap=0.2,
     )
     return fig
+
+
+@st.cache_data
+def transpose_and_scale(feature_df, meta_data_df):
+
+    time.sleep(3)
+
+    # remove meta data rows that are not samples
+    md_rows_not_in_samples = [
+        row for row in meta_data_df.index if row not in feature_df.index
+    ]
+    md_samples = meta_data_df.drop(md_rows_not_in_samples)
+
+    # put the rows in the feature table and metadata in the same order
+    feature_df.sort_index(inplace=True)
+    md_samples.sort_index(inplace=True)
+
+    try:
+        if not list(set(md_samples.index == feature_df.index))[0] == True:
+            st.warning("Sample names in feature and metadata table are NOT the same!")
+    except:
+        st.warning(
+            "Sample names in feature and metadata table can NOT be compared. Please check your tables!"
+        )
+
+    scaled = pd.DataFrame(
+        StandardScaler().fit_transform(feature_df),
+        index=feature_df.index,
+        columns=feature_df.columns,
+    )
+    data = pd.merge(md_samples, scaled, left_index=True, right_index=True, how="inner")
+    # scale and return
+    return data, scaled
