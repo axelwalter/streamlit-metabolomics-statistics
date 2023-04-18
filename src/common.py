@@ -3,23 +3,40 @@ import pandas as pd
 import io
 import uuid
 
-import time
-
 
 def page_setup():
     # streamlit configs
     st.set_page_config(
         page_title="Statistics for Metabolomics",
         page_icon="assets/icon.png",
-        layout="wide",
+        # layout="wide",
         initial_sidebar_state="auto",
         menu_items=None,
     )
     # initialize global session state variables if not already present
     # DataFrames
-    for key in ("ft", "md", "scaled"):
+    for key in ("md", "data"):
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
+    if "data_preparation_done" not in st.session_state:
+        st.session_state["data_preparation_done"] = False
+
+    m = st.markdown(
+        """
+        <style>
+        div.stButton > button:first-child {
+            background-color: #0d6efd;
+            color:#ffffff;
+            border-color: #0d6efd;
+        }
+        div.stButton > button:hover {
+            background-color: #ffffff;
+            color:#FF4B4B;
+            border-color: #FF4B4B;
+            }
+        </style>""",
+        unsafe_allow_html=True,
+    )
 
 
 def v_space(n, col=None):
@@ -53,23 +70,24 @@ def open_df(file):
         return pd.DataFrame()
 
 
-def show_table(df, title="", col=""):
+def show_table(df, title="", col="", download=True):
     if col:
         col = col
     else:
         col = st
     if title:
         col.markdown(f"**{title}**")
-    col.download_button(
-        f"{df.shape[0]} rows, {df.shape[1]} columns",
-        df.to_csv(sep="\t").encode("utf-8"),
-        title.replace(" ", "-") + ".tsv",
-        key=uuid.uuid1(),
-    )
+    if download:
+        col.download_button(
+            f"Download Table",
+            df.to_csv(sep="\t").encode("utf-8"),
+            title.replace(" ", "-") + ".tsv",
+            key=uuid.uuid1(),
+        )
     col.dataframe(df)
 
 
-def download_plotly_figure(fig, col=None, filename=""):
+def download_plotly_figure(fig, filename="", col=""):
     buffer = io.BytesIO()
     fig.write_image(file=buffer, format="png")
 

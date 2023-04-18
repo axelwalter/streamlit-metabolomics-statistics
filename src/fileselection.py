@@ -46,15 +46,12 @@ allowed_formats = "Allowed formats: csv (comma separated), tsv (tab separated), 
 
 def load_example():
     ft = open_df("example-data/FeatureMatrix.csv")
-    st.session_state.ft, _ = get_new_index(ft)
-    st.session_state.md = open_df("example-data/MetaData.txt").set_index("filename")
+    ft, _ = get_new_index(ft)
+    md = open_df("example-data/MetaData.txt").set_index("filename")
+    return ft, md
 
 
-def clear():
-    st.session_state.ft = pd.DataFrame()
-    st.session_state.md = pd.DataFrame()
-
-
+@st.cache_data
 def load_ft(ft_file):
     ft = open_df(ft_file)
     # determining index with m/z, rt and adduct information
@@ -89,6 +86,7 @@ Please select the correct one or try to automatically create an index based on R
     return ft
 
 
+@st.cache_data
 def load_md(md_file):
     md = open_df(md_file)
     # we need file names as index, if they don't exist throw a warning and let user chose column
