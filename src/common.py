@@ -75,8 +75,6 @@ def show_table(df, title="", col="", download=True):
         col = col
     else:
         col = st
-    if title:
-        col.markdown(f"**{title}**")
     if download:
         col.download_button(
             f"Download Table",

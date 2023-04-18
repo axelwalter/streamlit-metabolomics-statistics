@@ -37,7 +37,9 @@ if not st.session_state.data.empty:
                     "select",
                     "resetscale",
                 ],
-                "toImageButtonOptions": {"filename": "pca"},
+                "toImageButtonOptions": {
+                    "filename": f"PCA-{st.session_state.pca_attribute}"
+                },
             },
         )
     with t2:
@@ -56,13 +58,11 @@ if not st.session_state.data.empty:
                     "zoomout",
                     "resetscale",
                 ],
-                "toImageButtonOptions": {"filename": "pca-explainedvariance"},
+                "toImageButtonOptions": {"filename": "PCA-explained-variance"},
             },
         )
 
     with t3:
-        show_table(pca_df)
+        show_table(pca_df, "priciple-components")
 else:
-    st.warning(
-        "Please complete data clean up step first! (Preparing data for statistical analysis)"
-    )
+    st.warning("Please complete data preparation step first!")
