@@ -10,20 +10,21 @@ These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmo
 - Multivariate analyses: (PERMANOVA & PCoA)
 - Hierachial Clustering & Heatmaps
 
-## Quickstart,
-Launch the app via the **Open in Streamlit** badge.
+## Quickstart
 
-Mandatory steps:
-1. File Selection:
+Once you have completed the **Data Preparation** step, chose any of the available statistics sections.
+
+### Data Preparation
 - two tables are required: **Feature Intensity** and **Meta Data**
 - supported formats: `tsv` and `txt` (tab separated), `csv` (comma separated) and `xlsx` (Excel file)
 - if feature table has an optional `metabolite` column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
-- feature index can be automatically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
+- feature index can be automat<ically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
 - sample file names need to contain `mzML` file name extensions
 - feature table needs sample file names as column names
 - meta data table **requires** a `filename` column
 - meta data table can contain columns with attributes (prefixed with `ATTRIBUTE_`)
 - checkout the **example data** availabe in file selection
+- remove blank features and impute missing values in the **Data Cleanup** section
 
 Example feature table:
 |metabolite|sample1.mzML|sample2.mzML|blank.mzML|
@@ -37,6 +38,3 @@ Example meta data table:
 |sample1.mzML|Sample|1h|
 |sample2.mzML|Sample|2h|
 |blank.mzML|Blank|N/A|
-2. Data Cleanup:
-- here you can remove blank features and impute missing values
-- **important!** click the button at the end of data cleanup to prepare data for statistics!
