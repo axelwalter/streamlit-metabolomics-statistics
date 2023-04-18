@@ -8,14 +8,8 @@ page_setup()
 
 st.markdown("# Data Preparation")
 
-st.info(
-    """💡 Follow this steps and to prepare your data for the statistics tasks.
-
-Once you are happy with the results, don't forget to click the **Submit Data for Statistics!** button.
-        """
-)
 if st.session_state["data_preparation_done"]:
-    st.success("**Data clean-up successful!**")
+    st.success("Data preparation was successful!")
     if st.button("Re-do the data preparation step now."):
         st.session_state["md"], st.session_state["data"] = (
             pd.DataFrame(),
@@ -24,6 +18,9 @@ if st.session_state["data_preparation_done"]:
         st.session_state["data_preparation_done"] = False
         st.experimental_rerun()
 else:
+    st.info(
+        """💡 Once you are happy with the results, don't forget to click the **Submit Data for Statistics!** button."""
+    )
     st.markdown("## File Upload")
 
     example = st.checkbox("**Example Data**")
@@ -136,16 +133,7 @@ else:
             c1, c2 = st.columns(2)
             ft = impute_missing_values(ft, cutoff_LOD)
             with st.expander(f"**Imputed data {ft.shape}**"):
-                show_table(ft)
-
-        with st.expander("**Summary**"):
-            fig = get_feature_frequency_fig(ft)
-            download_plotly_figure(fig, "frequency-plot.png")
-            st.plotly_chart(fig)
-
-            fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
-            download_plotly_figure(fig, "missing-values-plot.png")
-            st.plotly_chart(fig)
+                show_table(ft, title=f"**Imputed data {ft.shape}**")
 
         _, c1, _ = st.columns(3)
         if c1.button("**Submit Data for Statistics!**"):
@@ -154,3 +142,15 @@ else:
             )
             st.session_state["data_preparation_done"] = True
             st.experimental_rerun()
+
+        tab1, tab2 = st.tabs(
+            ["Feature intensity frequency", "Missing values per feature"]
+        )
+        with tab1:
+            fig = get_feature_frequency_fig(ft)
+            download_plotly_figure(fig, "frequency-plot.png")
+            st.plotly_chart(fig)
+        with tab2:
+            fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
+            download_plotly_figure(fig, "missing-values-plot.png")
+            st.plotly_chart(fig)
