@@ -46,13 +46,9 @@ allowed_formats = "Allowed formats: csv (comma separated), tsv (tab separated), 
 
 def load_example():
     ft = open_df("example-data/FeatureMatrix.csv")
-    st.session_state.ft, _ = get_new_index(ft)
-    st.session_state.md = open_df("example-data/MetaData.txt").set_index("filename")
-
-
-def clear():
-    st.session_state.ft = pd.DataFrame()
-    st.session_state.md = pd.DataFrame()
+    ft, _ = get_new_index(ft)
+    md = open_df("example-data/MetaData.txt").set_index("filename")
+    return ft, md
 
 
 def load_ft(ft_file):

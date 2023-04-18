@@ -16,7 +16,11 @@ if not st.session_state["scaled"].empty:
         show_table(pca_df)
     attribute = st.selectbox(
         "Attribute for PCA scatter plot",
-        st.session_state["md_clean"].columns,
+        [
+            column
+            for column in st.session_state["data"].columns
+            if "ATTRIBUTE" in column
+        ],
     )
     c1, c2 = st.columns(2)
     fig = get_pca_scatter_plot(pca_df, pca_variance, attribute, st.session_state.md)

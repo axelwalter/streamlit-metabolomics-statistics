@@ -169,7 +169,6 @@ def get_missing_values_per_feature_fig(df, cutoff_LOD):
 
 @st.cache_data
 def transpose_and_scale(feature_df, meta_data_df):
-
     time.sleep(3)
 
     # remove meta data rows that are not samples
@@ -197,4 +196,4 @@ def transpose_and_scale(feature_df, meta_data_df):
     )
     data = pd.merge(md_samples, scaled, left_index=True, right_index=True, how="inner")
     # scale and return
-    return data, scaled
+    return md_samples, scaled

@@ -47,7 +47,7 @@ else:
     with st.expander("**Selected samples**"):
         show_table(samples)
 
-    v_space(3)
+    v_space(1)
     # Ask if blank removal should be done
     blank_removal = st.checkbox("**Remove blank features?**", False)
     if blank_removal:
@@ -87,7 +87,7 @@ else:
     else:
         st.session_state["cutoff_LOD"] = get_cutoff_LOD(samples)
 
-    v_space(3)
+    v_space(1)
     imputation = st.checkbox("**Impute missing values?**", False)
     if imputation:
         if blank_removal:
@@ -106,9 +106,9 @@ else:
     else:
         ft_clean = ft.T
 
-    v_space(3)
+    v_space(1)
     if st.button(
-        "✔️ **I'm happy with the data clean up. Use this data for statistical analyis!** ✔️"
+        "**I'm happy with the data clean up. Use this data for statistical analyis!** ✔️"
     ):
         st.session_state["scaled"], st.session_state["data"] = transpose_and_scale(
             ft_clean, md
@@ -116,7 +116,7 @@ else:
         if not st.session_state["scaled"].empty:
             st.success("Data clean-up successful!")
 
-    with st.expander("**Show clean-up metrics**"):
+    if not st.session_state["scaled"].empty:
         st.metric(
             f"Total missing values in dataset (coded as <= {st.session_state['cutoff_LOD']})",
             str(
@@ -129,13 +129,12 @@ else:
             + " %",
         )
 
-        c1, c2 = st.columns(2)
         if blank_removal:
             fig = get_feature_frequency_fig(blanks_removed)
         else:
             fig = get_feature_frequency_fig(samples)
-        c1.plotly_chart(fig)
-        download_plotly_figure(fig, c1, "frequency-plot.png")
+        st.plotly_chart(fig)
+        download_plotly_figure(fig, "frequency-plot.png")
 
         if imputation:
             fig = get_missing_values_per_feature_fig(
@@ -149,5 +148,5 @@ else:
             fig = get_missing_values_per_feature_fig(
                 samples, st.session_state["cutoff_LOD"]
             )
-        c2.plotly_chart(fig)
-        download_plotly_figure(fig, c2, "missing-values-plot.png")
+        st.plotly_chart(fig)
+        download_plotly_figure(fig, "missing-values-plot.png")
