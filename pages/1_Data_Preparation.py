@@ -8,13 +8,20 @@ page_setup()
 
 st.markdown("# Data Preparation")
 
-if not st.session_state["md"].empty and not st.session_state["data"].empty:
-    st.info("💡 You have already prepared data for statistical analysis.")
+st.info(
+    """💡 Follow this steps and to prepare your data for the statistics tasks.
+
+Once you are happy with the results, don't forget to click the **Submit Data for Statistics!** button.
+        """
+)
+if st.session_state["data_preparation_done"]:
+    st.success("**Data clean-up successful!**")
     if st.button("Re-do the data preparation step now."):
         st.session_state["md"], st.session_state["data"] = (
             pd.DataFrame(),
             pd.DataFrame(),
         )
+        st.session_state["data_preparation_done"] = False
         st.experimental_rerun()
 else:
     st.markdown("## File Upload")
@@ -45,7 +52,7 @@ else:
         show_table(md, "Meta Data", c2)
 
     if not ft.empty and not md.empty:
-        st.success("Files loaded successfully!")
+        st.success("**Files loaded successfully!**")
         st.markdown("## Data Cleanup")
 
         # clean up meta data table
@@ -64,10 +71,10 @@ else:
         st.dataframe(inside_levels(md))
         c1, c2 = st.columns(2)
         sample_column = c1.selectbox(
-            "Choose attribute for sample selection",
+            "attribute for sample selection",
             md.columns,
         )
-        sample_row = c2.selectbox("Choose sample", set(md[sample_column]))
+        sample_row = c2.selectbox("sample selection", set(md[sample_column]))
         samples = ft[md[md[sample_column] == sample_row].index]
         samples_md = md.loc[samples.columns]
 
@@ -88,85 +95,62 @@ else:
             c1, c2 = st.columns(2)
 
             blank_column = c1.selectbox(
-                "Choose attribute for blank selection", non_samples_md.columns
+                "attribute for blank selection", non_samples_md.columns
             )
-            blank_row = c2.selectbox("Choose blank", set(non_samples_md[blank_column]))
+            blank_row = c2.selectbox(
+                "blank selection", set(non_samples_md[blank_column])
+            )
             blanks = ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
-            blanks_md = non_samples_md.loc[blanks.columns]
             with st.expander(f"**Selected blanks {blanks.shape}**"):
                 st.dataframe(blanks)
 
             # define a cutoff value for blank removal (ratio blank/avg(samples))
-            st.markdown("**Define a cutoff value for blank removal.**")
-            c1, c2, c3 = st.columns(3)
+            c1, c2 = st.columns(2)
             cutoff = c1.number_input(
-                "recommended cutoff range between 0.1 and 0.3", 0.1, 1.0, 0.3, 0.05
+                "cutoff value for blank removal",
+                0.1,
+                1.0,
+                0.3,
+                0.05,
+                help="The recommended cutoff range is between 0.1 and 0.3",
             )
             (
-                blanks_removed,
+                ft,
                 n_background_features,
                 n_real_features,
             ) = remove_blank_features(blanks, samples, cutoff)
             c2.metric("background or noise features", n_background_features)
-            c3.metric("real features", n_real_features)
-            with st.expander(
-                f"**Feature table after removing blanks {blanks_removed.shape}**"
-            ):
-                show_table(blanks_removed)
-            cutoff_LOD = get_cutoff_LOD(blanks_removed)
-        else:
-            cutoff_LOD = get_cutoff_LOD(samples)
+            with st.expander(f"**Feature table after removing blanks {ft.shape}**"):
+                show_table(ft)
+        cutoff_LOD = get_cutoff_LOD(ft)
 
         v_space(1)
-        imputation = st.checkbox("**Impute missing values?**", False)
+        c1, c2 = st.columns(2)
+        c2.metric(
+            f"total missing values",
+            str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
+            help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.",
+        )
+        imputation = c1.checkbox("**Impute missing values?**", False)
         if imputation:
-            if blank_removal:
-                tmp_ft = blanks_removed
-            else:
-                tmp_ft = samples
             c1, c2 = st.columns(2)
-            imputed = impute_missing_values(tmp_ft, get_cutoff_LOD(tmp_ft))
-            with st.expander(f"**Imputed data {imputed.shape}**"):
-                show_table(imputed)
+            ft = impute_missing_values(ft, cutoff_LOD)
+            with st.expander(f"**Imputed data {ft.shape}**"):
+                show_table(ft)
 
-        if imputation:
-            ft_clean = imputed.T
-        elif blank_removal:
-            ft_clean = blanks_removed.T
-        else:
-            ft_clean = ft.T
+        with st.expander("**Summary**"):
+            fig = get_feature_frequency_fig(ft)
+            download_plotly_figure(fig, "frequency-plot.png")
+            st.plotly_chart(fig)
 
-        v_space(1)
-        st.session_state["md"], st.session_state["data"] = transpose_and_scale(
-            ft_clean, md
-        )
-        if not st.session_state["data"].empty:
-            st.success("Data clean-up successful!")
+            fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
+            download_plotly_figure(fig, "missing-values-plot.png")
+            st.plotly_chart(fig)
 
-        st.metric(
-            f"Total missing values in dataset (coded as <= {cutoff_LOD})",
-            str(
-                round(
-                    ((ft_clean <= cutoff_LOD).to_numpy()).mean(),
-                    3,
-                )
-                * 100
+        _, c1, _ = st.columns(3)
+        if c1.button("**Submit Data for Statistics!**"):
+            st.session_state["md"], st.session_state["data"] = transpose_and_scale(
+                ft, md
             )
-            + " %",
-        )
-
-        if blank_removal:
-            fig = get_feature_frequency_fig(blanks_removed)
-        else:
-            fig = get_feature_frequency_fig(samples)
-        download_plotly_figure(fig, "frequency-plot.png")
-        st.plotly_chart(fig)
-
-        if imputation:
-            fig = get_missing_values_per_feature_fig(imputed, cutoff_LOD)
-        elif blank_removal:
-            fig = get_missing_values_per_feature_fig(blanks_removed, cutoff_LOD)
-        else:
-            fig = get_missing_values_per_feature_fig(samples, cutoff_LOD)
-        download_plotly_figure(fig, "missing-values-plot.png")
-        st.plotly_chart(fig)
+            st.session_state["data_preparation_done"] = True
+            st.experimental_rerun()

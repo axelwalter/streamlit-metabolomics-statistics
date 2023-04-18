@@ -51,6 +51,7 @@ def load_example():
     return ft, md
 
 
+@st.cache_data
 def load_ft(ft_file):
     ft = open_df(ft_file)
     # determining index with m/z, rt and adduct information
@@ -85,6 +86,7 @@ Please select the correct one or try to automatically create an index based on R
     return ft
 
 
+@st.cache_data
 def load_md(md_file):
     md = open_df(md_file)
     # we need file names as index, if they don't exist throw a warning and let user chose column

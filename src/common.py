@@ -3,8 +3,6 @@ import pandas as pd
 import io
 import uuid
 
-import time
-
 
 def page_setup():
     # streamlit configs
@@ -20,6 +18,25 @@ def page_setup():
     for key in ("md", "data"):
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
+    if "data_preparation_done" not in st.session_state:
+        st.session_state["data_preparation_done"] = False
+
+    m = st.markdown(
+        """
+        <style>
+        div.stButton > button:first-child {
+            background-color: #0d6efd;
+            color:#ffffff;
+            border-color: #0d6efd;
+        }
+        div.stButton > button:hover {
+            background-color: #ffffff;
+            color:#FF4B4B;
+            border-color: #FF4B4B;
+            }
+        </style>""",
+        unsafe_allow_html=True,
+    )
 
 
 def v_space(n, col=None):
