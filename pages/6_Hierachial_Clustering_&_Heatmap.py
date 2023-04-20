@@ -4,7 +4,7 @@ from src.clustering import *
 
 page_setup()
 
-st.markdown("### Hierachial Clustering & Heatmap")
+st.markdown("# Hierachial Clustering & Heatmap")
 
 if not st.session_state.data.empty:
     with st.expander("Hierachial Clustering Algorithm"):

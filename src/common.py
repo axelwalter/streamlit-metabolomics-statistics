@@ -15,7 +15,7 @@ def page_setup():
     )
     # initialize global session state variables if not already present
     # DataFrames
-    for key in ("md", "data"):
+    for key in ("md", "data", "df_anova", "df_tukey"):
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
     if "data_preparation_done" not in st.session_state:
@@ -33,6 +33,11 @@ def page_setup():
             background-color: #ffffff;
             color:#FF4B4B;
             border-color: #FF4B4B;
+            }
+        div.stButton > button:disabled {
+            background-color: #f0f2f6;
+            color:#ffffff;
+            border-color: #f0f2f6;
             }
         </style>""",
         unsafe_allow_html=True,
@@ -82,7 +87,7 @@ def show_table(df, title="", col="", download=True):
             title.replace(" ", "-") + ".tsv",
             key=uuid.uuid1(),
         )
-    col.dataframe(df)
+    col.dataframe(df, use_container_width=True)
 
 
 def download_plotly_figure(fig, filename="", col=""):

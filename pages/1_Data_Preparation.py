@@ -103,12 +103,15 @@ else:
             # define a cutoff value for blank removal (ratio blank/avg(samples))
             c1, c2 = st.columns(2)
             cutoff = c1.number_input(
-                "cutoff value for blank removal",
+                "cutoff threshold for blank removal",
                 0.1,
                 1.0,
                 0.3,
                 0.05,
-                help="The recommended cutoff range is between 0.1 and 0.3",
+                help="""The recommended cutoff range is between 0.1 and 0.3.
+                
+Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
+                """,
             )
             (
                 ft,
