@@ -148,7 +148,7 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
         v_space(2)
 
         tab1, tab2 = st.tabs(
-            ["Feature intensity frequency", "Missing values per feature"]
+            ["📊 Feature intensity frequency", "📊 Missing values per feature"]
         )
         with tab1:
             fig = get_feature_frequency_fig(ft)

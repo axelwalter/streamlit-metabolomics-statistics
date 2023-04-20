@@ -8,7 +8,7 @@ page_setup()
 
 st.markdown("# Principle Component Analysis (PCA)")
 
-with st.expander("About Principle Component Analysis"):
+with st.expander("📖 Principle Component Analysis"):
     st.markdown(
         "Principal Component Analysis (PCA) is a statistical method used for dimensionality reduction in multivariate data analysis. It involves transforming a set of correlated variables into a smaller set of uncorrelated variables, known as principal components. These principal components are ordered by their ability to explain the variability in the data, with the first component accounting for the highest amount of variance. PCA can be used to simplify complex data sets, identify patterns and relationships among variables, and remove noise or redundancy from data."
     )
@@ -28,7 +28,7 @@ if not st.session_state.data.empty:
         st.session_state.data, st.session_state.n_components
     )
 
-    t1, t2, t3 = st.tabs(["PCA Plot", "Explained variance", "Data"])
+    t1, t2, t3 = st.tabs(["📈 PCA Plot", "📊 Explained variance", "📁 Data"])
     with t1:
         fig = get_pca_scatter_plot(
             pca_df, pca_variance, st.session_state.pca_attribute, st.session_state.md

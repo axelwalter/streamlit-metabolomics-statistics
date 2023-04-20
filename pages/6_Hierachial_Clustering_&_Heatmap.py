@@ -6,7 +6,7 @@ page_setup()
 
 st.markdown("# Hierachial Clustering & Heatmap")
 
-with st.expander("About hierachial clustering and heatmaps"):
+with st.expander("📖 hierachial clustering and heatmaps"):
     st.markdown(
         """
 Hierarchical clustering is a popular unsupervised machine learning technique used for grouping data points based on their similarities. In this method, the data is organized in a tree-like structure or dendrogram, where each branch represents a cluster of data points with similar features. The clustering process starts with each data point being considered as a separate cluster, and then iteratively combines similar clusters until all the data points are in a single cluster.
@@ -17,7 +17,7 @@ There are a lot of [good videos](https://www.youtube.com/watch?v=7xHsRkOdVwo) an
 """
     )
 if not st.session_state.data.empty:
-    t1, t2 = st.tabs(["Clustering", "Heatmap"])
+    t1, t2 = st.tabs(["📈 Clustering", "📊 Heatmap"])
     with t1:
         fig = get_dendrogram(st.session_state.data, "bottom")
         show_fig(fig, "clustering")

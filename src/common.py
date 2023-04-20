@@ -15,7 +15,7 @@ def page_setup():
     )
     # initialize global session state variables if not already present
     # DataFrames
-    for key in ("md", "data", "df_anova", "df_tukey"):
+    for key in ("md", "data", "df_anova", "df_tukey", "df_ttest"):
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
     if "data_preparation_done" not in st.session_state:
@@ -42,6 +42,15 @@ def page_setup():
         </style>""",
         unsafe_allow_html=True,
     )
+    with st.sidebar:
+        st.image("assets/vmol-icon.png")
+        st.markdown("----")
+        with st.expander("⚙️ Settings"):
+            st.selectbox(
+                "image export format",
+                ["svg", "png", "jpeg", "webp"],
+                key="image_format",
+            )
 
 
 def v_space(n, col=None):
@@ -90,10 +99,10 @@ def show_table(df, title="", col="", download=True):
     col.dataframe(df, use_container_width=True)
 
 
-def show_fig(fig, download_name):
+def show_fig(fig, download_name, container_width=True):
     st.plotly_chart(
         fig,
-        use_container_width=True,
+        use_container_width=container_width,
         config={
             "displaylogo": False,
             "modeBarButtonsToRemove": [
@@ -106,7 +115,10 @@ def show_fig(fig, download_name):
                 "zoomout",
                 "resetscale",
             ],
-            "toImageButtonOptions": {"filename": download_name},
+            "toImageButtonOptions": {
+                "filename": download_name,
+                "format": st.session_state.image_format,
+            },
         },
     )
 

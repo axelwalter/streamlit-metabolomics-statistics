@@ -7,7 +7,7 @@ page_setup()
 
 st.markdown("# ANOVA & Tukey's post hoc test")
 
-with st.expander("About ANOVA and Tukey's post hoc test"):
+with st.expander("📖 ANOVA and Tukey's post hoc test"):
     st.markdown(
         """Analysis of variance (ANOVA) is a statistical method used to compare means between two or more groups. ANOVA tests whether there is a significant difference between the means of different groups based on the variation within and between groups. If ANOVA reveals that there is a significant difference between at least two group means, post hoc tests are used to determine which specific groups differ significantly from one another. Tukey's post hoc test is a widely used statistical method for pairwise comparisons after ANOVA. It accounts for multiple comparisons and adjusts the p-values accordingly, allowing for a more accurate identification of significant group differences."""
     )
@@ -59,9 +59,9 @@ if not st.session_state.data.empty:
             )
 
     tab_options = [
-        "ANOVA: plot",
-        "ANOVA: result table",
-        "ANOVA: significant metabolites",
+        "📈 ANOVA: plot",
+        "📁 ANOVA: result table",
+        "📊 ANOVA: significant metabolites",
     ]
     if not st.session_state.df_tukey.empty:
         tab_options += ["Tukey's: plot", "Tukey's: result"]

@@ -34,7 +34,7 @@ def test_equal_variance(attribute, between):
     fig.update_layout(
         bargap=0.2,
         font={"color": "grey", "size": 12, "family": "Sans"},
-        title={"text": f"TEST FOR EQUAL VARIANCE", "x": 0.5, "font_color": "#3E3D53"},
+        title={"text": f"TEST FOR EQUAL VARIANCE", "font_color": "#3E3D53"},
         xaxis_title="p-value",
         yaxis_title="count",
     )
@@ -70,7 +70,7 @@ def test_normal_distribution(attribute, between):
     fig.update_layout(
         bargap=0.2,
         font={"color": "grey", "size": 12, "family": "Sans"},
-        title={"text": f"TEST FOR NORMALITY", "x": 0.5, "font_color": "#3E3D53"},
+        title={"text": f"TEST FOR NORMALITY", "font_color": "#3E3D53"},
         xaxis_title="p-value",
         yaxis_title="count",
     )

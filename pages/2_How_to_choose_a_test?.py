@@ -8,7 +8,7 @@ page_setup()
 st.markdown("# How to choose a test?")
 st.markdown("## Normal distribution and equal variance")
 
-with st.expander("Why is this important?"):
+with st.expander("📖 Why is this important?"):
     st.markdown(
         "When analyzing data, it is important to choose the appropriate statistical test to use. One of the factors to consider is whether the data follows a normal distribution and has equal variance. This is because many statistical tests assume that the data is normally distributed and has equal variance. If the data violates these assumptions, parametric tests may not be appropriate and non-parametric tests should be used instead. In this context, testing for normal distribution and equal variance is crucial in determining the most suitable statistical test for the analysis."
     )
@@ -37,7 +37,7 @@ if not st.session_state.data.empty:
         help="Select two options.",
     )
     if st.session_state.test_attribute and len(st.session_state.test_options) == 2:
-        tabs = st.tabs(["Normal distribution", "Equal variance"])
+        tabs = st.tabs(["📊 Normal distribution", "📊 Equal variance"])
         with tabs[0]:
             fig = test_normal_distribution(
                 "ATTRIBUTE_" + st.session_state.test_attribute,
