@@ -7,12 +7,12 @@ page_setup()
 st.markdown("# Multivariate Statistics")
 st.markdown("### PERMANOVA & Principle Coordinate Analysis (PCoA)")
 
-with st.expander("More information on PCoA", expanded=False):
+with st.expander("About PERMANOVA & Principle Coordinate Analysis"):
     st.markdown(
         """
-Principal coordinates analysis (PCoA) is a metric multidimensional scaling (MDS) method that attempts to represent sample dissimilarities in a low-dimensional space. It converts a distance st.session_state.pcoa_distance_matrix consisting of pair-wise distances (dissimilarities) across samples into a 2- or 3-D graph (Gower, 2005). Different distance metrics can be used to calculate dissimilarities among samples (e.g. Euclidean, Canberra, Minkowski). Performing a principal coordinates analysis using the Euclidean distance metric is the same as performing a principal components analysis (PCA). The selection of the most appropriate metric depends on the nature of your data and assumptions made by the metric.
+PERMANOVA (Permutational Multivariate Analysis of Variance) is a statistical method used to test differences in multivariate data between two or more groups. It is similar to traditional ANOVA but accounts for correlations between variables and allows for the testing of non-parametric data. It works by permuting the data to create a null distribution, which is then used to calculate a p-value for the observed differences between groups.
 
-Within the metabolomics field the Euclidean, Bray-Curtis, Jaccard or Canberra distances are most commonly used. The Jaccard distance is an unweighted metric (presence/absence) whereas Euclidean, Bray-Curtis and Canberra distances take into account relative abundances (weighted). Some metrics may be better suited for very sparse data (with many zeroes) than others. For example, the Euclidean distance metric is not recommended to be used for highly sparse data.
+Principal Coordinate Analysis (PCoA) is a multivariate technique used to analyze the structure of a distance matrix. PCoA transforms the distance matrix into a set of orthogonal axes that capture the maximum variation in the data. It is a useful tool for visualizing and exploring patterns in multivariate data, particularly in environmental and ecological research.
 
 This [video tutorial](https://www.youtube.com/watch?v=GEn-_dAyYME) by StatQuest summarizes nicely the basic principles of PCoA. 
 """

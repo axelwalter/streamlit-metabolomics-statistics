@@ -6,22 +6,17 @@ page_setup()
 
 st.markdown("# Hierachial Clustering & Heatmap")
 
-if not st.session_state.data.empty:
-    with st.expander("Hierachial Clustering Algorithm"):
-        st.markdown(
-            """
-The concept behind hierarchical clustering is to repeatedly combine the two nearest clusters into a larger cluster.
+with st.expander("About hierachial clustering and heatmaps"):
+    st.markdown(
+        """
+Hierarchical clustering is a popular unsupervised machine learning technique used for grouping data points based on their similarities. In this method, the data is organized in a tree-like structure or dendrogram, where each branch represents a cluster of data points with similar features. The clustering process starts with each data point being considered as a separate cluster, and then iteratively combines similar clusters until all the data points are in a single cluster.
 
-The first step consists of calculating the distance between every pair of observation points and stores it in a matrix.
-1. It puts every point in its own cluster.
-2. It merges the closest pairs of points according to their distances.
-3. It recomputes the distance between the new cluster and the old ones and stores them in a new distance matrix.
-4. It repeats steps 2 and 3 until all the clusters are merged into one single cluster.
+Heatmaps, on the other hand, are a graphical representation of data where the individual values are represented as colors. Heatmaps are often used in combination with hierarchical clustering to visualize the results of clustering analysis. The heatmap provides an easy-to-read visualization of the similarities and differences between the data points and clusters, with similar data points appearing as blocks of similar colors. Heatmaps are particularly useful for analyzing large datasets with complex relationships between variables.
 
-There are a lot of good videos and resources out there explaining very well the principle behind clustering. Some good ones are the following:
-- Hierarchical clustering and heatmaps: https://www.youtube.com/watch?v=7xHsRkOdVwo
+There are a lot of [good videos](https://www.youtube.com/watch?v=7xHsRkOdVwo) and resources out there explaining very well the principle behind clustering. Some good ones are the following:
 """
-        )
+    )
+if not st.session_state.data.empty:
     t1, t2 = st.tabs(["Clustering", "Heatmap"])
     with t1:
         fig = get_dendrogram(st.session_state.data, "bottom")
