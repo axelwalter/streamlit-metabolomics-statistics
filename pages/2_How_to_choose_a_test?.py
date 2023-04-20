@@ -1,0 +1,70 @@
+import streamlit as st
+
+from src.common import *
+from src.testparametric import *
+
+page_setup()
+
+st.markdown("# How to choose a test?")
+st.markdown("## Normal distribution and equal variance")
+
+with st.expander("Why is this important?"):
+    st.markdown(
+        "When analyzing data, it is important to choose the appropriate statistical test to use. One of the factors to consider is whether the data follows a normal distribution and has equal variance. This is because many statistical tests assume that the data is normally distributed and has equal variance. If the data violates these assumptions, parametric tests may not be appropriate and non-parametric tests should be used instead. In this context, testing for normal distribution and equal variance is crucial in determining the most suitable statistical test for the analysis."
+    )
+
+if not st.session_state.data.empty:
+    c1, c2 = st.columns(2)
+    c1.selectbox(
+        "select attribute of interest",
+        options=[
+            c.replace("ATTRIBUTE_", "")
+            for c in st.session_state.md.columns
+            if len(set(st.session_state.md[c])) > 1
+        ],
+        key="test_attribute",
+    )
+    attribute_options = list(
+        set(st.session_state.md["ATTRIBUTE_" + st.session_state.test_attribute])
+    )
+    attribute_options.sort()
+    c2.multiselect(
+        "select **two** options from the attribute for comparison",
+        options=attribute_options,
+        default=attribute_options[:2],
+        key="test_options",
+        max_selections=2,
+        help="Select two options.",
+    )
+    if st.session_state.test_attribute and len(st.session_state.test_options) == 2:
+        tabs = st.tabs(["Normal distribution", "Equal variance"])
+        with tabs[0]:
+            fig = test_normal_distribution(
+                "ATTRIBUTE_" + st.session_state.test_attribute,
+                st.session_state.test_options,
+            )
+            show_fig(fig, "test-normal-distribution")
+        with tabs[1]:
+            fig = test_equal_variance(
+                "ATTRIBUTE_" + st.session_state.test_attribute,
+                st.session_state.test_options,
+            )
+            show_fig(fig, "test-equal-variance")
+
+    st.info(
+        """💡 **Interpretation**
+
+In both tests low p-values indicate that data points for a feature are **NOT** normal distributed or have similar variance.
+To meet **parametric** criteria the p-values in the histograms should be equally distributed between 0 and 1.
+When a larger number of data points indicate low p-values, it would be advisable to opt for a **non-parametric** statistical test.
+
+|                  | Parametric Test                | Non-Parametric test                                |
+| --------------- | ------------------------------ | -------------------------------------------------- |
+|                  | Paired t-test                  | Wilcoxon Rank sum test                             |
+|                  | Unpaired t-test                | Mann Whitney U-test                                |
+| **Univariate**   | ANOVA & Tukey's post hoc test  | Kruskal Wallis Test & Dunn’s post hoc test         |
+| **Multivariate** |                                | PERMANOVA & Principle Coordinate Analysis (PCoA) |
+"""
+    )
+else:
+    st.warning("Please complete data preparation step first!")
