@@ -33,39 +33,10 @@ if not st.session_state.data.empty:
         fig = get_pca_scatter_plot(
             pca_df, pca_variance, st.session_state.pca_attribute, st.session_state.md
         )
-        st.plotly_chart(
-            fig,
-            config={
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "lasso",
-                    "select",
-                    "resetscale",
-                ],
-                "toImageButtonOptions": {
-                    "filename": f"PCA-{st.session_state.pca_attribute}"
-                },
-            },
-        )
+        show_fig(fig, "principle-component-analysis")
     with t2:
         fig = get_pca_scree_plot(pca_df, pca_variance)
-        st.plotly_chart(
-            fig,
-            config={
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "zoom",
-                    "pan",
-                    "select",
-                    "lasso",
-                    "zoomin",
-                    "autoscale",
-                    "zoomout",
-                    "resetscale",
-                ],
-                "toImageButtonOptions": {"filename": "PCA-explained-variance"},
-            },
-        )
+        show_fig(fig, "pca-variance")
 
     with t3:
         show_table(pca_df, "priciple-components")

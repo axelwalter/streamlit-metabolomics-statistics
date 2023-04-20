@@ -63,41 +63,10 @@ if not st.session_state.data.empty:
                 st.session_state.md,
                 st.session_state.pcoa_attribute,
             )
-            st.plotly_chart(
-                fig,
-                config={
-                    "displaylogo": False,
-                    "modeBarButtonsToRemove": [
-                        "lasso",
-                        "select",
-                        "resetscale",
-                    ],
-                    "toImageButtonOptions": {
-                        "filename": f"PCoA-{st.session_state.pcoa_attribute}-{st.session_state.pcoa_distance_matrix}"
-                    },
-                },
-            )
+            show_fig(fig, "principle-coordinate-analysis")
         with t3:
             fig = get_pcoa_variance_plot(pcoa_result)
-            st.plotly_chart(
-                fig,
-                config={
-                    "displaylogo": False,
-                    "modeBarButtonsToRemove": [
-                        "zoom",
-                        "pan",
-                        "select",
-                        "lasso",
-                        "zoomin",
-                        "autoscale",
-                        "zoomout",
-                        "resetscale",
-                    ],
-                    "toImageButtonOptions": {
-                        "filename": f"pcoa-explained-variance-{st.session_state.pcoa_distance_matrix}"
-                    },
-                },
-            )
+            show_fig(fig, "pcoa-variance")
 
 else:
     st.warning("Please complete data preparation step first!")

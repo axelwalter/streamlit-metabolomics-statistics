@@ -133,7 +133,7 @@ else:
             fig = get_feature_frequency_fig(blanks_removed)
         else:
             fig = get_feature_frequency_fig(samples)
-        st.plotly_chart(fig)
+        show_fig(fig)
         download_plotly_figure(fig, "frequency-plot.png")
 
         if imputation:
@@ -148,5 +148,5 @@ else:
             fig = get_missing_values_per_feature_fig(
                 samples, st.session_state["cutoff_LOD"]
             )
-        st.plotly_chart(fig)
+        show_fig(fig)
         download_plotly_figure(fig, "missing-values-plot.png")

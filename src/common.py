@@ -90,6 +90,27 @@ def show_table(df, title="", col="", download=True):
     col.dataframe(df, use_container_width=True)
 
 
+def show_fig(fig, download_name):
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        config={
+            "displaylogo": False,
+            "modeBarButtonsToRemove": [
+                "zoom",
+                "pan",
+                "select",
+                "lasso",
+                "zoomin",
+                "autoscale",
+                "zoomout",
+                "resetscale",
+            ],
+            "toImageButtonOptions": {"filename": download_name},
+        },
+    )
+
+
 def download_plotly_figure(fig, filename="", col=""):
     buffer = io.BytesIO()
     fig.write_image(file=buffer, format="png")

@@ -20,44 +20,10 @@ if not st.session_state.data.empty:
     t1, t2 = st.tabs(["Clustering", "Heatmap"])
     with t1:
         fig = get_dendrogram(st.session_state.data, "bottom")
-        st.plotly_chart(
-            fig,
-            use_container_width=True,
-            config={
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "zoom",
-                    "pan",
-                    "select",
-                    "lasso",
-                    "zoomin",
-                    "autoscale",
-                    "zoomout",
-                    "resetscale",
-                ],
-                "toImageButtonOptions": {"filename": "hierachiacal-clustering"},
-            },
-        )
+        show_fig(fig, "clustering")
     with t2:
         fig = get_heatmap(order_df_for_heatmap(st.session_state.data))
-        st.plotly_chart(
-            fig,
-            use_container_width=True,
-            config={
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "zoom",
-                    "pan",
-                    "select",
-                    "lasso",
-                    "zoomin",
-                    "autoscale",
-                    "zoomout",
-                    "resetscale",
-                ],
-                "toImageButtonOptions": {"filename": "heatmap"},
-            },
-        )
+        show_fig(fig, "heatmap")
 
 else:
     st.warning("Please complete data preparation step first!")

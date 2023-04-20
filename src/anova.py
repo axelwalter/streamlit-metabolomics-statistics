@@ -70,7 +70,7 @@ def get_anova_plot(anova):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": "ANOVA - FEATURE SIGNIFICANCE",
+            "text": f"ANOVA - {st.session_state.anova_attribute.upper()}",
             "font_color": "#3E3D53",
         },
         xaxis_title="log(F)",
@@ -198,7 +198,10 @@ def get_tukey_volcano_plot(df):
 
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
-        title={"text": "TUKEY - FEATURE DIFFERENCE", "font_color": "#3E3D53"},
+        title={
+            "text": f"TUKEY - {st.session_state.anova_attribute.upper()}: {st.session_state.tukey_elements[0]} - {st.session_state.tukey_elements[1]}",
+            "font_color": "#3E3D53",
+        },
         xaxis_title=f"diff",
         yaxis_title="-log(p)",
     )

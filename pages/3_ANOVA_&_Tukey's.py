@@ -70,23 +70,7 @@ if not st.session_state.data.empty:
     if not st.session_state.df_anova.empty:
         with tabs[0]:
             fig = get_anova_plot(st.session_state.df_anova)
-            st.plotly_chart(
-                fig,
-                config={
-                    "displaylogo": False,
-                    "modeBarButtonsToRemove": [
-                        "zoom",
-                        "pan",
-                        "select",
-                        "lasso",
-                        "zoomin",
-                        "autoscale",
-                        "zoomout",
-                        "resetscale",
-                    ],
-                    "toImageButtonOptions": {"filename": "hierachiacal-clustering"},
-                },
-            )
+            show_fig(fig, "anova")
         with tabs[1]:
             show_table(st.session_state.df_anova)
         with tabs[2]:
@@ -107,44 +91,12 @@ if not st.session_state.data.empty:
                 st.session_state.anova_metabolite,
                 "ATTRIBUTE_" + st.session_state.anova_attribute,
             )
-            st.plotly_chart(
-                fig,
-                config={
-                    "displaylogo": False,
-                    "modeBarButtonsToRemove": [
-                        "zoom",
-                        "pan",
-                        "select",
-                        "lasso",
-                        "zoomin",
-                        "autoscale",
-                        "zoomout",
-                        "resetscale",
-                    ],
-                    "toImageButtonOptions": {"filename": "hierachiacal-clustering"},
-                },
-            )
+            show_fig(fig, f"anova-{st.session_state.anova_metabolite}")
 
         if not st.session_state.df_tukey.empty:
             with tabs[3]:
                 fig = get_tukey_volcano_plot(st.session_state.df_tukey)
-                st.plotly_chart(
-                    fig,
-                    config={
-                        "displaylogo": False,
-                        "modeBarButtonsToRemove": [
-                            "zoom",
-                            "pan",
-                            "select",
-                            "lasso",
-                            "zoomin",
-                            "autoscale",
-                            "zoomout",
-                            "resetscale",
-                        ],
-                        "toImageButtonOptions": {"filename": "hierachiacal-clustering"},
-                    },
-                )
+                show_fig(fig, "tukeys")
             with tabs[4]:
                 show_table(st.session_state.df_tukey)
 

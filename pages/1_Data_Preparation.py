@@ -152,9 +152,7 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
         )
         with tab1:
             fig = get_feature_frequency_fig(ft)
-            download_plotly_figure(fig, "frequency-plot.png")
-            st.plotly_chart(fig)
+            show_fig(fig, "feature-intensity-frequency")
         with tab2:
             fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
-            download_plotly_figure(fig, "missing-values-plot.png")
-            st.plotly_chart(fig)
+            show_fig(fig, "missing-values")
