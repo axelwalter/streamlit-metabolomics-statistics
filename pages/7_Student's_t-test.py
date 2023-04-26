@@ -48,12 +48,12 @@ if not st.session_state.data.empty:
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
         )
+        st.experimental_rerun()
 
     if not st.session_state.df_ttest.empty:
         tabs = st.tabs(
             ["📈 Feature significance", "📊 Single metabolite plots", "📁 Data"]
         )
-
         with tabs[0]:
             fig = plot_ttest(st.session_state.df_ttest)
             show_fig(fig, "t-test")

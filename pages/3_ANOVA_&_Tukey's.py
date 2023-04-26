@@ -30,7 +30,7 @@ if not st.session_state.data.empty:
             st.session_state.data,
             "ATTRIBUTE_" + st.session_state.anova_attribute
         )
-        st.dataframe(st.session_state.df_anova)
+        st.experimental_rerun()
 
     if not st.session_state.df_anova.empty:
         attribute_options = list(
@@ -57,6 +57,7 @@ if not st.session_state.data.empty:
                 "ATTRIBUTE_" + st.session_state.anova_attribute,
                 st.session_state.tukey_elements,
             )
+            st.experimental_rerun()
 
     tab_options = [
         "📈 ANOVA: plot",
