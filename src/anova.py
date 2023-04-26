@@ -102,7 +102,7 @@ def get_metabolite_boxplot(anova, metabolite):
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={"text": title, "font_color": "#3E3D53"},
         xaxis_title=attribute.replace("ATTRIBUTE_", ""),
-        yaxis_title="intensity scales and centered",
+        yaxis_title="intensity",
     )
     return fig
 
