@@ -128,7 +128,7 @@ def ttest_boxplot(df_ttest, metabolite):
         line=dict(width=1, color="#000000"),
     )
     if symbol == "ns":
-        y_margin = 0.1
+        y_margin = 0.2
     else:
         y_margin = 0.05
     fig.add_annotation(
