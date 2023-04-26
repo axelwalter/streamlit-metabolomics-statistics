@@ -22,7 +22,7 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     c1.selectbox(
         "attribute for multivariate analysis",
-        st.session_state.md.columns,
+        [c for c in st.session_state.md.columns if len(set(st.session_state.md[c])) > 1],
         key="pcoa_attribute",
     )
     c2.selectbox(
