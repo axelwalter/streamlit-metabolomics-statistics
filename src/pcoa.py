@@ -51,7 +51,7 @@ def get_pcoa_scatter_plot(pcoa, md_samples, attribute):
 
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
-        title={"text": title, "x": 0.18, "font_color": "#3E3D53"},
+        title={"text": title, "font_color": "#3E3D53"},
         xaxis_title=f"PC1 {round(pcoa.proportion_explained[0]*100, 1)}%",
         yaxis_title=f"PC2 {round(pcoa.proportion_explained[1]*100, 1)}%",
     )

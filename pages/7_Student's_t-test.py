@@ -48,25 +48,22 @@ if not st.session_state.data.empty:
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
         )
+        st.experimental_rerun()
 
     if not st.session_state.df_ttest.empty:
         tabs = st.tabs(
             ["📈 Feature significance", "📊 Single metabolite plots", "📁 Data"]
         )
-
         with tabs[0]:
-            fig = plot_ttest()
+            fig = plot_ttest(st.session_state.df_ttest)
             show_fig(fig, "t-test")
         with tabs[1]:
             cols = st.columns(2)
             cols[0].selectbox(
                 "metabolite", st.session_state.df_ttest.index, key="ttest_metabolite"
             )
-
-            fig = ttest_boxplot(
-                "ATTRIBUTE_" + st.session_state.ttest_attribute,
-                st.session_state.ttest_metabolite,
-                st.session_state.ttest_options,
+            fig = ttest_boxplot(st.session_state.df_ttest,
+                st.session_state.ttest_metabolite
             )
             show_fig(fig, f"ttest-boxplot-{st.session_state.ttest_metabolite}", False)
 

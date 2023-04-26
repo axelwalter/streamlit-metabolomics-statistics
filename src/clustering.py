@@ -49,7 +49,7 @@ def get_heatmap(ord_ft):
         ord_ft,
         y=list(ord_ft.index),
         x=list(ord_ft.columns),
-        text_auto=True,
+        text_auto=False,
         aspect="auto",
         color_continuous_scale="PuOr_r",
         range_color=[-3, 3],
