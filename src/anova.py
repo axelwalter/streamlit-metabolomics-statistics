@@ -29,12 +29,12 @@ def add_bonferroni_to_anova(df):
 
 
 @st.cache_data
-def anova(attribute):
+def anova(df, attribute):
     df = pd.DataFrame(
         np.fromiter(
             gen_anova_data(
-                pd.concat([st.session_state.data, st.session_state.md], axis=1),
-                st.session_state.data.columns,
+                pd.concat([df, st.session_state.md], axis=1),
+                df.columns,
                 attribute,
             ),
             dtype=[("metabolite", "U100"), ("p", "f"), ("F", "f")],
@@ -80,7 +80,8 @@ def get_anova_plot(anova):
 
 
 @st.cache_resource
-def get_metabolite_boxplot(anova, metabolite, attribute):
+def get_metabolite_boxplot(anova, metabolite):
+    attribute = "ATTRIBUTE_"+st.session_state.anova_attribute
     p_value = anova.set_index("metabolite")._get_value(metabolite, "p")
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
@@ -136,7 +137,8 @@ def add_bonferroni_to_tukeys(tukey):
 
 
 @st.cache_data
-def tukey(significant_metabolites, attribute, elements):
+def tukey(df, attribute, elements):
+    significant_metabolites = df[df["significant"]]["metabolite"]
     data = pd.concat(
         [
             st.session_state.data.loc[:, significant_metabolites],

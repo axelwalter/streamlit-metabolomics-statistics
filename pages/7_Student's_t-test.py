@@ -48,7 +48,6 @@ if not st.session_state.data.empty:
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
         )
-        st.dataframe(st.session_state.df_ttest)
 
     if not st.session_state.df_ttest.empty:
         tabs = st.tabs(

@@ -6,12 +6,12 @@ import numpy as np
 
 
 @st.cache_data
-def gen_ttest_data(ttest_st.session_state.ttest_attribute, target_groups, paired):
+def gen_ttest_data(ttest_attribute, target_groups, paired):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)
     ttest = []
     for col in st.session_state.data.columns:
-        group1 = df[col][df[ttest_st.session_state.ttest_attribute] == target_groups[0]]
-        group2 = df[col][df[ttest_st.session_state.ttest_attribute] == target_groups[1]]
+        group1 = df[col][df[ttest_attribute] == target_groups[0]]
+        group2 = df[col][df[ttest_attribute] == target_groups[1]]
         result = pg.ttest(group1, group2, paired=paired)
         result["metabolite"] = col
 
@@ -22,7 +22,7 @@ def gen_ttest_data(ttest_st.session_state.ttest_attribute, target_groups, paired
     ttest.insert(8, "p-bonf", pg.multicomp(ttest["p-val"], method="bonf")[1])
     # add significance
     ttest.insert(9, "significance", ttest["p-bonf"] < 0.05)
-    ttest.insert(10, "st.session_state.ttest_attribute", ttest_st.session_state.ttest_attribute.replace("st.session_state.ttest_attribute_", ""))
+    ttest.insert(10, "st.session_state.ttest_attribute", ttest_attribute.replace("ATTRIBUTE_", ""))
     ttest.insert(11, "A", target_groups[0])
     ttest.insert(12, "B", target_groups[1])
 
@@ -71,17 +71,17 @@ def plot_ttest(df):
 
 
 @st.cache_resource
-def ttest_boxplot(df, metabolite):
+def ttest_boxplot(df_ttest, metabolite):
     df = pd.concat([st.session_state.md, st.session_state.data], axis=1)
     df1 = pd.DataFrame(
         {
-            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[0]].loc[:, metabolite],
+            metabolite: df[df["ATTRIBUTE_"+st.session_state.ttest_attribute] == st.session_state.ttest_options[0]].loc[:, metabolite],
             "option": st.session_state.ttest_options[0],
         }
     )
     df2 = pd.DataFrame(
         {
-            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[1]].loc[:, metabolite],
+            metabolite: df[df["ATTRIBUTE_"+st.session_state.ttest_attribute] == st.session_state.ttest_options[1]].loc[:, metabolite],
             "option": st.session_state.ttest_options[1],
         }
     )
@@ -107,7 +107,7 @@ def ttest_boxplot(df, metabolite):
         },
     )
     fig.update_yaxes(title_standoff=10)
-    pvalue = df.loc[metabolite, "p-bonf"]
+    pvalue = df_ttest.loc[metabolite, "p-bonf"]
     if pvalue >= 0.05:
         symbol = "ns"
     elif pvalue >= 0.01:

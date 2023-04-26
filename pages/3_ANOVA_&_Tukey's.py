@@ -27,8 +27,10 @@ if not st.session_state.data.empty:
     c1.button("Run ANOVA", key="run_anova")
     if st.session_state.run_anova:
         st.session_state.df_anova = anova(
+            st.session_state.data,
             "ATTRIBUTE_" + st.session_state.anova_attribute
         )
+        st.dataframe(st.session_state.df_anova)
 
     if not st.session_state.df_anova.empty:
         attribute_options = list(
@@ -51,9 +53,7 @@ if not st.session_state.data.empty:
         )
         if st.session_state.run_tukey:
             st.session_state.df_tukey = tukey(
-                st.session_state.df_anova[st.session_state.df_anova["significant"]][
-                    "metabolite"
-                ],
+                st.session_state.df_anova,
                 "ATTRIBUTE_" + st.session_state.anova_attribute,
                 st.session_state.tukey_elements,
             )
@@ -89,7 +89,6 @@ if not st.session_state.data.empty:
             fig = get_metabolite_boxplot(
                 st.session_state.df_anova,
                 st.session_state.anova_metabolite,
-                "ATTRIBUTE_" + st.session_state.anova_attribute,
             )
             show_fig(fig, f"anova-{st.session_state.anova_metabolite}")
 
