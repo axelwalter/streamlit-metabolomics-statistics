@@ -46,7 +46,10 @@ else:
         t1.dataframe(ft)
         t2.dataframe(md)
 
-    if not ft.empty and not md.empty:
+    if not ft.index.is_unique:
+        st.error("Please upload a feature matrix with unique metabolite names.")
+
+    elif not ft.empty and not md.empty:
         st.success("Files loaded successfully!")
         st.markdown("### Data Cleanup")
 
