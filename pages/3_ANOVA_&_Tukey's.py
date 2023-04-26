@@ -64,7 +64,7 @@ if not st.session_state.data.empty:
         "📊 ANOVA: significant metabolites",
     ]
     if not st.session_state.df_tukey.empty:
-        tab_options += ["Tukey's: plot", "Tukey's: result"]
+        tab_options += ["📈 Tukey's: plot", "📁 Tukey's: result"]
 
     if not st.session_state.df_anova.empty:
         tabs = st.tabs(tab_options)
