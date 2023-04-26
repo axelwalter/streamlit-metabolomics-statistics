@@ -11,10 +11,7 @@ st.markdown("# Data Preparation")
 if st.session_state["data_preparation_done"]:
     st.success("Data preparation was successful!")
     if st.button("Re-do the data preparation step now."):
-        st.session_state["md"], st.session_state["data"] = (
-            pd.DataFrame(),
-            pd.DataFrame(),
-        )
+        reset_dataframes()
         st.session_state["data_preparation_done"] = False
         st.experimental_rerun()
 else:

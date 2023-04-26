@@ -3,6 +3,11 @@ import pandas as pd
 import io
 import uuid
 
+dataframe_names = ("md", "data", "df_anova", "df_tukey", "df_ttest")
+
+def reset_dataframes():
+    for key in dataframe_names:
+        st.session_state[key] = pd.DataFrame()
 
 def page_setup():
     # streamlit configs
@@ -15,7 +20,7 @@ def page_setup():
     )
     # initialize global session state variables if not already present
     # DataFrames
-    for key in ("md", "data", "df_anova", "df_tukey", "df_ttest"):
+    for key in dataframe_names:
         if key not in st.session_state:
             st.session_state[key] = pd.DataFrame()
     if "data_preparation_done" not in st.session_state:
