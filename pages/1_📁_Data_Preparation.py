@@ -75,7 +75,7 @@ else:
                 "attribute for sample selection",
                 md.columns,
             )
-            sample_row = c2.selectbox("sample selection", set(md[sample_column]))
+            sample_row = c2.selectbox("sample selection", set(md[sample_column].dropna()))
             samples = ft[md[md[sample_column] == sample_row].index]
             samples_md = md.loc[samples.columns]
 
@@ -97,7 +97,7 @@ else:
                 "attribute for blank selection", non_samples_md.columns
             )
             blank_row = c2.selectbox(
-                "blank selection", set(non_samples_md[blank_column])
+                "blank selection", set(non_samples_md[blank_column].dropna())
             )
             blanks = ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
             with st.expander(f"Selected blanks {blanks.shape}"):
@@ -124,38 +124,43 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
             c2.metric("background or noise features", n_background_features)
             with st.expander(f"Feature table after removing blanks {ft.shape}"):
                 show_table(ft, "blank-features-removed")
-        cutoff_LOD = get_cutoff_LOD(ft)
+        
+        if not ft.empty:
+            cutoff_LOD = get_cutoff_LOD(ft)
 
-        st.markdown("##### Imputation")
-        c1, c2 = st.columns(2)
-        c2.metric(
-            f"total missing values",
-            str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
-            help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.",
-        )
-        imputation = c1.checkbox("Impute missing values?", False)
-        if imputation:
+            st.markdown("##### Imputation")
             c1, c2 = st.columns(2)
-            ft = impute_missing_values(ft, cutoff_LOD)
-            with st.expander(f"Imputed data {ft.shape}"):
-                show_table(ft, "imputed")
-
-        v_space(2)
-        _, c1, _ = st.columns(3)
-        if c1.button("**Submit Data for Statistics!**"):
-            st.session_state["md"], st.session_state["data"] = transpose_and_scale(
-                ft, md
+            c2.metric(
+                f"total missing values",
+                str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
+                help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.",
             )
-            st.session_state["data_preparation_done"] = True
-            st.experimental_rerun()
-        v_space(2)
+            imputation = c1.checkbox("Impute missing values?", False)
+            if imputation:
+                c1, c2 = st.columns(2)
+                ft = impute_missing_values(ft, cutoff_LOD)
+                with st.expander(f"Imputed data {ft.shape}"):
+                    show_table(ft, "imputed")
 
-        tab1, tab2 = st.tabs(
-            ["📊 Feature intensity frequency", "📊 Missing values per feature"]
-        )
-        with tab1:
-            fig = get_feature_frequency_fig(ft)
-            show_fig(fig, "feature-intensity-frequency")
-        with tab2:
-            fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
-            show_fig(fig, "missing-values")
+            v_space(2)
+            _, c1, _ = st.columns(3)
+            if c1.button("**Submit Data for Statistics!**"):
+                st.session_state["md"], st.session_state["data"] = transpose_and_scale(
+                    ft, md
+                )
+                st.session_state["data_preparation_done"] = True
+                st.experimental_rerun()
+            v_space(2)
+
+            tab1, tab2 = st.tabs(
+                ["📊 Feature intensity frequency", "📊 Missing values per feature"]
+            )
+            with tab1:
+                fig = get_feature_frequency_fig(ft)
+                show_fig(fig, "feature-intensity-frequency")
+            with tab2:
+                fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
+                show_fig(fig, "missing-values")
+        
+        else:
+            st.error("No features left after blank removal!")
