@@ -6,12 +6,12 @@ import numpy as np
 
 
 @st.cache_data
-def gen_ttest_data(ttest_attribute, target_groups, paired):
+def gen_ttest_data(ttest_st.session_state.ttest_attribute, target_groups, paired):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)
     ttest = []
     for col in st.session_state.data.columns:
-        group1 = df[col][df[ttest_attribute] == target_groups[0]]
-        group2 = df[col][df[ttest_attribute] == target_groups[1]]
+        group1 = df[col][df[ttest_st.session_state.ttest_attribute] == target_groups[0]]
+        group2 = df[col][df[ttest_st.session_state.ttest_attribute] == target_groups[1]]
         result = pg.ttest(group1, group2, paired=paired)
         result["metabolite"] = col
 
@@ -22,7 +22,7 @@ def gen_ttest_data(ttest_attribute, target_groups, paired):
     ttest.insert(8, "p-bonf", pg.multicomp(ttest["p-val"], method="bonf")[1])
     # add significance
     ttest.insert(9, "significance", ttest["p-bonf"] < 0.05)
-    ttest.insert(10, "attribute", ttest_attribute.replace("ATTRIBUTE_", ""))
+    ttest.insert(10, "st.session_state.ttest_attribute", ttest_st.session_state.ttest_attribute.replace("st.session_state.ttest_attribute_", ""))
     ttest.insert(11, "A", target_groups[0])
     ttest.insert(12, "B", target_groups[1])
 
@@ -30,29 +30,29 @@ def gen_ttest_data(ttest_attribute, target_groups, paired):
 
 
 @st.cache_resource
-def plot_ttest():
+def plot_ttest(df):
     fig = px.scatter(
-        x=st.session_state.df_ttest["T"],
-        y=st.session_state.df_ttest["p-bonf"].apply(lambda x: -np.log(x)),
+        x=df["T"],
+        y=df["p-bonf"].apply(lambda x: -np.log(x)),
         template="plotly_white",
         width=600,
         height=600,
-        color=st.session_state.df_ttest["significance"].apply(lambda x: str(x)),
+        color=df["significance"].apply(lambda x: str(x)),
         color_discrete_sequence=["#ef553b", "#696880"],
-        hover_name=st.session_state.df_ttest.index,
+        hover_name=df.index,
     )
     
-    xlim = [st.session_state.df_ttest["T"].min(), st.session_state.df_ttest["T"].max()]
+    xlim = [df["T"].min(), df["T"].max()]
     x_padding = abs(xlim[1]-xlim[0])/5
     fig.update_layout(xaxis=dict(range=[xlim[0]-x_padding, xlim[1]+x_padding]))
 
-    for i in range(st.session_state.df_ttest["significance"].sum()):
+    for i in range(df["significance"].sum()):
         fig.add_annotation(
-            x=st.session_state.df_ttest["T"][i] + (xlim[1] - xlim[0])/12,  # x-coordinate of the annotation
-            y=st.session_state.df_ttest["p-bonf"].apply(lambda x: -np.log(x))[
+            x=df["T"][i] + (xlim[1] - xlim[0])/12,  # x-coordinate of the annotation
+            y=df["p-bonf"].apply(lambda x: -np.log(x))[
                 i
             ],  # y-coordinate of the annotation
-            text=st.session_state.df_ttest.index[i],  # text to be displayed
+            text=df.index[i],  # text to be displayed
             showarrow=False,  # don't display an arrow pointing to the annotation
             font=dict(size=10, color="#ef553b"),  # font size of the text
         )
@@ -60,7 +60,7 @@ def plot_ttest():
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": f"t-test - FEATURE SIGNIFICANCE - {st.session_state.df_ttest.iloc[0, 10].upper()}: {st.session_state.df_ttest.iloc[0, 11]} - {st.session_state.df_ttest.iloc[0, 12]}",
+            "text": f"t-test - FEATURE SIGNIFICANCE - {df.iloc[0, 10].upper()}: {df.iloc[0, 11]} - {df.iloc[0, 12]}",
             "font_color": "#3E3D53",
         },
         xaxis_title="T",
@@ -71,18 +71,18 @@ def plot_ttest():
 
 
 @st.cache_resource
-def ttest_boxplot(attribute, metabolite, options):
+def ttest_boxplot(df, metabolite):
     df = pd.concat([st.session_state.md, st.session_state.data], axis=1)
     df1 = pd.DataFrame(
         {
-            metabolite: df[df[attribute] == options[0]].loc[:, metabolite],
-            "option": options[0],
+            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[0]].loc[:, metabolite],
+            "option": st.session_state.ttest_options[0],
         }
     )
     df2 = pd.DataFrame(
         {
-            metabolite: df[df[attribute] == options[1]].loc[:, metabolite],
-            "option": options[1],
+            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[1]].loc[:, metabolite],
+            "option": st.session_state.ttest_options[1],
         }
     )
     df = pd.concat([df1, df2])
@@ -102,12 +102,12 @@ def ttest_boxplot(attribute, metabolite, options):
         template="plotly_white",
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": attribute.replace("ATTRIBUTE_", ""),
+            "text": st.session_state.ttest_attribute.replace("st.session_state.ttest_attribute_", ""),
             "font_color": "#3E3D53",
         },
     )
     fig.update_yaxes(title_standoff=10)
-    pvalue = st.session_state.df_ttest.loc[metabolite, "p-bonf"]
+    pvalue = df.loc[metabolite, "p-bonf"]
     if pvalue >= 0.05:
         symbol = "ns"
     elif pvalue >= 0.01:
