@@ -65,9 +65,9 @@ if not st.session_state.data.empty:
     ]
     if not st.session_state.df_tukey.empty:
         tab_options += ["Tukey's: plot", "Tukey's: result"]
-    tabs = st.tabs(tab_options)
 
     if not st.session_state.df_anova.empty:
+        tabs = st.tabs(tab_options)
         with tabs[0]:
             fig = get_anova_plot(st.session_state.df_anova)
             show_fig(fig, "anova")
