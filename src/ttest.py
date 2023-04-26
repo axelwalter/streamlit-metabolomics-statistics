@@ -41,10 +41,14 @@ def plot_ttest():
         color_discrete_sequence=["#ef553b", "#696880"],
         hover_name=st.session_state.df_ttest.index,
     )
+    
+    xlim = [st.session_state.df_ttest["T"].min(), st.session_state.df_ttest["T"].max()]
+    x_padding = abs(xlim[1]-xlim[0])/5
+    fig.update_layout(xaxis=dict(range=[xlim[0]-x_padding, xlim[1]+x_padding]))
 
-    for i in range(4):
+    for i in range(st.session_state.df_ttest["significance"].sum()):
         fig.add_annotation(
-            x=st.session_state.df_ttest["T"][i],  # x-coordinate of the annotation
+            x=st.session_state.df_ttest["T"][i] + (xlim[1] - xlim[0])/12,  # x-coordinate of the annotation
             y=st.session_state.df_ttest["p-bonf"].apply(lambda x: -np.log(x))[
                 i
             ],  # y-coordinate of the annotation

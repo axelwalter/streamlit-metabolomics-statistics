@@ -48,6 +48,9 @@ if not st.session_state.data.empty:
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
         )
+        st.session_state.ttest_current_attribute = st.session_state.ttest_attribute
+        st.session_state.ttest_current_options = st.session_state.ttest_options
+
 
     if not st.session_state.df_ttest.empty:
         tabs = st.tabs(
@@ -64,9 +67,9 @@ if not st.session_state.data.empty:
             )
 
             fig = ttest_boxplot(
-                "ATTRIBUTE_" + st.session_state.ttest_attribute,
+                "ATTRIBUTE_" + st.session_state.ttest_current_attribute,
                 st.session_state.ttest_metabolite,
-                st.session_state.ttest_options,
+                st.session_state.ttest_current_options,
             )
             show_fig(fig, f"ttest-boxplot-{st.session_state.ttest_metabolite}", False)
 
