@@ -41,10 +41,14 @@ def test_equal_variance(attribute, between):
     return fig
 
 
-@st.cache_data
+# @st.cache_data
 def test_normal_distribution(attribute, between):
     # test for normal distribution
     data = pd.concat([st.session_state.data, st.session_state.md], axis=1)
+    for b in between:
+        if st.session_state.md[attribute].value_counts(b).loc[b] < 3:
+            st.warning("You need at least 3 values in each option to test for normality!")
+            return None
     normality = pd.DataFrame(
         {
             f"{b}": [
