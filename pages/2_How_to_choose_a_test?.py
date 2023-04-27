@@ -43,7 +43,8 @@ if not st.session_state.data.empty:
                 "ATTRIBUTE_" + st.session_state.test_attribute,
                 st.session_state.test_options,
             )
-            show_fig(fig, "test-normal-distribution")
+            if fig:
+                show_fig(fig, "test-normal-distribution")
         with tabs[1]:
             fig = test_equal_variance(
                 "ATTRIBUTE_" + st.session_state.test_attribute,
