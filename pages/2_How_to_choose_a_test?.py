@@ -25,7 +25,7 @@ if not st.session_state.data.empty:
         key="test_attribute",
     )
     attribute_options = list(
-        set(st.session_state.md["ATTRIBUTE_" + st.session_state.test_attribute])
+        set(st.session_state.md["ATTRIBUTE_" + st.session_state.test_attribute].dropna())
     )
     attribute_options.sort()
     c2.multiselect(
