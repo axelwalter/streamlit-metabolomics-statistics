@@ -34,7 +34,7 @@ if not st.session_state.data.empty:
 
     if not st.session_state.df_anova.empty:
         attribute_options = list(
-            set(st.session_state.md["ATTRIBUTE_" + st.session_state.anova_attribute])
+            set(st.session_state.md["ATTRIBUTE_" + st.session_state.anova_attribute].dropna())
         )
         attribute_options.sort()
 
