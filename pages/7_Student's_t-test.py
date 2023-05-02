@@ -35,6 +35,8 @@ if not st.session_state.data.empty:
         max_selections=2,
         help="Select two options.",
     )
+    c1, c2, c3 = st.columns(3)
+    v_space(2, c1)
     c1.checkbox(
         "paired",
         False,
@@ -42,11 +44,17 @@ if not st.session_state.data.empty:
         help="Specify whether the two observations are related (i.e. repeated measures) or independent.",
     )
 
+    c2.selectbox("correct for unequal variance", options=["auto", "True", "False"], key="ttest_correction", help="For unpaired two sample T-tests, specify whether or not to correct for unequal variances using Welch separate variances T-test. If ‘auto’, it will automatically uses Welch T-test when the sample sizes are unequal, as recommended by Zimmerman 2004.")
+    c3.selectbox("alternative", options=["two-sided", "greater", "less"], key="ttest_alternative", help="Defines the alternative hypothesis, or tail of the test.")
+
+
     if c2.button("Run t-test", disabled=(len(st.session_state.ttest_options) != 2)):
         st.session_state.df_ttest = gen_ttest_data(
             "ATTRIBUTE_" + st.session_state.ttest_attribute,
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
+            st.session_state.ttest_alternative,
+            st.session_state.ttest_correction
         )
         st.experimental_rerun()
 

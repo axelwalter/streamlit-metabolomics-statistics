@@ -6,13 +6,13 @@ import numpy as np
 
 
 @st.cache_data
-def gen_ttest_data(ttest_attribute, target_groups, paired):
+def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correction):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)
     ttest = []
     for col in st.session_state.data.columns:
         group1 = df[col][df[ttest_attribute] == target_groups[0]]
         group2 = df[col][df[ttest_attribute] == target_groups[1]]
-        result = pg.ttest(group1, group2, paired=paired)
+        result = pg.ttest(group1, group2, paired, alternative, correction)
         result["metabolite"] = col
 
         ttest.append(result)
@@ -46,7 +46,10 @@ def plot_ttest(df):
     x_padding = abs(xlim[1]-xlim[0])/5
     fig.update_layout(xaxis=dict(range=[xlim[0]-x_padding, xlim[1]+x_padding]))
 
-    for i in range(df["significance"].sum()):
+    r = df["significance"].sum()
+    if r > 5:
+        r = 5
+    for i in range(r):
         fig.add_annotation(
             x=df["T"][i] + (xlim[1] - xlim[0])/12,  # x-coordinate of the annotation
             y=df["p-bonf"].apply(lambda x: -np.log(x))[
