@@ -119,11 +119,11 @@ def gen_anova_data(df, columns, groups_col):
 
 def add_bonferroni_to_anova(anova):
     # add Bonferroni corrected p-values for multiple testing correction
-    if 'p_bonferroni' not in anova.columns:
-        anova.insert(2, 'p_bonferroni', pg.multicomp(anova['p'], method='bonf')[1])
+    if 'p-corrected' not in anova.columns:
+        anova.insert(2, 'p-corrected', pg.multicomp(anova['p'], method='bonf')[1])
     # add significance
     if 'significant' not in anova.columns:
-        anova.insert(3, 'significant', anova['p_bonferroni'] < 0.05)
+        anova.insert(3, 'significant', anova['p-corrected'] < 0.05)
     # sort by p-value
     anova.sort_values('p', inplace=True)
     return anova
@@ -136,11 +136,11 @@ def gen_pairwise_tukey(df, elements, metabolites, attribute):
         yield metabolite, tukey['diff'], tukey['p-tukey']
 
 def add_bonferroni_to_tukeys(tukey):
-    if 'stats_p_bonferroni' not in tukey.columns:
+    if 'stats_p-corrected' not in tukey.columns:
         # add Bonferroni corrected p-values
-        tukey.insert(3, 'stats_p_bonferroni', pg.multicomp(tukey['stats_p'], method='bonf')[1])
+        tukey.insert(3, 'stats_p-corrected', pg.multicomp(tukey['stats_p'], method='bonf')[1])
         # add significance
-        tukey.insert(4, 'stats_significant', tukey['stats_p_bonferroni'] < 0.05)
+        tukey.insert(4, 'stats_significant', tukey['stats_p-corrected'] < 0.05)
         # sort by p-value
         tukey.sort_values('stats_p', inplace=True)
     return tukey

@@ -6,7 +6,7 @@ import numpy as np
 
 
 @st.cache_data
-def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correction):
+def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correction, p_correction):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)
     ttest = []
     for col in st.session_state.data.columns:
@@ -19,21 +19,21 @@ def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correcti
 
     ttest = pd.concat(ttest).set_index("metabolite")
 
-    ttest.insert(8, "p-bonf", pg.multicomp(ttest["p-val"], method="bonf")[1])
+    ttest.insert(8, "p-corrected", pg.multicomp(ttest["p-val"], method=p_correction)[1])
     # add significance
-    ttest.insert(9, "significance", ttest["p-bonf"] < 0.05)
+    ttest.insert(9, "significance", ttest["p-corrected"] < 0.05)
     ttest.insert(10, "st.session_state.ttest_attribute", ttest_attribute.replace("ATTRIBUTE_", ""))
     ttest.insert(11, "A", target_groups[0])
     ttest.insert(12, "B", target_groups[1])
 
-    return ttest.sort_values("p-bonf")
+    return ttest.sort_values("p-corrected")
 
 
 @st.cache_resource
 def plot_ttest(df):
     fig = px.scatter(
         x=df["T"],
-        y=df["p-bonf"].apply(lambda x: -np.log(x)),
+        y=df["p-corrected"].apply(lambda x: -np.log(x)),
         template="plotly_white",
         width=600,
         height=600,
@@ -52,7 +52,7 @@ def plot_ttest(df):
     for i in range(r):
         fig.add_annotation(
             x=df["T"][i] + (xlim[1] - xlim[0])/12,  # x-coordinate of the annotation
-            y=df["p-bonf"].apply(lambda x: -np.log(x))[
+            y=df["p-corrected"].apply(lambda x: -np.log(x))[
                 i
             ],  # y-coordinate of the annotation
             text=df.index[i],  # text to be displayed
@@ -110,7 +110,7 @@ def ttest_boxplot(df_ttest, metabolite):
         },
     )
     fig.update_yaxes(title_standoff=10)
-    pvalue = df_ttest.loc[metabolite, "p-bonf"]
+    pvalue = df_ttest.loc[metabolite, "p-corrected"]
     if pvalue >= 0.05:
         symbol = "ns"
     elif pvalue >= 0.01:

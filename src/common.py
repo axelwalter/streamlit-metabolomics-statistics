@@ -50,7 +50,10 @@ def page_setup():
     with st.sidebar:
         st.image("assets/vmol-icon.png")
         st.markdown("----")
-        with st.expander("⚙️ Settings"):
+        with st.expander("⚙️ Settings", expanded=True):
+            st.selectbox("p-value correction",
+                         ["bonf", "sidak", "holm", "fdr_bh", "fdr_by", "none"],
+                         key="p_value_correction")
             st.selectbox(
                 "image export format",
                 ["svg", "png", "jpeg", "webp"],

@@ -54,7 +54,8 @@ if not st.session_state.data.empty:
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
             st.session_state.ttest_alternative,
-            st.session_state.ttest_correction
+            st.session_state.ttest_correction,
+            st.session_state.p_value_correction
         )
         st.experimental_rerun()
 

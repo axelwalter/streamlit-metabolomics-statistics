@@ -30,7 +30,8 @@ if not st.session_state.data.empty:
     if st.session_state.run_anova:
         st.session_state.df_anova = anova(
             st.session_state.data,
-            "ATTRIBUTE_" + st.session_state.anova_attribute
+            "ATTRIBUTE_" + st.session_state.anova_attribute,
+            st.session_state.p_value_correction
         )
         st.experimental_rerun()
 
@@ -58,6 +59,7 @@ if not st.session_state.data.empty:
                 st.session_state.df_anova,
                 "ATTRIBUTE_" + st.session_state.anova_attribute,
                 st.session_state.tukey_elements,
+                st.session_state.p_value_correction
             )
             st.experimental_rerun()
 

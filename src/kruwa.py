@@ -6,50 +6,52 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-def gen_anova_data(df, columns, groups_col):
+def gen_kruwa_data(df, columns, groups_col):
     for col in columns:
-        result = pg.anova(data=df, dv=col, between=groups_col, detailed=True).set_index(
+        result = pg.kruskal(data=df, dv=col, between=groups_col, detailed=True).set_index(
             "Source"
         )
         p = result.loc[groups_col, "p-unc"]
-        f = result.loc[groups_col, "F"]
-        yield col, p, f
+        s = result.loc[groups_col, "H"]
+        yield col, p, s
 
 
-def add_p_correction_to_anova(df, correction):
+def add_bonferroni_to_kruwa(df):
     # add Bonferroni corrected p-values for multiple testing correction
     if "p-corrected" not in df.columns:
-        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=correction)[1])
+        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=st.session_state.p_value_correction)[1])
     # add significance
     if "significant" not in df.columns:
         df.insert(3, "significant", df["p-corrected"] < 0.05)
     # sort by p-value
     df.sort_values("p", inplace=True)
+    print("df shape: ")
+    print(df.shape)
     return df
 
 
 @st.cache_data
-def anova(df, attribute, correction):
+def kruwa(df, attribute):
     df = pd.DataFrame(
         np.fromiter(
-            gen_anova_data(
+            gen_kruwa_data(
                 pd.concat([df, st.session_state.md], axis=1),
                 df.columns,
                 attribute,
             ),
-            dtype=[("metabolite", "U100"), ("p", "f"), ("F", "f")],
+            dtype=[("metabolite", "U100"), ("p", "f"), ("statistic", "f")],
         )
     )
-    df = add_p_correction_to_anova(df, correction)
+    df = add_bonferroni_to_kruwa(df)
     return df
 
 
 @st.cache_resource
-def get_anova_plot(anova):
+def get_kruwa_plot(kruwa):
     # first plot insignificant features
     fig = px.scatter(
-        x=anova[anova["significant"] == False]["F"].apply(np.log),
-        y=anova[anova["significant"] == False]["p"].apply(lambda x: -np.log(x)),
+        x=kruwa[kruwa["significant"] == False]["statistic"].apply(np.log),
+        y=kruwa[kruwa["significant"] == False]["p"].apply(lambda x: -np.log(x)),
         template="plotly_white",
         width=600,
         height=600,
@@ -58,10 +60,10 @@ def get_anova_plot(anova):
 
     # plot significant features
     fig.add_scatter(
-        x=anova[anova["significant"]]["F"].apply(np.log),
-        y=anova[anova["significant"]]["p"].apply(lambda x: -np.log(x)),
+        x=kruwa[kruwa["significant"]]["statistic"].apply(np.log),
+        y=kruwa[kruwa["significant"]]["p"].apply(lambda x: -np.log(x)),
         mode="markers+text",
-        text=anova["metabolite"].iloc[:5],
+        text=kruwa["metabolite"].iloc[:5],
         textposition="top left",
         textfont=dict(color="#ef553b", size=12),
         name="significant",
@@ -70,19 +72,19 @@ def get_anova_plot(anova):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": f"ANOVA - {st.session_state.anova_attribute.upper()}",
+            "text": f"Kruskall-Wallis - {st.session_state.kruwa_attribute.upper()}",
             "font_color": "#3E3D53",
         },
-        xaxis_title="log(F)",
+        xaxis_title="statistic",
         yaxis_title="-log(p)",
     )
     return fig
 
 
 @st.cache_resource
-def get_metabolite_boxplot(anova, metabolite):
-    attribute = "ATTRIBUTE_"+st.session_state.anova_attribute
-    p_value = anova.set_index("metabolite")._get_value(metabolite, "p")
+def get_metabolite_boxplot(kruwa, metabolite):
+    attribute = "ATTRIBUTE_"+st.session_state.kruwa_attribute
+    p_value = kruwa.set_index("metabolite")._get_value(metabolite, "p")
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
@@ -107,37 +109,37 @@ def get_metabolite_boxplot(anova, metabolite):
     return fig
 
 
-def gen_pairwise_tukey(df, metabolites, attribute):
-    """Yield results for pairwise Tukey test for all metabolites between two options within the attribute."""
+def gen_pairwise_dunn(df, metabolites, attribute):
+    """Yield results for pairwise dunn test for all metabolites between two options within the attribute."""
     for metabolite in metabolites:
-        tukey = pg.pairwise_tukey(df, dv=metabolite, between=attribute)
+        dunn = pg.pairwise_dunn(df, dv=metabolite, between=attribute)
         yield (
             metabolite,
-            tukey.loc[0, "diff"],
-            tukey.loc[0, "p-tukey"],
+            dunn.loc[0, "diff"],
+            dunn.loc[0, "p-dunn"],
             attribute.replace("ATTRIBUTE_", ""),
-            tukey.loc[0, "A"],
-            tukey.loc[0, "B"],
-            tukey.loc[0, "mean(A)"],
-            tukey.loc[0, "mean(B)"],
+            dunn.loc[0, "A"],
+            dunn.loc[0, "B"],
+            dunn.loc[0, "mean(A)"],
+            dunn.loc[0, "mean(B)"],
         )
 
 
-def add_p_value_correction_to_tukeys(tukey, correction):
-    if "p-corrected" not in tukey.columns:
+def add_bonferroni_to_dunns(dunn):
+    if "stats_p-corrected" not in dunn.columns:
         # add Bonferroni corrected p-values
-        tukey.insert(
-            3, "p-corrected", pg.multicomp(tukey["stats_p"], method=correction)[1]
+        dunn.insert(
+            3, "stats_p-corrected", pg.multicomp(dunn["stats_p"], method=st.session_state.p_value_correction)[1]
         )
         # add significance
-        tukey.insert(4, "stats_significant", tukey["p-corrected"] < 0.05)
+        dunn.insert(4, "stats_significant", dunn["stats_p-corrected"] < 0.05)
         # sort by p-value
-        tukey.sort_values("stats_p", inplace=True)
-    return tukey
+        dunn.sort_values("stats_p", inplace=True)
+    return dunn
 
 
 @st.cache_data
-def tukey(df, attribute, elements, correction):
+def dunn(df, attribute, elements):
     significant_metabolites = df[df["significant"]]["metabolite"]
     data = pd.concat(
         [
@@ -147,9 +149,9 @@ def tukey(df, attribute, elements, correction):
         axis=1,
     )
     data = data[data[attribute].isin(elements)]
-    tukey = pd.DataFrame(
+    dunn = pd.DataFrame(
         np.fromiter(
-            gen_pairwise_tukey(data, significant_metabolites, attribute),
+            gen_pairwise_dunn(data, significant_metabolites, attribute),
             dtype=[
                 ("stats_metabolite", "U100"),
                 (f"diff", "f"),
@@ -162,12 +164,12 @@ def tukey(df, attribute, elements, correction):
             ],
         )
     )
-    tukey = add_p_value_correction_to_tukeys(tukey, correction)
-    return tukey
+    dunn = add_bonferroni_to_dunns(dunn)
+    return dunn
 
 
 @st.cache_resource
-def get_tukey_volcano_plot(df):
+def get_dunn_volcano_plot(df):
     # create figure
     fig = px.scatter(template="plotly_white")
 
@@ -201,7 +203,7 @@ def get_tukey_volcano_plot(df):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": f"TUKEY - {st.session_state.anova_attribute.upper()}: {st.session_state.tukey_elements[0]} - {st.session_state.tukey_elements[1]}",
+            "text": f"dunn - {st.session_state.kruwa_attribute.upper()}: {st.session_state.dunn_elements[0]} - {st.session_state.dunn_elements[1]}",
             "font_color": "#3E3D53",
         },
         xaxis_title=f"diff",
