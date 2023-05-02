@@ -16,6 +16,8 @@ Heatmaps, on the other hand, are a graphical representation of data where the in
 There are a lot of [good videos](https://www.youtube.com/watch?v=7xHsRkOdVwo) and resources out there explaining very well the principle behind clustering. Some good ones are the following:
 """
     )
+    st.image("assets/figures/clustering.png")
+
 if not st.session_state.data.empty:
     t1, t2 = st.tabs(["📈 Clustering", "📊 Heatmap"])
     with t1:

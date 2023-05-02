@@ -58,14 +58,8 @@ if not st.session_state.data.empty:
 In both tests low p-values indicate that data points for a feature are **NOT** normal distributed or have similar variance.
 To meet **parametric** criteria the p-values in the histograms should be equally distributed between 0 and 1.
 When a larger number of data points indicate low p-values, it would be advisable to opt for a **non-parametric** statistical test.
-
-|                  | Parametric Test                | Non-Parametric test                                |
-| --------------- | ------------------------------ | -------------------------------------------------- |
-|                  | Paired t-test                  | Wilcoxon Rank sum test                             |
-|                  | Unpaired t-test                | Mann Whitney U-test                                |
-| **Univariate**   | ANOVA & Tukey's post hoc test  | Kruskal Wallis Test & Dunn’s post hoc test         |
-| **Multivariate** |                                | PERMANOVA & Principle Coordinate Analysis (PCoA) |
 """
     )
+    st.image("assets/figures/decision.png")
 else:
     st.warning("Please complete data preparation step first!")

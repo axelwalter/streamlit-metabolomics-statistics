@@ -47,5 +47,6 @@ Example meta data table:
 - Principle Component Analysis (PCA)
 - Multivariate analyses: (PERMANOVA & PCoA)
 - Hierachial Clustering & Heatmaps
+- Student's t-test
 """
 )
