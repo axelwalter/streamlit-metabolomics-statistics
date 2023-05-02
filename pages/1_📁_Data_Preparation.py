@@ -2,7 +2,7 @@ import streamlit as st
 from src.common import *
 from src.fileselection import *
 from src.cleanup import *
-
+import pandas as pd
 
 page_setup()
 
@@ -14,6 +14,7 @@ if st.session_state["data_preparation_done"]:
         reset_dataframes()
         st.session_state["data_preparation_done"] = False
         st.experimental_rerun()
+    show_table(pd.concat([st.session_state.md, st.session_state.data], axis=1))
 else:
     st.info(
         """💡 Once you are happy with the results, don't forget to click the **Submit Data for Statistics!** button."""
