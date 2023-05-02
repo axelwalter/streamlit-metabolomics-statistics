@@ -48,7 +48,16 @@ else:
 
     elif not ft.empty and not md.empty:
         st.success("Files loaded successfully!")
+
         st.markdown("### Data Cleanup")
+        with st.expander("📖 Data Cleanup"):
+            st.markdown("**Removal of blank features**")
+            st.image("assets/figures/blank-removal.png")
+            st.markdown("**Imputation of missing values**")
+            st.image("assets/figures/imputation.png")
+            st.markdown("**Data scaling and centering**")
+            st.image("assets/figures/scaling.png")
+
 
         # clean up meta data table
         md = clean_up_md(md)
@@ -60,6 +69,7 @@ else:
         md, ft = check_columns(md, ft)
 
         st.markdown("#### Blank removal")
+
         blank_removal = st.checkbox("Remove blank features?", False)
         if blank_removal:
             # Select true sample files (excluding blank and pools)
@@ -126,6 +136,7 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
             cutoff_LOD = get_cutoff_LOD(ft)
 
             st.markdown("##### Imputation")
+
             c1, c2 = st.columns(2)
             c2.metric(
                 f"total missing values",

@@ -17,6 +17,8 @@ Principal Coordinate Analysis (PCoA) is a multivariate technique used to analyze
 This [video tutorial](https://www.youtube.com/watch?v=GEn-_dAyYME) by StatQuest summarizes nicely the basic principles of PCoA. 
 """
     )
+    st.image("assets/figures/pcoa.png")
+
 
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)

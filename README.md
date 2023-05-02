@@ -9,6 +9,7 @@ These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmo
 - Principle Component Analysis (PCA)
 - Multivariate analyses: (PERMANOVA & PCoA)
 - Hierachial Clustering & Heatmaps
+- Student's t-test
 
 ## Quickstart
 

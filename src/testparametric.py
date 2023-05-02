@@ -41,7 +41,7 @@ def test_equal_variance(attribute, between):
     return fig
 
 
-# @st.cache_data
+@st.cache_data
 def test_normal_distribution(attribute, between):
     # test for normal distribution
     data = pd.concat([st.session_state.data, st.session_state.md], axis=1)
