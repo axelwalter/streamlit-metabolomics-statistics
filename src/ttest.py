@@ -94,18 +94,18 @@ def ttest_boxplot(df_ttest, metabolite):
         x="option",
         y=metabolite,
         color="option",
-        width=200,
-        height=300,
+        width=350,
+        height=400,
         points="all",
     )
     fig.update_layout(
         showlegend=False,
-        xaxis_title="",
-        yaxis_title=metabolite,
+        xaxis_title=st.session_state.ttest_attribute.replace("st.session_state.ttest_attribute_", ""),
+        yaxis_title="intensity",
         template="plotly_white",
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": st.session_state.ttest_attribute.replace("st.session_state.ttest_attribute_", ""),
+            "text": metabolite,
             "font_color": "#3E3D53",
         },
     )

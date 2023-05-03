@@ -4,9 +4,6 @@ import numpy as np
 import plotly.express as px
 from sklearn.preprocessing import StandardScaler
 
-import time
-
-
 @st.cache_data
 def clean_up_md(md):
     md = (
@@ -21,6 +18,7 @@ def clean_up_md(md):
     for col in md.columns:
         if md[col].dtype == str:
             md[col] = [item.strip().replace(" ", "_").upper() for item in md[col]]
+    md.index = [i.replace(".mzXML", "").replace(".mzML", "").replace(" Peak area", "") for i in md.index]
     return md
 
 
@@ -30,10 +28,10 @@ def clean_up_ft(ft):
         ft.copy()
     )  # storing the files under different names to preserve the original files
     # drop all columns that are not mzML or mzXML file names
-    ft.drop(columns=[col for col in ft.columns if ".mzML" not in col], inplace=True)
+    ft.drop(columns=[col for col in ft.columns if not (".mzML" in col or ".mzXML" in col)], inplace=True)
     # remove " Peak area" from column names, contained after mzmine pre-processing
     ft.rename(
-        columns={col: col.replace(" Peak area", "").strip() for col in ft.columns},
+        columns={col: col.replace(" Peak area", "").replace(".mzXML", "").replace(".mzML", "").strip() for col in ft.columns},
         inplace=True,
     )
     return ft
@@ -41,21 +39,21 @@ def clean_up_ft(ft):
 
 @st.cache_data
 def check_columns(md, ft):
-    if sorted(ft.columns) == sorted(md.index):
-        pass
-    else:
+    if sorted(ft.columns) != sorted(md.index):
         st.warning("Not all files are present in both meta data & feature table.")
         # print the md rows / ft column which are not in ft columns / md rows and remove them
         ft_cols_not_in_md = [col for col in ft.columns if col not in md.index]
-        st.warning(
-            f"These {len(ft_cols_not_in_md)} columns of feature table are not present in metadata table and will be removed:\n{', '.join(ft_cols_not_in_md)}"
-        )
-        ft = ft.drop(columns=ft_cols_not_in_md)
+        if ft_cols_not_in_md:
+            st.warning(
+                f"These {len(ft_cols_not_in_md)} columns of feature table are not present in metadata table and will be removed:\n{', '.join(ft_cols_not_in_md)}"
+            )
+            ft = ft.drop(columns=ft_cols_not_in_md)
         md_rows_not_in_ft = [row for row in md.index if row not in ft.columns]
-        st.warning(
-            f"These {len(md_rows_not_in_ft)} rows of metadata table are not present in feature table and will be removed:\n{', '.join(md_rows_not_in_ft)}"
-        )
-        md = md.drop(md_rows_not_in_ft)
+        if md_rows_not_in_ft:
+            st.warning(
+                f"These {len(md_rows_not_in_ft)} rows of metadata table are not present in feature table and will be removed:\n{', '.join(md_rows_not_in_ft)}"
+            )
+            md = md.drop(md_rows_not_in_ft)
     return md, ft
 
 

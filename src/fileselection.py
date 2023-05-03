@@ -51,7 +51,6 @@ def load_example():
     return ft, md
 
 
-@st.cache_data
 def load_ft(ft_file):
     ft = open_df(ft_file)
     # determining index with m/z, rt and adduct information
@@ -66,21 +65,20 @@ No **'metabolite'** column for unique metabolite ID specified.
 
 Please select the correct one or try to automatically create an index based on RT and m/z values."""
         )
-        c1, c2 = st.columns(2)
-        metabolite_col = c1.selectbox(
-            "Column to use for metabolite ID.",
-            [col for col in ft.columns if not col.endswith("mzML")],
-        )
-        if metabolite_col:
-            ft.index = ft[metabolite_col]
-        v_space(2, c2)
-        if c2.button("Create index automatically"):
+        if st.checkbox("Create index automatically", value=True):
             ft, msg = get_new_index(ft)
             if msg == "no matching columns":
                 st.warning(
                     "Could not determine index automatically, missing m/z and/or RT information in column names."
                 )
-        v_space(2)
+        else:
+            metabolite_col = st.selectbox(
+                "Column to use for metabolite ID.",
+                [col for col in ft.columns if not col.endswith("mzML")],
+            )
+            if metabolite_col:
+                ft.index = ft[metabolite_col]
+
     if ft.empty:
         st.error(f"Check feature quantification table!\n{allowed_formats}")
     return ft
