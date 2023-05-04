@@ -5,6 +5,12 @@ import uuid
 
 dataframe_names = ("md", "data", "df_anova", "df_tukey", "df_ttest")
 
+corrections_map = {"Bonferroni": "bonf",
+                   "Sidak": "sidak",
+                   "Benjamini/Hochberg FDR": "fdr_bh",
+                   "Benjamini/Yekutieli FDR": "fdr_by",
+                   "no correction": "none"}
+
 def reset_dataframes():
     for key in dataframe_names:
         st.session_state[key] = pd.DataFrame()
@@ -52,7 +58,7 @@ def page_setup():
         st.markdown("----")
         with st.expander("⚙️ Settings", expanded=True):
             st.selectbox("p-value correction",
-                         ["bonf", "sidak", "holm", "fdr_bh", "fdr_by", "none"],
+                         corrections_map.keys(),
                          key="p_value_correction")
             st.selectbox(
                 "image export format",

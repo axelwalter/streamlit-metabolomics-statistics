@@ -51,7 +51,7 @@ else:
         st.success("Files loaded successfully!")
 
         st.markdown("### Data Cleanup")
-        with st.expander("📖 Data Cleanup"):
+        with st.expander("📖 About"):
             st.markdown("**Removal of blank features**")
             st.image("assets/figures/blank-removal.png")
             st.markdown("**Imputation of missing values**")
@@ -142,9 +142,8 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
             c2.metric(
                 f"total missing values",
                 str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
-                help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.",
             )
-            imputation = c1.checkbox("Impute missing values?", False)
+            imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.")
             if imputation:
                 c1, c2 = st.columns(2)
                 ft = impute_missing_values(ft, cutoff_LOD)

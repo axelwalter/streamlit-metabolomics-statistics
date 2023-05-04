@@ -7,7 +7,7 @@ page_setup()
 st.markdown("# Multivariate Statistics")
 st.markdown("### PERMANOVA & Principle Coordinate Analysis (PCoA)")
 
-with st.expander("📖 PERMANOVA & Principle Coordinate Analysis"):
+with st.expander("📖 About"):
     st.markdown(
         """
 PERMANOVA (Permutational Multivariate Analysis of Variance) is a statistical method used to test differences in multivariate data between two or more groups. It is similar to traditional ANOVA but accounts for correlations between variables and allows for the testing of non-parametric data. It works by permuting the data to create a null distribution, which is then used to calculate a p-value for the observed differences between groups.

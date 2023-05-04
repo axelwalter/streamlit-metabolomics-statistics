@@ -7,7 +7,7 @@ page_setup()
 
 st.markdown("# Student's t-test")
 
-with st.expander("📖 Student's t-test"):
+with st.expander("📖 About"):
     st.markdown(
         "The Student's t-test is a statistical test used to determine whether the means of two groups of data are significantly different from each other. The t-test is a parametric test that assumes the data are normally distributed and the variances of the two groups are equal. It is commonly used in hypothesis testing to determine whether there is a significant difference between the means of two populations or to compare the means of two samples. The t-test is a powerful tool in statistical analysis and is often the go-to test for researchers and analysts when analyzing data."
     )
@@ -55,7 +55,7 @@ if not st.session_state.data.empty:
             st.session_state.ttest_paired,
             st.session_state.ttest_alternative,
             st.session_state.ttest_correction,
-            st.session_state.p_value_correction
+            corrections_map[st.session_state.p_value_correction]
         )
         st.experimental_rerun()
 

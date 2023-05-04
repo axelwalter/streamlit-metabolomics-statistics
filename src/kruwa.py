@@ -19,7 +19,7 @@ def gen_kruwa_data(df, columns, groups_col):
 def add_bonferroni_to_kruwa(df):
     # add Bonferroni corrected p-values for multiple testing correction
     if "p-corrected" not in df.columns:
-        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=st.session_state.p_value_correction)[1])
+        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=corrections_map[st.session_state.p_value_correction])[1])
     # add significance
     if "significant" not in df.columns:
         df.insert(3, "significant", df["p-corrected"] < 0.05)
@@ -129,7 +129,7 @@ def add_bonferroni_to_dunns(dunn):
     if "stats_p-corrected" not in dunn.columns:
         # add Bonferroni corrected p-values
         dunn.insert(
-            3, "stats_p-corrected", pg.multicomp(dunn["stats_p"], method=st.session_state.p_value_correction)[1]
+            3, "stats_p-corrected", pg.multicomp(dunn["stats_p"], method=corrections_map[st.session_state.p_value_correction])[1]
         )
         # add significance
         dunn.insert(4, "stats_significant", dunn["stats_p-corrected"] < 0.05)

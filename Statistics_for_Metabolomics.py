@@ -3,7 +3,7 @@ from src.common import *
 
 page_setup()
 
-st.title("Statistics for Metabolomics")
+st.title("A hitchhiker's guide to statistical analysis of metabolomics data")
 
 st.markdown(
     """

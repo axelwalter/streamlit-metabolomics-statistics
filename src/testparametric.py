@@ -37,6 +37,7 @@ def test_equal_variance(attribute, between):
         title={"text": f"TEST FOR EQUAL VARIANCE", "font_color": "#3E3D53"},
         xaxis_title="p-value",
         yaxis_title="count",
+        showlegend=False
     )
     return fig
 
@@ -65,17 +66,20 @@ def test_normal_distribution(attribute, between):
     )
 
     fig = px.histogram(
-        normality,
+        normality.iloc[:, 1],
         nbins=100,
         template="plotly_white",
         color_discrete_sequence=["#696880", "#ef553b"],
         opacity=0.8,
     )
+    fig.update_traces(marker_color="#696880")
+
     fig.update_layout(
         bargap=0.2,
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={"text": f"TEST FOR NORMALITY", "font_color": "#3E3D53"},
         xaxis_title="p-value",
         yaxis_title="count",
+        showlegend=False
     )
     return fig

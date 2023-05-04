@@ -5,9 +5,16 @@ import plotly.express as px
 from scipy.cluster.hierarchy import dendrogram, linkage
 import plotly.figure_factory as ff
 
+@st.cache_resource
+def get_dendrogram(data, label_pos="bottom"):
+    fig = ff.create_dendrogram(data, labels=list(data.index))
+    fig.update_layout(template="plotly_white")
+    fig.update_xaxes(side=label_pos)
+    return fig
 
-@st.cache_data
-def order_df_for_heatmap(data):
+
+@st.cache_resource
+def get_heatmap(data):
     # SORT DATA TO CREATE HEATMAP
 
     # Compute linkage matrix from distances for hierarchical clustering
@@ -30,24 +37,19 @@ def order_df_for_heatmap(data):
     ord_ft = ord_samp.T.reset_index()
     ord_ft = ord_ft.reindex(cluster_ft["leaves"])
     ord_ft.rename(columns={"index": "metabolite"}, inplace=True)
+
     ord_ft.set_index("metabolite", inplace=True)
-    return ord_ft
 
-
-@st.cache_resource
-def get_dendrogram(data, label_pos="bottom"):
-    fig = ff.create_dendrogram(data, labels=list(data.index))
-    fig.update_layout(template="plotly_white")
-    fig.update_xaxes(side=label_pos)
-    return fig
-
-
-@st.cache_resource
-def get_heatmap(ord_ft):
+    # if we have numerical values convert them to strings to have even spacing
+    try: 
+        float(ord_ft.index[0])
+        y_ticks = ["m_"+str(m) for m in ord_ft.index]
+    except ValueError:
+        y_ticks = list(ord_ft.index)
     # Heatmap
     fig = px.imshow(
         ord_ft,
-        y=list(ord_ft.index),
+        y=y_ticks,
         x=list(ord_ft.columns),
         text_auto=False,
         aspect="auto",
@@ -56,7 +58,7 @@ def get_heatmap(ord_ft):
     )
 
     fig.update_layout(
-        autosize=False, width=700, height=1200, xaxis_title="", yaxis_title=""
+        autosize=False, width=700, height=1200, xaxis_title="", yaxis_title="",
     )
 
     # fig.update_yaxes(visible=False)

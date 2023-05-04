@@ -1,4 +1,4 @@
-# Statistics for Metabolomics [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://metabolomics-statistics.streamlit.app/)
+# A hitchhiker's guide to statistical analysis of metabolomics data [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://metabolomics-statistics.streamlit.app/)
 
 A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
 

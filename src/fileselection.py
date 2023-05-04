@@ -53,6 +53,7 @@ def load_example():
 
 def load_ft(ft_file):
     ft = open_df(ft_file)
+    ft = ft.dropna(axis=1)
     # determining index with m/z, rt and adduct information
     if "metabolite" in ft.columns:
         ft.index = ft["metabolite"]
@@ -73,18 +74,19 @@ Please select the correct one or try to automatically create an index based on R
                 )
         else:
             metabolite_col = st.selectbox(
-                "Column to use for metabolite ID.",
-                [col for col in ft.columns if not col.endswith("mzML")],
+                "Column with unique values to use as metabolite ID.",
+                [col for col in ft.columns if not col.endswith("mzML") if len(ft[col]) == len(set(ft[col]))],
             )
             if metabolite_col:
-                ft.index = ft[metabolite_col]
+                ft = ft.rename(columns={metabolite_col: "metabolite"})
+                ft.index = ft["metabolite"].astype(str)
+                ft = ft.drop(columns=["metabolite"])
 
     if ft.empty:
         st.error(f"Check feature quantification table!\n{allowed_formats}")
     return ft
 
 
-@st.cache_data
 def load_md(md_file):
     md = open_df(md_file)
     # we need file names as index, if they don't exist throw a warning and let user chose column
@@ -99,9 +101,10 @@ No 'filename' column for samples specified.
 
 Please select the correct one."""
         )
-        filename_col = st.selectbox("Column to use for sample file names.", md.columns)
+        filename_col = st.selectbox("Column to use for sample file names.", [col for col in md.columns if len(md[col]) == len(set(md[col]))])
         if filename_col:
             md = md.set_index(filename_col)
+            md.index = md.index.astype(str)
         v_space(2)
     if md.empty:
         st.error(f"Check meta data table!\n{allowed_formats}")

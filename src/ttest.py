@@ -18,8 +18,9 @@ def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correcti
         ttest.append(result)
 
     ttest = pd.concat(ttest).set_index("metabolite")
+    ttest = ttest.dropna()
 
-    ttest.insert(8, "p-corrected", pg.multicomp(ttest["p-val"], method=p_correction)[1])
+    ttest.insert(8, "p-corrected", pg.multicomp(ttest["p-val"].astype(float), method=p_correction)[1])
     # add significance
     ttest.insert(9, "significance", ttest["p-corrected"] < 0.05)
     ttest.insert(10, "st.session_state.ttest_attribute", ttest_attribute.replace("ATTRIBUTE_", ""))

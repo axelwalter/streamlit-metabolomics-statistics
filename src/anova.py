@@ -19,7 +19,7 @@ def gen_anova_data(df, columns, groups_col):
 def add_p_correction_to_anova(df, correction):
     # add Bonferroni corrected p-values for multiple testing correction
     if "p-corrected" not in df.columns:
-        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=correction)[1])
+        df.insert(2, "p-corrected", pg.multicomp(df["p"].astype(float), method=correction)[1])
     # add significance
     if "significant" not in df.columns:
         df.insert(3, "significant", df["p-corrected"] < 0.05)
@@ -40,6 +40,7 @@ def anova(df, attribute, correction):
             dtype=[("metabolite", "U100"), ("p", "f"), ("F", "f")],
         )
     )
+    df = df.dropna()
     df = add_p_correction_to_anova(df, correction)
     return df
 
@@ -75,6 +76,7 @@ def get_anova_plot(anova):
         },
         xaxis_title="log(F)",
         yaxis_title="-log(p)",
+        showlegend=False
     )
     return fig
 
@@ -127,7 +129,7 @@ def add_p_value_correction_to_tukeys(tukey, correction):
     if "p-corrected" not in tukey.columns:
         # add Bonferroni corrected p-values
         tukey.insert(
-            3, "p-corrected", pg.multicomp(tukey["stats_p"], method=correction)[1]
+            3, "p-corrected", pg.multicomp(tukey["stats_p"].astype(float), method=correction)[1]
         )
         # add significance
         tukey.insert(4, "stats_significant", tukey["p-corrected"] < 0.05)
@@ -162,6 +164,7 @@ def tukey(df, attribute, elements, correction):
             ],
         )
     )
+    tukey = tukey.dropna()
     tukey = add_p_value_correction_to_tukeys(tukey, correction)
     return tukey
 
