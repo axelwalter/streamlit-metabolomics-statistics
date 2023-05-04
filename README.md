@@ -4,10 +4,13 @@ A web app implementation of the [statistics notebooks](https://github.com/Functi
 
 ## Installation
 - [run the app](https://metabolomics-statistics.streamlit.app/) without installation (recommended for smaller datasets)
+
 **local installation:**
 - clone this repository and install packages from requirements file
+
 `pip install -r requirements.txt`
 - start the app from the terminal
+
 `streamlit run Statistics_for_Metabolomics.py`
 
 ## Available Statistics
