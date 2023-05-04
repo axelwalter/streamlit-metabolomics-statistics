@@ -8,7 +8,6 @@ st.title("A hitchhiker's guide to statistical analysis of metabolomics data")
 st.markdown(
     """
 A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
-
 These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
 
 

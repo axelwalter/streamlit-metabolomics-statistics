@@ -1,8 +1,14 @@
 # A hitchhiker's guide to statistical analysis of metabolomics data [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://metabolomics-statistics.streamlit.app/)
 
-A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
+A web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab). These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
 
-These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
+## Installation
+- [run the app](https://metabolomics-statistics.streamlit.app/) without installation (recommended for smaller datasets)
+**local installation:**
+- clone this repository and install packages from requirements file
+`pip install -r requirements.txt`
+- start the app from the terminal
+`streamlit run Statistics_for_Metabolomics.py`
 
 ## Available Statistics
 - Univariate (ANOVA & Tukey's post hoc test)
