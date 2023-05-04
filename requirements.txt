@@ -3,7 +3,6 @@ pandas
 numpy
 scikit-learn
 plotly
-scipy==1.8.1
 scikit-bio
 pingouin
 kaleido
