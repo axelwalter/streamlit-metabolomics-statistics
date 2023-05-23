@@ -19,7 +19,8 @@ def gen_anova_data(df, columns, groups_col):
 def add_p_correction_to_anova(df, correction):
     # add Bonferroni corrected p-values for multiple testing correction
     if "p-corrected" not in df.columns:
-        df.insert(2, "p-corrected", pg.multicomp(df["p"].astype(float), method=correction)[1])
+        df.insert(2, "p-corrected",
+                  pg.multicomp(df["p"].astype(float), method=correction)[1])
     # add significance
     if "significant" not in df.columns:
         df.insert(3, "significant", df["p-corrected"] < 0.05)
@@ -50,7 +51,8 @@ def get_anova_plot(anova):
     # first plot insignificant features
     fig = px.scatter(
         x=anova[anova["significant"] == False]["F"].apply(np.log),
-        y=anova[anova["significant"] == False]["p"].apply(lambda x: -np.log(x)),
+        y=anova[anova["significant"] == False]["p"].apply(
+            lambda x: -np.log(x)),
         template="plotly_white",
         width=600,
         height=600,
@@ -62,9 +64,9 @@ def get_anova_plot(anova):
         x=anova[anova["significant"]]["F"].apply(np.log),
         y=anova[anova["significant"]]["p"].apply(lambda x: -np.log(x)),
         mode="markers+text",
-        text=anova["metabolite"].iloc[:5],
+        text=anova["metabolite"].iloc[:6],
         textposition="top left",
-        textfont=dict(color="#ef553b", size=12),
+        textfont=dict(color="#ef553b", size=14),
         name="significant",
     )
 
@@ -72,12 +74,15 @@ def get_anova_plot(anova):
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
             "text": f"ANOVA - {st.session_state.anova_attribute.upper()}",
-            "font_color": "#3E3D53",
+            "font_color": "#3E3D53"
         },
         xaxis_title="log(F)",
         yaxis_title="-log(p)",
         showlegend=False
     )
+    # fig.update_yaxes(title_font_size=20)
+    # fig.update_xaxes(title_font_size=20)
+
     return fig
 
 
@@ -88,7 +93,7 @@ def get_metabolite_boxplot(anova, metabolite):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
-    title = f"{metabolite}<br>p-value: {p_value}"
+    title = f"{metabolite}<br>p-value: {str(p_value)[:6]}"
     fig = px.box(
         df,
         x=attribute,
@@ -129,7 +134,8 @@ def add_p_value_correction_to_tukeys(tukey, correction):
     if "p-corrected" not in tukey.columns:
         # add Bonferroni corrected p-values
         tukey.insert(
-            3, "p-corrected", pg.multicomp(tukey["stats_p"].astype(float), method=correction)[1]
+            3, "p-corrected", pg.multicomp(
+                tukey["stats_p"].astype(float), method=correction)[1]
         )
         # add significance
         tukey.insert(4, "stats_significant", tukey["p-corrected"] < 0.05)
@@ -191,7 +197,8 @@ def get_tukey_volcano_plot(df):
     fig.add_trace(
         go.Scatter(
             x=df[df["stats_significant"]]["diff"],
-            y=df[df["stats_significant"]]["stats_p"].apply(lambda x: -np.log(x)),
+            y=df[df["stats_significant"]]["stats_p"].apply(
+                lambda x: -np.log(x)),
             mode="markers+text",
             text=df["stats_metabolite"].iloc[:5],
             textposition="top right",

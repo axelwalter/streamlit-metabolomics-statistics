@@ -11,9 +11,11 @@ corrections_map = {"Bonferroni": "bonf",
                    "Benjamini/Yekutieli FDR": "fdr_by",
                    "no correction": "none"}
 
+
 def reset_dataframes():
     for key in dataframe_names:
         st.session_state[key] = pd.DataFrame()
+
 
 def page_setup():
     # streamlit configs
@@ -54,7 +56,8 @@ def page_setup():
         unsafe_allow_html=True,
     )
     with st.sidebar:
-        st.image("assets/vmol-icon.png")
+        st.image("assets/Hitchhikers-App_Cover.png", use_column_width=True)
+        st.image("assets/vmol-icon.png", use_column_width=True)
         st.markdown("----")
         with st.expander("⚙️ Settings", expanded=True):
             st.selectbox("p-value correction",
