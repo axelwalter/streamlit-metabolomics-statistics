@@ -1,4 +1,4 @@
-![banner](https://github.com/XsirdanielX/streamlit-metabolomics-statistics/blob/main/assets/FBMN-STATS-GUIed_logo2.png)
+![banner](assets/FBMN-STATS-GUIed_logo2.png)
 
 [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://metabolomics-statistics.streamlit.app/)
 
