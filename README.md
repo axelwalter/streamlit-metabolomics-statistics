@@ -1,4 +1,4 @@
-![banner](assets/Hitchhikers-App_Cover.png)
+![banner](assets/FBMN-STATS-GUIed_logo2.png)
 
 [![Open in Statistics App!](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://metabolomics-statistics.streamlit.app/)
 
