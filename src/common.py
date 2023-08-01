@@ -56,9 +56,6 @@ def page_setup():
         unsafe_allow_html=True,
     )
     with st.sidebar:
-        st.image("assets/Hitchhikers-App_Cover.png", use_column_width=True)
-        st.image("assets/vmol-icon.png", use_column_width=True)
-        st.markdown("----")
         with st.expander("⚙️ Settings", expanded=True):
             st.selectbox("p-value correction",
                          corrections_map.keys(),
@@ -68,6 +65,10 @@ def page_setup():
                 ["svg", "png", "jpeg", "webp"],
                 key="image_format",
             )
+        v_space(1)
+        st.image("assets/FBMN-STATS-GUIed_logo2.png", use_column_width=True)
+        v_space(1)
+        st.image("assets/vmol-icon.png", use_column_width=True)
 
 
 def v_space(n, col=None):

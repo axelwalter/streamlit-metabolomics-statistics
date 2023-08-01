@@ -5,7 +5,7 @@ page_setup()
 
 # st.title("The hitchhiker's guide to statistical analysis of metabolomics data")
 
-st.image("assets/Hitchhikers-App_Cover.png", use_column_width=True)
+st.image("assets/FBMN-STATS-GUIed_logo2.png", use_column_width=True)
 
 st.markdown(
     """
