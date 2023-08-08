@@ -5,3 +5,4 @@ plotly
 pingouin
 kaleido
 openpyxl
+scikit-posthocs

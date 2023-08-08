@@ -28,41 +28,41 @@ if not st.session_state.data.empty:
 
     c1.button("Run Kruskal Wallis", key="run_kruskal")
     if st.session_state.run_kruskal:
-        st.session_state.df_kruskal = kruskal(
+        st.session_state.df_kruskal = kruskal_wallis(
             st.session_state.data,
             "ATTRIBUTE_" + st.session_state.kruskal_attribute,
             corrections_map[st.session_state.p_value_correction]
         )
         st.experimental_rerun()
 
-    # if not st.session_state.df_kruskal.empty:
-    #     attribute_options = list(
-    #         set(st.session_state.md["ATTRIBUTE_" +
-    #             st.session_state.kruskal_attribute].dropna())
-    #     )
-    #     attribute_options.sort()
+    if not st.session_state.df_kruskal.empty:
+        attribute_options = list(
+            set(st.session_state.md["ATTRIBUTE_" +
+                st.session_state.kruskal_attribute].dropna())
+        )
+        attribute_options.sort()
 
-    #     c2.multiselect(
-    #         "select **two** options for Dunn's comparison",
-    #         options=attribute_options,
-    #         default=attribute_options[:2],
-    #         key="dunn_elements",
-    #         max_selections=2,
-    #         help="Select two options.",
-    #     )
-    #     c2.button(
-    #         "Run Dunn's",
-    #         key="run_dunn",
-    #         disabled=len(st.session_state.dunn_elements) != 2,
-    #     )
-    #     if st.session_state.run_dunn:
-    #         st.session_state.df_dunn = dunn(
-    #             st.session_state.df_kruskal,
-    #             "ATTRIBUTE_" + st.session_state.kruskal_attribute,
-    #             st.session_state.dunn_elements,
-    #             corrections_map[st.session_state.p_value_correction]
-    #         )
-    #         st.experimental_rerun()
+        c2.multiselect(
+            "select **two** options for Dunn's comparison",
+            options=attribute_options,
+            default=attribute_options[:2],
+            key="dunn_elements",
+            max_selections=2,
+            help="Select two options.",
+        )
+        c2.button(
+            "Run Dunn's",
+            key="run_dunn",
+            disabled=len(st.session_state.dunn_elements) != 2,
+        )
+        if st.session_state.run_dunn:
+            st.session_state.df_dunn = dunn(
+                st.session_state.df_kruskal,
+                "ATTRIBUTE_" + st.session_state.kruskal_attribute,
+                st.session_state.dunn_elements,
+                corrections_map[st.session_state.p_value_correction]
+            )
+            st.experimental_rerun()
 
     tab_options = [
         "📈 Kruskal Wallis: plot",

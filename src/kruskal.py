@@ -4,17 +4,13 @@ import numpy as np
 import pingouin as pg
 import plotly.express as px
 import plotly.graph_objects as go
+from scipy.stats import kruskal
+import scikit_posthocs as sp
 
-
-def gen_kruskal_data(df, columns, groups_col):
-    for col in columns:
-        result = pg.kruskal(data=df, dv=col, between=groups_col, detailed=True).set_index(
-            "Source"
-        )
-        p = result.loc[groups_col, "p-unc"]
-        h = result.loc[groups_col, "H"]
-        yield col, p, h
-
+def gen_kruskal_data(group_data):
+    for col in group_data[0].columns:
+        statistic, p = kruskal(*[df[col] for df in group_data])
+        yield col, p, statistic
 
 def add_p_correction_to_kruskal(df, correction):
     # add Bonferroni corrected p-values for multiple testing correction
@@ -29,16 +25,16 @@ def add_p_correction_to_kruskal(df, correction):
     return df
 
 
-@st.cache_data
-def kruskal(df, attribute, correction):
+# @st.cache_data
+def kruskal_wallis(df, attribute, correction):
+    df = pd.concat([df, st.session_state.md], axis=1)
+    groups = df[attribute].unique()
+    group_data = [df[df[attribute] == group].drop(columns=[c for c in df.columns if "ATTRIBUTE_" in c]) for group in groups]
+
     df = pd.DataFrame(
         np.fromiter(
-            gen_kruskal_data(
-                pd.concat([df, st.session_state.md], axis=1),
-                df.columns,
-                attribute,
-            ),
-            dtype=[("metabolite", "U100"), ("p", "f"), ("H", "f")],
+            gen_kruskal_data(group_data),
+            dtype=[("metabolite", "U100"), ("p", "f"), ("statistic", "f")],
         )
     )
     df = df.dropna()
@@ -50,7 +46,7 @@ def kruskal(df, attribute, correction):
 def get_kruskal_plot(kruskal):
     # first plot insignificant features
     fig = px.scatter(
-        x=kruskal[kruskal["significant"] == False]["H"].apply(np.log),
+        x=kruskal[kruskal["significant"] == False]["statistic"].apply(np.log),
         y=kruskal[kruskal["significant"] == False]["p"].apply(
             lambda x: -np.log(x)),
         template="plotly_white",
@@ -61,7 +57,7 @@ def get_kruskal_plot(kruskal):
 
     # plot significant features
     fig.add_scatter(
-        x=kruskal[kruskal["significant"]]["H"].apply(np.log),
+        x=kruskal[kruskal["significant"]]["statistic"].apply(np.log),
         y=kruskal[kruskal["significant"]]["p"].apply(lambda x: -np.log(x)),
         mode="markers+text",
         text=kruskal["metabolite"].iloc[:6],
