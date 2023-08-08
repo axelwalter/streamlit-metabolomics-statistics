@@ -6,52 +6,53 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-def gen_kruwa_data(df, columns, groups_col):
+def gen_kruskal_data(df, columns, groups_col):
     for col in columns:
         result = pg.kruskal(data=df, dv=col, between=groups_col, detailed=True).set_index(
             "Source"
         )
         p = result.loc[groups_col, "p-unc"]
-        s = result.loc[groups_col, "H"]
-        yield col, p, s
+        h = result.loc[groups_col, "H"]
+        yield col, p, h
 
 
-def add_bonferroni_to_kruwa(df):
+def add_p_correction_to_kruskal(df, correction):
     # add Bonferroni corrected p-values for multiple testing correction
     if "p-corrected" not in df.columns:
-        df.insert(2, "p-corrected", pg.multicomp(df["p"], method=corrections_map[st.session_state.p_value_correction])[1])
+        df.insert(2, "p-corrected",
+                  pg.multicomp(df["p"].astype(float), method=correction)[1])
     # add significance
     if "significant" not in df.columns:
         df.insert(3, "significant", df["p-corrected"] < 0.05)
     # sort by p-value
     df.sort_values("p", inplace=True)
-    print("df shape: ")
-    print(df.shape)
     return df
 
 
 @st.cache_data
-def kruwa(df, attribute):
+def kruskal(df, attribute, correction):
     df = pd.DataFrame(
         np.fromiter(
-            gen_kruwa_data(
+            gen_kruskal_data(
                 pd.concat([df, st.session_state.md], axis=1),
                 df.columns,
                 attribute,
             ),
-            dtype=[("metabolite", "U100"), ("p", "f"), ("statistic", "f")],
+            dtype=[("metabolite", "U100"), ("p", "f"), ("H", "f")],
         )
     )
-    df = add_bonferroni_to_kruwa(df)
+    df = df.dropna()
+    df = add_p_correction_to_kruskal(df, correction)
     return df
 
 
 @st.cache_resource
-def get_kruwa_plot(kruwa):
+def get_kruskal_plot(kruskal):
     # first plot insignificant features
     fig = px.scatter(
-        x=kruwa[kruwa["significant"] == False]["statistic"].apply(np.log),
-        y=kruwa[kruwa["significant"] == False]["p"].apply(lambda x: -np.log(x)),
+        x=kruskal[kruskal["significant"] == False]["H"].apply(np.log),
+        y=kruskal[kruskal["significant"] == False]["p"].apply(
+            lambda x: -np.log(x)),
         template="plotly_white",
         width=600,
         height=600,
@@ -60,35 +61,37 @@ def get_kruwa_plot(kruwa):
 
     # plot significant features
     fig.add_scatter(
-        x=kruwa[kruwa["significant"]]["statistic"].apply(np.log),
-        y=kruwa[kruwa["significant"]]["p"].apply(lambda x: -np.log(x)),
+        x=kruskal[kruskal["significant"]]["H"].apply(np.log),
+        y=kruskal[kruskal["significant"]]["p"].apply(lambda x: -np.log(x)),
         mode="markers+text",
-        text=kruwa["metabolite"].iloc[:5],
+        text=kruskal["metabolite"].iloc[:6],
         textposition="top left",
-        textfont=dict(color="#ef553b", size=12),
+        textfont=dict(color="#ef553b", size=14),
         name="significant",
     )
 
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": f"Kruskall-Wallis - {st.session_state.kruwa_attribute.upper()}",
-            "font_color": "#3E3D53",
+            "text": f"Kruskal Wallis - {st.session_state.kruskal_attribute.upper()}",
+            "font_color": "#3E3D53"
         },
-        xaxis_title="statistic",
+        xaxis_title="log(H)",
         yaxis_title="-log(p)",
+        showlegend=False
     )
+
     return fig
 
 
 @st.cache_resource
-def get_metabolite_boxplot(kruwa, metabolite):
-    attribute = "ATTRIBUTE_"+st.session_state.kruwa_attribute
-    p_value = kruwa.set_index("metabolite")._get_value(metabolite, "p")
+def get_metabolite_boxplot(kruskal, metabolite):
+    attribute = "ATTRIBUTE_"+st.session_state.kruskal_attribute
+    p_value = kruskal.set_index("metabolite")._get_value(metabolite, "p")
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
-    title = f"{metabolite}<br>p-value: {p_value}"
+    title = f"{metabolite}<br>p-value: {str(p_value)[:6]}"
     fig = px.box(
         df,
         x=attribute,
@@ -112,11 +115,11 @@ def get_metabolite_boxplot(kruwa, metabolite):
 def gen_pairwise_dunn(df, metabolites, attribute):
     """Yield results for pairwise dunn test for all metabolites between two options within the attribute."""
     for metabolite in metabolites:
-        dunn = pg.pairwise_dunn(df, dv=metabolite, between=attribute)
+        dunn = pg.pairwise_tukey(df, dv=metabolite, between=attribute)
         yield (
             metabolite,
             dunn.loc[0, "diff"],
-            dunn.loc[0, "p-dunn"],
+            dunn.loc[0, "p-tukey"],
             attribute.replace("ATTRIBUTE_", ""),
             dunn.loc[0, "A"],
             dunn.loc[0, "B"],
@@ -125,21 +128,22 @@ def gen_pairwise_dunn(df, metabolites, attribute):
         )
 
 
-def add_bonferroni_to_dunns(dunn):
-    if "stats_p-corrected" not in dunn.columns:
+def add_p_value_correction_to_dunns(dunn, correction):
+    if "p-corrected" not in dunn.columns:
         # add Bonferroni corrected p-values
         dunn.insert(
-            3, "stats_p-corrected", pg.multicomp(dunn["stats_p"], method=corrections_map[st.session_state.p_value_correction])[1]
+            3, "p-corrected", pg.multicomp(
+                dunn["stats_p"].astype(float), method=correction)[1]
         )
         # add significance
-        dunn.insert(4, "stats_significant", dunn["stats_p-corrected"] < 0.05)
+        dunn.insert(4, "stats_significant", dunn["p-corrected"] < 0.05)
         # sort by p-value
         dunn.sort_values("stats_p", inplace=True)
     return dunn
 
 
 @st.cache_data
-def dunn(df, attribute, elements):
+def dunn(df, attribute, elements, correction):
     significant_metabolites = df[df["significant"]]["metabolite"]
     data = pd.concat(
         [
@@ -164,7 +168,8 @@ def dunn(df, attribute, elements):
             ],
         )
     )
-    dunn = add_bonferroni_to_dunns(dunn)
+    dunn = dunn.dropna()
+    dunn = add_p_value_correction_to_dunns(dunn, correction)
     return dunn
 
 
@@ -190,7 +195,8 @@ def get_dunn_volcano_plot(df):
     fig.add_trace(
         go.Scatter(
             x=df[df["stats_significant"]]["diff"],
-            y=df[df["stats_significant"]]["stats_p"].apply(lambda x: -np.log(x)),
+            y=df[df["stats_significant"]]["stats_p"].apply(
+                lambda x: -np.log(x)),
             mode="markers+text",
             text=df["stats_metabolite"].iloc[:5],
             textposition="top right",
@@ -203,7 +209,7 @@ def get_dunn_volcano_plot(df):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={
-            "text": f"dunn - {st.session_state.kruwa_attribute.upper()}: {st.session_state.dunn_elements[0]} - {st.session_state.dunn_elements[1]}",
+            "text": f"dunn - {st.session_state.kruskal_attribute.upper()}: {st.session_state.dunn_elements[0]} - {st.session_state.dunn_elements[1]}",
             "font_color": "#3E3D53",
         },
         xaxis_title=f"diff",
