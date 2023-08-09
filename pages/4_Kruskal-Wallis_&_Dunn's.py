@@ -7,12 +7,10 @@ page_setup()
 
 st.markdown("# Kruskal Wallis & Dunn's post hoc")
 
-# with st.expander("📖 About"):
-#     st.markdown(
-#         """Analysis of variance (kruskal) is a statistical method used to compare means between two or more groups. kruskal tests whether there is a significant difference between the means of different groups based on the variation within and between groups. If kruskal reveals that there is a significant difference between at least two group means, post hoc tests are used to determine which specific groups differ significantly from one another. dunn's post hoc test is a widely used statistical method for pairwise comparisons after kruskal. It accounts for multiple comparisons and adjusts the p-values accordingly, allowing for a more accurate identification of significant group differences."""
-#     )
-#     st.image("assets/figures/kruskal.png")
-#     st.image("assets/figures/dunns.png")
+with st.expander("📖 About"):
+    st.markdown(
+        """The Kruskal-Wallis test helps determine if there are significant differences among multiple groups, and if significant differences exist, Dunn's post hoc test helps pinpoint which specific groups differ from each other. These non-parametric tests are valuable tools for analyzing data when the assumptions of parametric tests are not met or when working with ordinal or skewed data."""
+    )
 
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
