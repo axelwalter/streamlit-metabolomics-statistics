@@ -3,7 +3,15 @@ import pandas as pd
 import io
 import uuid
 
-dataframe_names = ("md", "data", "df_anova", "df_tukey", "df_ttest", "df_kruskal", "df_dunn")
+dataframe_names = ("md",
+                   "data",
+                   "df_anova",
+                   "df_tukey",
+                   "df_ttest",
+                   "df_kruskal",
+                   "df_dunn",
+                   "df_important_features",
+                   "df_oob")
 
 corrections_map = {"Bonferroni": "bonf",
                    "Sidak": "sidak",
