@@ -34,27 +34,6 @@ def page_setup():
     if "data_preparation_done" not in st.session_state:
         st.session_state["data_preparation_done"] = False
 
-    m = st.markdown(
-        """
-        <style>
-        div.stButton > button:first-child {
-            background-color: #0d6efd;
-            color:#ffffff;
-            border-color: #0d6efd;
-        }
-        div.stButton > button:hover {
-            background-color: #ffffff;
-            color:#FF4B4B;
-            border-color: #FF4B4B;
-            }
-        div.stButton > button:disabled {
-            background-color: #f0f2f6;
-            color:#ffffff;
-            border-color: #f0f2f6;
-            }
-        </style>""",
-        unsafe_allow_html=True,
-    )
     with st.sidebar:
         with st.expander("⚙️ Settings", expanded=True):
             st.selectbox("p-value correction",

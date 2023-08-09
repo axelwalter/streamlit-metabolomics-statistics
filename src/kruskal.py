@@ -25,7 +25,7 @@ def add_p_correction_to_kruskal(df, correction):
     return df
 
 
-# @st.cache_data
+@st.cache_data
 def kruskal_wallis(df, attribute, correction):
     df = pd.concat([df, st.session_state.md], axis=1)
     groups = df[attribute].unique()
@@ -108,33 +108,25 @@ def get_metabolite_boxplot(kruskal, metabolite):
     return fig
 
 
-def gen_pairwise_dunn(df, metabolites, attribute):
+def gen_pairwise_dunn(group_data):
     """Yield results for pairwise dunn test for all metabolites between two options within the attribute."""
-    for metabolite in metabolites:
-        dunn = pg.pairwise_tukey(df, dv=metabolite, between=attribute)
-        yield (
-            metabolite,
-            dunn.loc[0, "diff"],
-            dunn.loc[0, "p-tukey"],
-            attribute.replace("ATTRIBUTE_", ""),
-            dunn.loc[0, "A"],
-            dunn.loc[0, "B"],
-            dunn.loc[0, "mean(A)"],
-            dunn.loc[0, "mean(B)"],
-        )
+    for col in group_data[0].columns:
+        # posthoc_dunn returns a 2x2 matrix with p values, we just need one with from the comparison
+        p = sp.posthoc_dunn([df[col] for df in group_data]).iloc[0, 1]
+        yield (col, p)
 
 
 def add_p_value_correction_to_dunns(dunn, correction):
     if "p-corrected" not in dunn.columns:
         # add Bonferroni corrected p-values
         dunn.insert(
-            3, "p-corrected", pg.multicomp(
-                dunn["stats_p"].astype(float), method=correction)[1]
+            2, "p-corrected", pg.multicomp(
+                dunn["p"].astype(float), method=correction)[1]
         )
         # add significance
-        dunn.insert(4, "stats_significant", dunn["p-corrected"] < 0.05)
+        dunn.insert(3, "stats_significant", dunn["p-corrected"] < 0.05)
         # sort by p-value
-        dunn.sort_values("stats_p", inplace=True)
+        dunn.sort_values("p", inplace=True)
     return dunn
 
 
@@ -151,64 +143,13 @@ def dunn(df, attribute, elements, correction):
     data = data[data[attribute].isin(elements)]
     dunn = pd.DataFrame(
         np.fromiter(
-            gen_pairwise_dunn(data, significant_metabolites, attribute),
+            gen_pairwise_dunn([data[data[attribute] == element].drop(columns=[attribute]) for element in elements]),
             dtype=[
                 ("stats_metabolite", "U100"),
-                (f"diff", "f"),
-                ("stats_p", "f"),
-                ("attribute", "U100"),
-                ("A", "U100"),
-                ("B", "U100"),
-                ("mean(A)", "f"),
-                ("mean(B)", "f"),
+                ("p", "f")
             ],
         )
     )
     dunn = dunn.dropna()
     dunn = add_p_value_correction_to_dunns(dunn, correction)
     return dunn
-
-
-@st.cache_resource
-def get_dunn_volcano_plot(df):
-    # create figure
-    fig = px.scatter(template="plotly_white")
-
-    # plot insignificant values
-    fig.add_trace(
-        go.Scatter(
-            x=df[df["stats_significant"] == False]["diff"],
-            y=df[df["stats_significant"] == False]["stats_p"].apply(
-                lambda x: -np.log(x)
-            ),
-            mode="markers",
-            marker_color="#696880",
-            name="insignificant",
-        )
-    )
-
-    # plot significant values
-    fig.add_trace(
-        go.Scatter(
-            x=df[df["stats_significant"]]["diff"],
-            y=df[df["stats_significant"]]["stats_p"].apply(
-                lambda x: -np.log(x)),
-            mode="markers+text",
-            text=df["stats_metabolite"].iloc[:5],
-            textposition="top right",
-            textfont=dict(color="#ef553b", size=12),
-            marker_color="#ef553b",
-            name="significant",
-        )
-    )
-
-    fig.update_layout(
-        font={"color": "grey", "size": 12, "family": "Sans"},
-        title={
-            "text": f"dunn - {st.session_state.kruskal_attribute.upper()}: {st.session_state.dunn_elements[0]} - {st.session_state.dunn_elements[1]}",
-            "font_color": "#3E3D53",
-        },
-        xaxis_title=f"diff",
-        yaxis_title="-log(p)",
-    )
-    return fig

@@ -36,33 +36,36 @@ if not st.session_state.data.empty:
         st.experimental_rerun()
 
     if not st.session_state.df_kruskal.empty:
-        attribute_options = list(
-            set(st.session_state.md["ATTRIBUTE_" +
-                st.session_state.kruskal_attribute].dropna())
-        )
-        attribute_options.sort()
-
-        c2.multiselect(
-            "select **two** options for Dunn's comparison",
-            options=attribute_options,
-            default=attribute_options[:2],
-            key="dunn_elements",
-            max_selections=2,
-            help="Select two options.",
-        )
-        c2.button(
-            "Run Dunn's",
-            key="run_dunn",
-            disabled=len(st.session_state.dunn_elements) != 2,
-        )
-        if st.session_state.run_dunn:
-            st.session_state.df_dunn = dunn(
-                st.session_state.df_kruskal,
-                "ATTRIBUTE_" + st.session_state.kruskal_attribute,
-                st.session_state.dunn_elements,
-                corrections_map[st.session_state.p_value_correction]
+        if any(st.session_state.df_kruskal["significant"]):
+            attribute_options = list(
+                set(st.session_state.md["ATTRIBUTE_" +
+                    st.session_state.kruskal_attribute].dropna())
             )
-            st.experimental_rerun()
+            attribute_options.sort()
+
+            c2.multiselect(
+                "select **two** options for Dunn's comparison",
+                options=attribute_options,
+                default=attribute_options[:2],
+                key="dunn_elements",
+                max_selections=2,
+                help="Select two options.",
+            )
+            c2.button(
+                "Run Dunn's",
+                key="run_dunn",
+                disabled=len(st.session_state.dunn_elements) != 2,
+            )
+            if st.session_state.run_dunn:
+                st.session_state.df_dunn = dunn(
+                    st.session_state.df_kruskal,
+                    "ATTRIBUTE_" + st.session_state.kruskal_attribute,
+                    st.session_state.dunn_elements,
+                    corrections_map[st.session_state.p_value_correction]
+                )
+                st.experimental_rerun()
+        else:
+            st.warning("No significant metabolites found in Kruskal Wallis test after p-value correction.")
 
     tab_options = [
         "📈 Kruskal Wallis: plot",
@@ -70,7 +73,7 @@ if not st.session_state.data.empty:
         "📊 Kruskal Wallis: significant metabolites",
     ]
     if not st.session_state.df_dunn.empty:
-        tab_options += ["📈 Dunn's: plot", "📁 Dunn's: result"]
+        tab_options += ["📁 Dunn's: result"]
 
     if not st.session_state.df_kruskal.empty:
         tabs = st.tabs(tab_options)
@@ -101,9 +104,6 @@ if not st.session_state.data.empty:
 
         if not st.session_state.df_dunn.empty:
             with tabs[3]:
-                fig = get_dunn_volcano_plot(st.session_state.df_dunn)
-                show_fig(fig, "dunns")
-            with tabs[4]:
                 show_table(st.session_state.df_dunn, "dunns")
 
 else:
