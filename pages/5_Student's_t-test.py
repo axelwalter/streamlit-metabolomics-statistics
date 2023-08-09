@@ -48,7 +48,7 @@ if not st.session_state.data.empty:
     c3.selectbox("alternative", options=["two-sided", "greater", "less"], key="ttest_alternative", help="Defines the alternative hypothesis, or tail of the test.")
 
 
-    if c2.button("Run t-test", disabled=(len(st.session_state.ttest_options) != 2)):
+    if c2.button("Run t-test", type="primary", disabled=(len(st.session_state.ttest_options) != 2)):
         st.session_state.df_ttest = gen_ttest_data(
             "ATTRIBUTE_" + st.session_state.ttest_attribute,
             st.session_state.ttest_options,

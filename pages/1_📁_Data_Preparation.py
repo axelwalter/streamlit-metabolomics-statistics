@@ -152,7 +152,7 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
 
             v_space(2)
             _, c1, _ = st.columns(3)
-            if c1.button("**Submit Data for Statistics!**"):
+            if c1.button("**Submit Data for Statistics!**", type="primary"):
                 st.session_state["md"], st.session_state["data"] = transpose_and_scale(
                     ft, md
                 )

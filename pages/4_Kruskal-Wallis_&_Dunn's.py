@@ -24,7 +24,7 @@ if not st.session_state.data.empty:
         key="kruskal_attribute",
     )
 
-    c1.button("Run Kruskal Wallis", key="run_kruskal")
+    c1.button("Run Kruskal Wallis", key="run_kruskal", type="primary")
     if st.session_state.run_kruskal:
         st.session_state.df_kruskal = kruskal_wallis(
             st.session_state.data,
@@ -52,6 +52,7 @@ if not st.session_state.data.empty:
             c2.button(
                 "Run Dunn's",
                 key="run_dunn",
+                type="primary",
                 disabled=len(st.session_state.dunn_elements) != 2,
             )
             if st.session_state.run_dunn:

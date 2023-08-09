@@ -26,7 +26,7 @@ if not st.session_state.data.empty:
         key="anova_attribute",
     )
 
-    c1.button("Run ANOVA", key="run_anova")
+    c1.button("Run ANOVA", key="run_anova", type="primary")
     if st.session_state.run_anova:
         st.session_state.df_anova = anova(
             st.session_state.data,
@@ -53,6 +53,7 @@ if not st.session_state.data.empty:
         c2.button(
             "Run Tukey's",
             key="run_tukey",
+            type="primary",
             disabled=len(st.session_state.tukey_elements) != 2,
         )
         if st.session_state.run_tukey:
