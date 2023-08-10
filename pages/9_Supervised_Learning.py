@@ -10,6 +10,7 @@ with st.expander("📖 About"):
     st.markdown(
         """Get the most important features explaining the selected attribute with supervised learning via random forest model."""
     )
+    st.image("assets/figures/random-forest.png")
 
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)

@@ -11,6 +11,8 @@ with st.expander("📖 About"):
     st.markdown(
         """The Kruskal-Wallis test helps determine if there are significant differences among multiple groups, and if significant differences exist, Dunn's post hoc test helps pinpoint which specific groups differ from each other. These non-parametric tests are valuable tools for analyzing data when the assumptions of parametric tests are not met or when working with ordinal or skewed data."""
     )
+    st.image("assets/figures/kruskal-wallis.png")
+    st.image("assets/figures/dunn.png")
 
 if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
