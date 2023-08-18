@@ -6,3 +6,4 @@ pingouin
 kaleido
 openpyxl
 scikit-posthocs
+scikit-bio
