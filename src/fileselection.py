@@ -50,7 +50,7 @@ def load_example():
     md = open_df("example-data/MetaData.txt").set_index("filename")
     return ft, md
 
-@st.cache_data()
+# @st.cache_data()
 def load_from_gnps(task_id, merge_annotations):
     ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
     md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
@@ -58,6 +58,7 @@ def load_from_gnps(task_id, merge_annotations):
     an_analog_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_analogresult/&block=main"
 
     ft = pd.read_csv(ft_url, index_col="row ID")
+    ft = ft[[col for col in ft.columns if not "Unnamed" in col]]
     ft.index.name = "metabolite"
     md = pd.read_csv(md_url, sep = "\t", index_col="filename")
 
@@ -89,9 +90,11 @@ def load_from_gnps(task_id, merge_annotations):
         # Annotate metabolites in ft if annotation is available
         ft["metabolite"] = ft.index
 
-        ft["metabolite"] = ft["metabolite"].apply(lambda x: x if x not in an_final_single.index else an_final_single.loc[x, "Combined_Name"])
+        ft["metabolite"] = ft["metabolite"].apply(lambda x: str(x) if x not in an_final_single.index else an_final_single.loc[x, "Combined_Name"].replace("nan;", "").replace('"', '')+f"_{x}")
 
         ft = ft.set_index("metabolite")
+
+   
     return ft, md
 
 def load_ft(ft_file):
