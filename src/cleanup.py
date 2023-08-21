@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from sklearn.preprocessing import StandardScaler
+# currently conflicting dependencies (requires old pandas 1.2.4)
+# from pynmranalysis.normalization import PQN_normalization
 
 @st.cache_data
 def clean_up_md(md):
@@ -166,7 +168,7 @@ def get_missing_values_per_feature_fig(df, cutoff_LOD):
 
 
 @st.cache_data
-def transpose_and_scale(feature_df, meta_data_df):
+def normalization(feature_df, meta_data_df, normalization_method):
     feature_df = feature_df.T
 
     # remove meta data rows that are not samples
@@ -187,10 +189,19 @@ def transpose_and_scale(feature_df, meta_data_df):
             "Sample names in feature and metadata table can NOT be compared. Please check your tables!"
         )
 
-    scaled = pd.DataFrame(
-        StandardScaler().fit_transform(feature_df),
-        index=feature_df.index,
-        columns=feature_df.columns,
-    )
-    # scale and return
-    return md_samples, scaled
+    if normalization_method == "Center-Scale":
+        normalized = pd.DataFrame(
+            StandardScaler().fit_transform(feature_df),
+            index=feature_df.index,
+            columns=feature_df.columns,
+        )
+
+    # elif normalization_method == "Probabilistic Quotient Normalization (PQN)":
+    #     normalized = PQN_normalization(feature_df ,ref_norm = "median" , verbose=False)
+
+    elif normalization_method == "Total Ion Current (TIC) or sample-centric normalization":
+        normalized = feature_df.apply(lambda x: x/np.sum(x), axis=0)
+    
+    else:
+        return md_samples, feature_df
+    return md_samples, normalized

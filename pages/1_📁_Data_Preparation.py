@@ -27,7 +27,7 @@ else:
         ft, md = load_example()
 
     if file_origin == "GNPS task ID":
-        task_id = st.text_input("GNPS task ID", "b661d12ba88745639664988329c1363e")
+        task_id = st.text_input("GNPS task ID", "")
         c1, c2 = st.columns(2)
         merge_annotations = c1.checkbox("Annotate metabolites", True, help="Merge annotations from GNPS FBMN and analog search if available.")
         if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0):
@@ -174,11 +174,16 @@ Features with intensity ratio of (blank mean)/(sample mean) above the threshold 
                 with st.expander(f"Imputed data {ft.shape}"):
                     show_table(ft, "imputed")
 
+            st.markdown("##### Normalization")
+            normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 
+                                                    # "Probabilistic Quotient Normalization (PQN)", 
+                                                    "Total Ion Current (TIC) or sample-centric normalization",
+                                                    "None"])
             v_space(2)
             _, c1, _ = st.columns(3)
             if c1.button("**Submit Data for Statistics!**", type="primary"):
-                st.session_state["md"], st.session_state["data"] = transpose_and_scale(
-                    ft, md
+                st.session_state["md"], st.session_state["data"] = normalization(
+                    ft, md, normalization_method
                 )
                 st.session_state["data_preparation_done"] = True
                 st.experimental_rerun()
