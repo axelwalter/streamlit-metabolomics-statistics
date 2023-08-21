@@ -19,35 +19,59 @@ else:
     st.info(
         """💡 Once you are happy with the results, don't forget to click the **Submit Data for Statistics!** button."""
     )
-    st.markdown("### File Upload")
+    ft, md = pd.DataFrame(), pd.DataFrame()
 
-    example = st.checkbox("Example Data")
-    if example:
+    file_origin = st.selectbox("File upload", ["Feature quantification and meta data files", "Example data", "GNPS task ID"])
+    
+    if file_origin == "Example data":
         ft, md = load_example()
-    else:
-        ft, md = pd.DataFrame(), pd.DataFrame()
 
-    if not example:
+    if file_origin == "GNPS task ID":
+        task_id = st.text_input("GNPS task ID", "b661d12ba88745639664988329c1363e")
+        c1, c2 = st.columns(2)
+        merge_annotations = c1.checkbox("Annotate metabolites", True, help="Merge annotations from GNPS FBMN and analog search if available.")
+        if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0):
+            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, merge_annotations)
+        
+        if "ft_gnps" in st.session_state:
+            if not st.session_state["ft_gnps"].empty:
+                ft = st.session_state["ft_gnps"]
+
+        if "md_gnps" in st.session_state:
+            if not st.session_state["md_gnps"].empty:
+                md = st.session_state["md_gnps"]
+
+    elif file_origin == "Feature quantification and meta data files":
         c1, c2 = st.columns(2)
         # Feature Quantification Table
         ft_file = c1.file_uploader("Feature Quantification Table")
         if ft_file:
-            ft = load_ft(ft_file)
+            st.session_state["ft_uploaded"] = load_ft(ft_file)
 
         # Meta Data Table
         md_file = c2.file_uploader("Meta Data Table")
         if md_file:
-            md = load_md(md_file)
+            st.session_state["md_uploaded"] = load_md(md_file)
 
+        if "ft_uploaded" in st.session_state:
+            if not st.session_state["ft_uploaded"].empty:
+                ft = st.session_state["ft_uploaded"]
+
+        if "md_uploaded" in st.session_state:
+            if not st.session_state["md_uploaded"].empty:
+                md = st.session_state["md_uploaded"]
+
+    v_space(2)
     if not ft.empty or not md.empty:
         t1, t2 = st.tabs(["Feature Quantification", "Meta Data"])
         t1.dataframe(ft)
         t2.dataframe(md)
 
+
     if not ft.index.is_unique:
         st.error("Please upload a feature matrix with unique metabolite names.")
 
-    elif not ft.empty and not md.empty:
+    if not ft.empty and not md.empty:
         st.success("Files loaded successfully!")
 
         st.markdown("### Data Cleanup")

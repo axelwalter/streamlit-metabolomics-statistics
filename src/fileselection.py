@@ -50,6 +50,49 @@ def load_example():
     md = open_df("example-data/MetaData.txt").set_index("filename")
     return ft, md
 
+@st.cache_data()
+def load_from_gnps(task_id, merge_annotations):
+    ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
+    md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
+    an_gnps_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
+    an_analog_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_analogresult/&block=main"
+
+    ft = pd.read_csv(ft_url, index_col="row ID")
+    ft.index.name = "metabolite"
+    md = pd.read_csv(md_url, sep = "\t", index_col="filename")
+
+    if merge_annotations:
+        an_gnps = pd.read_csv(an_gnps_url, sep = "\t")
+        an_analog = pd.read_csv(an_analog_url, sep = "\t")
+
+        # Rename the columns of 'an_analog' with a prefix 'Analog' (excluding the '#Scan#' column)
+        an_analog.columns = ['Analog_' + col if col != '#Scan#' else col for col in an_analog.columns]
+
+        # Merge 'an_analog' with 'an_gnps' using a full join on the '#Scan#' column
+        an_final = pd.merge(an_gnps, an_analog, on='#Scan#', how='outer')
+
+        # Consolidate multiple annotations for a single '#Scan#' into one combined name
+        def combine_names(row):
+            if row['Compound_Name'] == row['Analog_Compound_Name']:
+                return row['Compound_Name']
+            return ';'.join([str(row['Compound_Name']), str(row['Analog_Compound_Name'])])
+
+        an_final_single = an_final.groupby('#Scan#').apply(lambda group: pd.Series({
+            'Combined_Name': combine_names(group.iloc[0])
+        })).reset_index()
+
+        # To get the DataFrame with that exact column name (without automatic renaming)
+        an_final_single.columns = an_final_single.columns.str.replace('.', '_')
+
+        an_final_single = an_final_single.set_index("#Scan#")
+
+        # Annotate metabolites in ft if annotation is available
+        ft["metabolite"] = ft.index
+
+        ft["metabolite"] = ft["metabolite"].apply(lambda x: x if x not in an_final_single.index else an_final_single.loc[x, "Combined_Name"])
+
+        ft = ft.set_index("metabolite")
+    return ft, md
 
 def load_ft(ft_file):
     ft = open_df(ft_file)
