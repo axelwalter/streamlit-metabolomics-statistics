@@ -63,4 +63,4 @@ def get_heatmap(data):
 
     # fig.update_yaxes(visible=False)
     fig.update_xaxes(tickangle=35)
-    return fig
+    return fig, ord_ft

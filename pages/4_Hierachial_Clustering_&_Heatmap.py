@@ -23,9 +23,15 @@ if not st.session_state.data.empty:
     with t1:
         fig = get_dendrogram(st.session_state.data, "bottom")
         show_fig(fig, "clustering")
+    fig, df = get_heatmap(st.session_state.data)
     with t2:
-        fig = get_heatmap(st.session_state.data)
+        st.download_button(
+            f"📁 Download Heatmap Data",
+            df.to_csv(sep="\t").encode("utf-8"),
+            f"heat-map-data.tsv"
+        )
         show_fig(fig, "heatmap")
+
 
 else:
     st.warning("Please complete data preparation step first!")
