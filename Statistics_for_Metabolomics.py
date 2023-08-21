@@ -16,6 +16,11 @@ These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmo
 
 Once you have completed the **Data Preparation** step, chose any of the available statistics sections.
 
+💡 **All plots are interactive!**
+- select area with your mouse to zoom in
+- double click in the plot to zoom back out
+- save plots using the camera icon in the top right corner (specify image format in settings panel)
+
 ### Data Preparation
 - two tables are required: **Feature Intensity** and **Meta Data**
 - supported formats: `tsv` and `txt` (tab separated), `csv` (comma separated) and `xlsx` (Excel file)
