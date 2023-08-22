@@ -43,7 +43,7 @@ def anova(df, attribute, correction):
     )
     df = df.dropna()
     df = add_p_correction_to_anova(df, correction)
-    return df
+    return df.set_index("metabolite")
 
 
 @st.cache_resource
@@ -64,7 +64,7 @@ def get_anova_plot(anova):
         x=anova[anova["significant"]]["F"].apply(np.log),
         y=anova[anova["significant"]]["p"].apply(lambda x: -np.log(x)),
         mode="markers+text",
-        text=anova["metabolite"].iloc[:6],
+        text=anova.index[:6],
         textposition="top left",
         textfont=dict(color="#ef553b", size=14),
         name="significant",
@@ -89,7 +89,7 @@ def get_anova_plot(anova):
 @st.cache_resource
 def get_metabolite_boxplot(anova, metabolite):
     attribute = "ATTRIBUTE_"+st.session_state.anova_attribute
-    p_value = anova.set_index("metabolite")._get_value(metabolite, "p")
+    p_value = anova.loc[metabolite, "p"]
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
@@ -146,7 +146,7 @@ def add_p_value_correction_to_tukeys(tukey, correction):
 
 @st.cache_data
 def tukey(df, attribute, elements, correction):
-    significant_metabolites = df[df["significant"]]["metabolite"]
+    significant_metabolites = df[df["significant"]].index
     data = pd.concat(
         [
             st.session_state.data.loc[:, significant_metabolites],

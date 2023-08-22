@@ -86,17 +86,19 @@ if not st.session_state.data.empty:
                 "select metabolite",
                 sorted(
                     list(
-                        st.session_state.df_anova["metabolite"][
+                        st.session_state.df_anova[
                             st.session_state.df_anova["significant"] == True
-                        ]
+                        ].index
                     )
                 ),
                 key="anova_metabolite",
             )
+
             fig = get_metabolite_boxplot(
                 st.session_state.df_anova,
                 st.session_state.anova_metabolite,
             )
+
             show_fig(fig, f"anova-{st.session_state.anova_metabolite}")
 
         if not st.session_state.df_tukey.empty:

@@ -50,7 +50,7 @@ def load_example():
     md = open_df("example-data/MetaData.txt").set_index("filename")
     return ft, md
 
-# @st.cache_data()
+@st.cache_data()
 def load_from_gnps(task_id, merge_annotations):
     ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
     md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
@@ -76,7 +76,7 @@ def load_from_gnps(task_id, merge_annotations):
         def combine_names(row):
             if row['Compound_Name'] == row['Analog_Compound_Name']:
                 return row['Compound_Name']
-            return ';'.join([str(row['Compound_Name']), str(row['Analog_Compound_Name'])])
+            return f"{row['Compound_Name']};{row['Analog_Compound_Name']}"
 
         an_final_single = an_final.groupby('#Scan#').apply(lambda group: pd.Series({
             'Combined_Name': combine_names(group.iloc[0])
@@ -90,7 +90,7 @@ def load_from_gnps(task_id, merge_annotations):
         # Annotate metabolites in ft if annotation is available
         ft["metabolite"] = ft.index
 
-        ft["metabolite"] = ft["metabolite"].apply(lambda x: str(x) if x not in an_final_single.index else an_final_single.loc[x, "Combined_Name"].replace("nan;", "").replace('"', '')+f"_{x}")
+        ft["metabolite"] = ft["metabolite"].apply(lambda x: ''.join(i for i in str(x)[:80] if ord(i)<128) if x not in an_final_single.index else ''.join(i for i in an_final_single.loc[x, "Combined_Name"].replace("nan;", "").replace('"', "").replace("'", "")[:80]+f"_{x}" if ord(i)<128))
 
         ft = ft.set_index("metabolite")
 
