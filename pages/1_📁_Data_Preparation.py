@@ -42,6 +42,7 @@ else:
                 md = st.session_state["md_gnps"]
 
     elif file_origin == "Feature quantification and meta data files":
+        st.info("💡 Upload tables in txt (tab separated), tsv, csv or xlsx (Excel) format.")
         c1, c2 = st.columns(2)
         # Feature Quantification Table
         ft_file = c1.file_uploader("Feature Quantification Table")
