@@ -4,7 +4,7 @@ from src.randomforest import *
 
 page_setup()
 
-st.title("Supervised learning")
+st.title("Random Forest")
 
 with st.expander("📖 About"):
     st.markdown(
