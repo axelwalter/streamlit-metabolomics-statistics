@@ -31,7 +31,7 @@ if not st.session_state.data.empty:
         st.session_state.df_oob, st.session_state.df_important_features = run_random_forest("ATTRIBUTE_"+st.session_state.rf_attribute, st.session_state.rf_n_trees)
 
 if not st.session_state.df_important_features.empty:
-    tabs = st.tabs(["📈 Analyze optimum number of trees", "📁 Top 10 important features"])
+    tabs = st.tabs(["📈 Analyze optimum number of trees", "📁 Feature ranked by importance"])
     with tabs[0]:
         fig = get_oob_fig(st.session_state.df_oob)
         show_fig(fig, "oob-error")

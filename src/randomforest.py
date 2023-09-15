@@ -75,9 +75,10 @@ def run_random_forest(attribute, n_trees):
 
     # Extract the important features in the model
     df_important_features = pd.DataFrame(rf.feature_importances_, index=st.session_state.data.columns).sort_values(by=0, ascending=False)
+    df_important_features.columns = ["importance"]
 
 
-    return df_oob, df_important_features.head(10)
+    return df_oob, df_important_features
 
 def get_oob_fig(df):
     return px.line(df, x="n trees", y="error rate", title="out-of-bag (OOB) error")
