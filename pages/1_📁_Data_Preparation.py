@@ -102,61 +102,70 @@ else:
             st.markdown(
                 "Select samples (excluding blank and pools) based on the following table."
             )
-            st.dataframe(inside_levels(md))
+            df = inside_levels(md)
+            mask = df.apply(lambda row: len(row['LEVELS']) == 0, axis=1)
+            df = df[~mask]
+            st.dataframe(df)
             c1, c2 = st.columns(2)
             sample_column = c1.selectbox(
                 "attribute for sample selection",
                 md.columns,
             )
-            sample_row = c2.selectbox("sample selection", set(md[sample_column].dropna()))
-            samples = ft[md[md[sample_column] == sample_row].index]
+            sample_options = list(set(md[sample_column].dropna()))
+            sample_rows = c2.multiselect("sample selection", sample_options, sample_options[0])
+            samples = ft[md[md[sample_column].isin(sample_rows)].index]
             samples_md = md.loc[samples.columns]
 
             with st.expander(f"Selected samples {samples.shape}"):
                 st.dataframe(samples)
 
-            v_space(1)
-            # Ask if blank removal should be done
-            st.markdown(
-                "Select blanks (excluding samples and pools) based on the following table."
-            )
-            non_samples_md = md.loc[
-                [index for index in md.index if index not in samples.columns]
-            ]
-            st.dataframe(inside_levels(non_samples_md))
-            c1, c2 = st.columns(2)
+            if samples.shape[1] == ft.shape[1]:
+                st.warning("You selected everything as sample type. Blank removal not possible.")
+            else:
+                v_space(1)
+                # Ask if blank removal should be done
+                st.markdown(
+                    "Select blanks (excluding samples and pools) based on the following table."
+                )
+                non_samples_md = md.loc[
+                    [index for index in md.index if index not in samples.columns]
+                ]
+                df = inside_levels(non_samples_md)
+                mask = df.apply(lambda row: len(row['LEVELS']) == 0, axis=1)
+                df = df[~mask]
+                st.dataframe(df)
+                c1, c2 = st.columns(2)
 
-            blank_column = c1.selectbox(
-                "attribute for blank selection", non_samples_md.columns
-            )
-            blank_row = c2.selectbox(
-                "blank selection", set(non_samples_md[blank_column].dropna())
-            )
-            blanks = ft[non_samples_md[non_samples_md[blank_column] == blank_row].index]
-            with st.expander(f"Selected blanks {blanks.shape}"):
-                st.dataframe(blanks)
+                blank_column = c1.selectbox(
+                    "attribute for blank selection", non_samples_md.columns
+                )
+                blank_options = list(set(non_samples_md[blank_column].dropna()))
+                blank_rows = c2.multiselect("blank selection", blank_options, blank_options[0])
+                blanks = ft[non_samples_md[non_samples_md[blank_column].isin(blank_rows)].index]
+                with st.expander(f"Selected blanks {blanks.shape}"):
+                    st.dataframe(blanks)
 
-            # define a cutoff value for blank removal (ratio blank/avg(samples))
-            c1, c2 = st.columns(2)
-            cutoff = c1.number_input(
-                "cutoff threshold for blank removal",
-                0.1,
-                1.0,
-                0.3,
-                0.05,
-                help="""The recommended cutoff range is between 0.1 and 0.3.
-                
-Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
-                """,
-            )
-            (
-                ft,
-                n_background_features,
-                n_real_features,
-            ) = remove_blank_features(blanks, samples, cutoff)
-            c2.metric("background or noise features", n_background_features)
-            with st.expander(f"Feature table after removing blanks {ft.shape}"):
-                show_table(ft, "blank-features-removed")
+                # define a cutoff value for blank removal (ratio blank/avg(samples))
+                c1, c2 = st.columns(2)
+                cutoff = c1.number_input(
+                    "cutoff threshold for blank removal",
+                    0.1,
+                    1.0,
+                    0.3,
+                    0.05,
+                    help="""The recommended cutoff range is between 0.1 and 0.3.
+                    
+    Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
+                    """,
+                )
+                (
+                    ft,
+                    n_background_features,
+                    n_real_features,
+                ) = remove_blank_features(blanks, samples, cutoff)
+                c2.metric("background or noise features", n_background_features)
+                with st.expander(f"Feature table after removing blanks {ft.shape}"):
+                    show_table(ft, "blank-features-removed")
         
         if not ft.empty:
             cutoff_LOD = get_cutoff_LOD(ft)
