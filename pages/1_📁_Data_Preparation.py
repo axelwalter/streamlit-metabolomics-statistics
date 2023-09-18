@@ -70,7 +70,7 @@ else:
 
     v_space(2)
     if not ft.empty or not md.empty:
-        t1, t2 = st.tabs(["Feature Quantification", "Meta Data"])
+        t1, t2 = st.tabs(["Quantification Table", "Meta Data"])
         t1.dataframe(ft)
         t2.dataframe(md)
 

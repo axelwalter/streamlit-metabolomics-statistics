@@ -129,7 +129,7 @@ Please select the correct one or try to automatically create an index based on R
                 ft = ft.drop(columns=["metabolite"])
 
     if ft.empty:
-        st.error(f"Check feature quantification table!\n{allowed_formats}")
+        st.error(f"Check quantification table!\n{allowed_formats}")
     return ft
 
 
@@ -151,7 +151,10 @@ Please select the correct one."""
         if filename_col:
             md = md.set_index(filename_col)
             md.index = md.index.astype(str)
-        v_space(2)
+    for col in md.columns:
+        if "ATTRIBUTE_" not in col:
+            st.error(f"No **ATTRIBUTE_** declarationwarning (in capital letters!) found in at least one column of meta data table.")
+            return pd.DataFrame()
     if md.empty:
         st.error(f"Check meta data table!\n{allowed_formats}")
 
