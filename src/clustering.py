@@ -54,7 +54,7 @@ def get_heatmap(data):
         text_auto=False,
         aspect="auto",
         color_continuous_scale="PuOr_r",
-        range_color=[-3, 3],
+        range_color=[ord_ft.min().min(), ord_ft.max().max()],
     )
 
     fig.update_layout(
