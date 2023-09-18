@@ -48,10 +48,13 @@ Example meta data table:
 
 
 ### Available Statistics
-- Univariate (ANOVA & Tukey's post hoc test)
 - Principle Component Analysis (PCA)
-- Multivariate analyses: (PERMANOVA & PCoA)
+- Multivariate
+    - PERMANOVA & PCoA
 - Hierachial Clustering & Heatmaps
+- Univariate 
+    - One-way ANOVA & Tukey's post hoc test
+    - Kruskal-Wallis & Dunn's post hoc test
 - Student's t-test
 """
 )

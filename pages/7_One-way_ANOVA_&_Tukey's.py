@@ -5,7 +5,7 @@ from src.anova import *
 
 page_setup()
 
-st.markdown("# ANOVA & Tukey's post hoc test")
+st.markdown("# One-way ANOVA & Tukey's")
 
 with st.expander("📖 About"):
     st.markdown(
