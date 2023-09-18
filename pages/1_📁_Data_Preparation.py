@@ -21,7 +21,7 @@ else:
     )
     ft, md = pd.DataFrame(), pd.DataFrame()
 
-    file_origin = st.selectbox("File upload", ["Feature quantification and meta data files", "Example data", "GNPS task ID"])
+    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "Example data", "GNPS task ID"])
     
     if file_origin == "Example data":
         ft, md = load_example()
@@ -41,11 +41,11 @@ else:
             if not st.session_state["md_gnps"].empty:
                 md = st.session_state["md_gnps"]
 
-    elif file_origin == "Feature quantification and meta data files":
+    elif file_origin == "Quantification table and meta data files":
         st.info("💡 Upload tables in txt (tab separated), tsv, csv or xlsx (Excel) format.")
         c1, c2 = st.columns(2)
         # Feature Quantification Table
-        ft_file = c1.file_uploader("Feature Quantification Table")
+        ft_file = c1.file_uploader("Quantification Table")
         if ft_file:
             st.session_state["ft_uploaded"] = load_ft(ft_file)
 

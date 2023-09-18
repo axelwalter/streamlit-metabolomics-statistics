@@ -27,12 +27,12 @@ A web app implementation of the [statistics notebooks](https://github.com/Functi
 Once you have completed the **Data Preparation** step, chose any of the available statistics sections.
 
 ### Data Preparation
-- two tables are required: **Feature Intensity** and **Meta Data**
+- two tables are required: **Quantification** and **Meta Data**
 - supported formats: `tsv` and `txt` (tab separated), `csv` (comma separated) and `xlsx` (Excel file)
 - if feature table has an optional `metabolite` column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
 - feature index can be automat<ically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
 - sample file names need to contain `mzML` file name extensions
-- feature table needs sample file names as column names
+- quantification table needs sample file names as column names
 - meta data table **requires** a `filename` column
 - meta data table can contain columns with attributes (prefixed with `ATTRIBUTE_`)
 - checkout the **example data** availabe in file selection
