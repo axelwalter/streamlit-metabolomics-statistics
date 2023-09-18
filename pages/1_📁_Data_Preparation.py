@@ -21,13 +21,19 @@ else:
     )
     ft, md = pd.DataFrame(), pd.DataFrame()
 
-    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "Example data", "GNPS task ID"])
-    
-    if file_origin == "Example data":
+    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "GNPS task ID", "Example dataset from publication", "Small example dataset for testing"])
+    # b661d12ba88745639664988329c1363e
+    if file_origin == "Small example dataset for testing":
         ft, md = load_example()
 
-    if file_origin == "GNPS task ID":
-        task_id = st.text_input("GNPS task ID", "")
+    if file_origin == "GNPS task ID" or file_origin == "Example dataset from publication":
+        if file_origin == "Example dataset from publication":
+            task_id_default = "b661d12ba88745639664988329c1363e"
+            disabled = True
+        else:
+            task_id_default = ""
+            disabled = False
+        task_id = st.text_input("GNPS task ID", task_id_default, disabled=disabled)
         c1, c2 = st.columns(2)
         merge_annotations = c1.checkbox("Annotate metabolites", True, help="Merge annotations from GNPS FBMN and analog search if available.")
         if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0):
@@ -192,10 +198,11 @@ else:
             v_space(2)
             _, c1, _ = st.columns(3)
             if c1.button("**Submit Data for Statistics!**", type="primary"):
-                st.session_state["md"], st.session_state["data"] = normalization(
-                    ft, md, normalization_method
-                )
-                st.session_state["data_preparation_done"] = True
+                with st.spinner("Normalizing data..."):
+                    st.session_state["md"], st.session_state["data"] = normalization(
+                        ft, md, normalization_method
+                    )
+                    st.session_state["data_preparation_done"] = True
                 st.experimental_rerun()
             v_space(2)
 
