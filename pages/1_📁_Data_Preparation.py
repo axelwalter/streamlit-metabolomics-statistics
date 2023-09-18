@@ -198,11 +198,10 @@ else:
             v_space(2)
             _, c1, _ = st.columns(3)
             if c1.button("**Submit Data for Statistics!**", type="primary"):
-                with st.spinner("Normalizing data..."):
-                    st.session_state["md"], st.session_state["data"] = normalization(
-                        ft, md, normalization_method
-                    )
-                    st.session_state["data_preparation_done"] = True
+                st.session_state["md"], st.session_state["data"] = normalization(
+                    ft, md, normalization_method
+                )
+                st.session_state["data_preparation_done"] = True
                 st.experimental_rerun()
             v_space(2)
 
