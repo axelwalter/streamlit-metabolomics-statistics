@@ -26,8 +26,6 @@ def get_pca_scatter_plot(pca_df, pca_variance, attribute, md):
         left_index=True,
         right_index=True,
     )
-    import streamlit as st
-
     fig = px.scatter(
         df,
         x="PC1",
