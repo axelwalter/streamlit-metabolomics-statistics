@@ -11,7 +11,9 @@ dataframe_names = ("md",
                    "df_kruskal",
                    "df_dunn",
                    "df_important_features",
-                   "df_oob")
+                   "df_oob",
+                   "ft_gnps",
+                   "md_gnps")
 
 corrections_map = {"Bonferroni": "bonf",
                    "Sidak": "sidak",

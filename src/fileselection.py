@@ -57,9 +57,10 @@ def load_from_gnps(task_id, merge_annotations):
     an_gnps_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
     an_analog_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_analogresult/&block=main"
 
-    ft = pd.read_csv(ft_url, index_col="row ID")
+    ft = pd.read_csv(ft_url)
+    ft["metabolite"] = ft.apply(lambda x: str(x["row ID"]) + "_" + str(round(x["row m/z"], 4)) + "@" + str(round(x["row retention time"], 2)), axis = 1)
+    ft = ft.set_index("metabolite")
     ft = ft[[col for col in ft.columns if not "Unnamed" in col]]
-    ft.index.name = "metabolite"
     md = pd.read_csv(md_url, sep = "\t", index_col="filename")
 
     if merge_annotations:
@@ -89,8 +90,7 @@ def load_from_gnps(task_id, merge_annotations):
 
         # Annotate metabolites in ft if annotation is available
         ft["metabolite"] = ft.index
-
-        ft["metabolite"] = ft["metabolite"].apply(lambda x: ''.join(i for i in str(x)[:80] if ord(i)<128) if x not in an_final_single.index else ''.join(i for i in an_final_single.loc[x, "Combined_Name"].replace("nan;", "").replace('"', "").replace("'", "")[:80]+f"_{x}" if ord(i)<128))
+        ft["metabolite"] = ft["metabolite"].apply(lambda x: ''.join(i for i in str(x)[:80] if ord(i)<128) if int(x.split("_")[0]) not in an_final_single.index else ''.join(i for i in an_final_single.loc[int(x.split("_")[0]), "Combined_Name"].replace("nan;", "").replace('"', "").replace("'", "")[:80]+f"_{x.split('_')[0]}" if ord(i)<128))
 
         ft = ft.set_index("metabolite")
 
@@ -153,7 +153,7 @@ Please select the correct one."""
             md.index = md.index.astype(str)
     for col in md.columns:
         if "ATTRIBUTE_" not in col:
-            st.error(f"No **ATTRIBUTE_** declarationwarning (in capital letters!) found in at least one column of meta data table.")
+            st.error(f"No **ATTRIBUTE_** declaration (in capital letters!) found in at least one column of meta data table.")
             return pd.DataFrame()
     if md.empty:
         st.error(f"Check meta data table!\n{allowed_formats}")
