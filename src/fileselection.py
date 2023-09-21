@@ -58,7 +58,7 @@ def load_from_gnps(task_id, merge_annotations):
     an_analog_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_analogresult/&block=main"
 
     ft = pd.read_csv(ft_url)
-    ft["metabolite"] = ft.apply(lambda x: str(x["row ID"]) + "_" + str(round(x["row m/z"], 4)) + "@" + str(round(x["row retention time"], 2)), axis = 1)
+    ft["metabolite"] = ft.apply(lambda x: str(int(x["row ID"])) + "_" + str(round(x["row m/z"], 4)) + "@" + str(round(x["row retention time"], 2)), axis = 1)
     ft = ft.set_index("metabolite")
     ft = ft[[col for col in ft.columns if not "Unnamed" in col]]
     md = pd.read_csv(md_url, sep = "\t", index_col="filename")
