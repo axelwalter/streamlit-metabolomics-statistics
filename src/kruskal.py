@@ -87,7 +87,7 @@ def get_metabolite_boxplot(kruskal, metabolite):
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
-    title = f"{metabolite}<br>p-value: {str(p_value)[:6]}"
+    title = f"{metabolite}<br>p-value: {str(p_value)}"
     fig = px.box(
         df,
         x=attribute,
