@@ -187,10 +187,13 @@ else:
             )
             imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.")
             if imputation:
-                c1, c2 = st.columns(2)
-                ft = impute_missing_values(ft, cutoff_LOD)
-                with st.expander(f"Imputed data {ft.shape}"):
-                    show_table(ft, "imputed")
+                if cutoff_LOD > 1:
+                    c1, c2 = st.columns(2)
+                    ft = impute_missing_values(ft, cutoff_LOD)
+                    with st.expander(f"Imputed data {ft.shape}"):
+                        show_table(ft, "imputed")
+                else:
+                    st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
 
             st.markdown("##### Normalization")
             normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 

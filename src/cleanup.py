@@ -102,10 +102,11 @@ def remove_blank_features(blanks, samples, cutoff):
 
 @st.cache_data
 def impute_missing_values(df, cutoff_LOD):
-    # impute missing values (0) with a random value between zero and lowest intensity (cutoff_LOD)
-    return df.apply(
-        lambda x: [np.random.randint(1, cutoff_LOD) if v == 0 else v for v in x]
-    )
+    # impute missing values (0) with a random value between one and lowest intensity (cutoff_LOD)
+    if cutoff_LOD > 1:
+        return df.apply(
+            lambda x: [np.random.randint(1, cutoff_LOD) if v == 0 else v for v in x]
+        )
 
 
 @st.cache_resource
