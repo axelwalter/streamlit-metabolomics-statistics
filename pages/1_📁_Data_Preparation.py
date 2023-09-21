@@ -105,6 +105,7 @@ else:
         blank_removal = st.checkbox("Remove blank features?", False)
         if blank_removal:
             # Select true sample files (excluding blank and pools)
+            st.markdown("**Sample selection**")
             st.markdown(
                 "Select samples (excluding blank and pools) based on the following table."
             )
@@ -130,6 +131,7 @@ else:
             else:
                 v_space(1)
                 # Ask if blank removal should be done
+                st.markdown("**Blank selection**")
                 st.markdown(
                     "Select blanks (excluding samples and pools) based on the following table."
                 )
