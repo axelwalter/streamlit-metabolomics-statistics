@@ -88,7 +88,7 @@ def get_anova_plot(anova):
 
 @st.cache_resource
 def get_metabolite_boxplot(anova, metabolite):
-    attribute = "ATTRIBUTE_"+st.session_state.anova_attribute
+    attribute = st.session_state.anova_attribute
     p_value = anova.loc[metabolite, "p"]
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
@@ -108,7 +108,7 @@ def get_metabolite_boxplot(anova, metabolite):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={"text": title, "font_color": "#3E3D53"},
-        xaxis_title=attribute.replace("ATTRIBUTE_", ""),
+        xaxis_title=attribute,
         yaxis_title="intensity",
     )
     return fig
@@ -122,7 +122,7 @@ def gen_pairwise_tukey(df, metabolites, attribute):
             metabolite,
             tukey.loc[0, "diff"],
             tukey.loc[0, "p-tukey"],
-            attribute.replace("ATTRIBUTE_", ""),
+            attribute,
             tukey.loc[0, "A"],
             tukey.loc[0, "B"],
             tukey.loc[0, "mean(A)"],

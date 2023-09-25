@@ -17,15 +17,11 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     c1.selectbox(
         "select attribute of interest",
-        options=[
-            c.replace("ATTRIBUTE_", "")
-            for c in st.session_state.md.columns
-            if len(set(st.session_state.md[c])) > 1
-        ],
+        options=[c for c in st.session_state.md.columns if len(set(st.session_state.md[c])) > 1],
         key="test_attribute",
     )
     attribute_options = list(
-        set(st.session_state.md["ATTRIBUTE_" + st.session_state.test_attribute].dropna())
+        set(st.session_state.md[st.session_state.test_attribute].dropna())
     )
     attribute_options.sort()
     c2.multiselect(
@@ -39,17 +35,11 @@ if not st.session_state.data.empty:
     if st.session_state.test_attribute and len(st.session_state.test_options) == 2:
         tabs = st.tabs(["📊 Normal distribution", "📊 Equal variance"])
         with tabs[0]:
-            fig = test_normal_distribution(
-                "ATTRIBUTE_" + st.session_state.test_attribute,
-                st.session_state.test_options,
-            )
+            fig = test_normal_distribution(st.session_state.test_attribute, st.session_state.test_options)
             if fig:
                 show_fig(fig, "test-normal-distribution")
         with tabs[1]:
-            fig = test_equal_variance(
-                "ATTRIBUTE_" + st.session_state.test_attribute,
-                st.session_state.test_options,
-            )
+            fig = test_equal_variance(st.session_state.test_attribute, st.session_state.test_options)
             show_fig(fig, "test-equal-variance")
 
     st.info(

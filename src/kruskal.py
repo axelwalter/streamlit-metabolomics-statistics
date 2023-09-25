@@ -27,9 +27,9 @@ def add_p_correction_to_kruskal(df, correction):
 
 @st.cache_data
 def kruskal_wallis(df, attribute, correction):
-    df = pd.concat([df, st.session_state.md], axis=1)
+    df = pd.concat([df, st.session_state.md[[attribute]]], axis=1)
     groups = df[attribute].unique()
-    group_data = [df[df[attribute] == group].drop(columns=[c for c in df.columns if "ATTRIBUTE_" in c]) for group in groups]
+    group_data = [df[df[attribute] == group] for group in groups]
 
     df = pd.DataFrame(
         np.fromiter(
@@ -39,6 +39,7 @@ def kruskal_wallis(df, attribute, correction):
     )
     df = df.dropna()
     df = add_p_correction_to_kruskal(df, correction)
+    df = df[df["metabolite"] != attribute]
     return df
 
 
@@ -82,7 +83,7 @@ def get_kruskal_plot(kruskal):
 
 @st.cache_resource
 def get_metabolite_boxplot(kruskal, metabolite):
-    attribute = "ATTRIBUTE_"+st.session_state.kruskal_attribute
+    attribute = st.session_state.kruskal_attribute
     p_value = kruskal.set_index("metabolite")._get_value(metabolite, "p")
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
@@ -102,7 +103,7 @@ def get_metabolite_boxplot(kruskal, metabolite):
     fig.update_layout(
         font={"color": "grey", "size": 12, "family": "Sans"},
         title={"text": title, "font_color": "#3E3D53"},
-        xaxis_title=attribute.replace("ATTRIBUTE_", ""),
+        xaxis_title=attribute,
         yaxis_title="intensity",
     )
     return fig
@@ -136,7 +137,7 @@ def dunn(df, attribute, elements, correction):
     data = pd.concat(
         [
             st.session_state.data.loc[:, significant_metabolites],
-            st.session_state.md.loc[:, attribute],
+            st.session_state.md[attribute],
         ],
         axis=1,
     )

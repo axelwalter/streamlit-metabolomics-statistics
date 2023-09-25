@@ -1,4 +1,4 @@
-filename	ATTRIBUTE_Sample	ATTRIBUTE_Sample_Type	ATTRIBUTE_Time-Point
+filename	Sample	Sample_Type	Time-Point
 DOM_Interlab-LCMS_Lab1_A5M_Pos_MS2_rep1.mzML	A5M	Sample	5
 DOM_Interlab-LCMS_Lab1_A5M_Pos_MS2_rep2.mzML	A5M	Sample	5
 DOM_Interlab-LCMS_Lab1_A5M_Pos_MS2_rep3.mzML	A5M	Sample	5

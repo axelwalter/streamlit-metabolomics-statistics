@@ -16,15 +16,11 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     c1.selectbox(
         "select attribute of interest",
-        options=[
-            c.replace("ATTRIBUTE_", "")
-            for c in st.session_state.md.columns
-            if len(set(st.session_state.md[c])) > 1
-        ],
+        options=[c for c in st.session_state.md.columns if len(set(st.session_state.md[c])) > 1],
         key="ttest_attribute",
     )
     attribute_options = list(
-        set(st.session_state.md["ATTRIBUTE_" + st.session_state.ttest_attribute].dropna())
+        set(st.session_state.md[st.session_state.ttest_attribute].dropna())
     )
     attribute_options.sort()
     c2.multiselect(
@@ -50,7 +46,7 @@ if not st.session_state.data.empty:
 
     if c2.button("Run t-test", type="primary", disabled=(len(st.session_state.ttest_options) != 2)):
         st.session_state.df_ttest = gen_ttest_data(
-            "ATTRIBUTE_" + st.session_state.ttest_attribute,
+            st.session_state.ttest_attribute,
             st.session_state.ttest_options,
             st.session_state.ttest_paired,
             st.session_state.ttest_alternative,

@@ -37,7 +37,7 @@ Once you have completed the **Data Preparation** step, chose any of the availabl
 - sample file names need to contain `mzML` file name extensions
 - quantification table needs sample file names as column names
 - meta data table **requires** a `filename` column
-- meta data table can contain columns with attributes (prefixed with `ATTRIBUTE_`)
+- meta data table can contain columns with attributes
 - checkout the **example data** availabe in file selection
 - remove blank features and impute missing values in the **Data Cleanup** section
 
@@ -48,7 +48,7 @@ Example feature table:
 |2|2000|2200|200|
 
 Example meta data table:
-|filename|ATTRIBUTE_Sample_Type|ATTRIBUTE_Time_Point|
+|filename|Sample_Type|Time_Point|
 |---|---|---|
 |sample1.mzML|Sample|1h|
 |sample2.mzML|Sample|2h|

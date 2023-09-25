@@ -18,19 +18,14 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     c1.selectbox(
         "attribute for Kruskal Wallis test",
-        options=[
-            c.replace("ATTRIBUTE_", "")
-            for c in st.session_state.md.columns
-            if len(set(st.session_state.md[c])) > 1
-        ],
+        options=[c for c in st.session_state.md.columns if len(set(st.session_state.md[c])) > 1],
         key="kruskal_attribute",
     )
 
     c1.button("Run Kruskal Wallis", key="run_kruskal", type="primary")
     if st.session_state.run_kruskal:
         st.session_state.df_kruskal = kruskal_wallis(
-            st.session_state.data,
-            "ATTRIBUTE_" + st.session_state.kruskal_attribute,
+            st.session_state.data, st.session_state.kruskal_attribute,
             corrections_map[st.session_state.p_value_correction]
         )
         st.experimental_rerun()
@@ -38,8 +33,7 @@ if not st.session_state.data.empty:
     if not st.session_state.df_kruskal.empty:
         if any(st.session_state.df_kruskal["significant"]):
             attribute_options = list(
-                set(st.session_state.md["ATTRIBUTE_" +
-                    st.session_state.kruskal_attribute].dropna())
+                set(st.session_state.md[st.session_state.kruskal_attribute].dropna())
             )
             attribute_options.sort()
 
@@ -60,7 +54,7 @@ if not st.session_state.data.empty:
             if st.session_state.run_dunn:
                 st.session_state.df_dunn = dunn(
                     st.session_state.df_kruskal,
-                    "ATTRIBUTE_" + st.session_state.kruskal_attribute,
+                    st.session_state.kruskal_attribute,
                     st.session_state.dunn_elements,
                     corrections_map[st.session_state.p_value_correction]
                 )

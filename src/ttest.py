@@ -23,7 +23,7 @@ def gen_ttest_data(ttest_attribute, target_groups, paired, alternative, correcti
     ttest.insert(8, "p-corrected", pg.multicomp(ttest["p-val"].astype(float), method=p_correction)[1])
     # add significance
     ttest.insert(9, "significance", ttest["p-corrected"] < 0.05)
-    ttest.insert(10, "st.session_state.ttest_attribute", ttest_attribute.replace("ATTRIBUTE_", ""))
+    ttest.insert(10, "st.session_state.ttest_attribute", ttest_attribute)
     ttest.insert(11, "A", target_groups[0])
     ttest.insert(12, "B", target_groups[1])
 
@@ -79,13 +79,13 @@ def ttest_boxplot(df_ttest, metabolite):
     df = pd.concat([st.session_state.md, st.session_state.data], axis=1)
     df1 = pd.DataFrame(
         {
-            metabolite: df[df["ATTRIBUTE_"+st.session_state.ttest_attribute] == st.session_state.ttest_options[0]].loc[:, metabolite],
+            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[0]].loc[:, metabolite],
             "option": st.session_state.ttest_options[0],
         }
     )
     df2 = pd.DataFrame(
         {
-            metabolite: df[df["ATTRIBUTE_"+st.session_state.ttest_attribute] == st.session_state.ttest_options[1]].loc[:, metabolite],
+            metabolite: df[df[st.session_state.ttest_attribute] == st.session_state.ttest_options[1]].loc[:, metabolite],
             "option": st.session_state.ttest_options[1],
         }
     )

@@ -18,11 +18,7 @@ if not st.session_state.data.empty:
     c1, c2 = st.columns(2)
     c1.selectbox(
         "attribute for ANOVA test",
-        options=[
-            c.replace("ATTRIBUTE_", "")
-            for c in st.session_state.md.columns
-            if len(set(st.session_state.md[c])) > 1
-        ],
+        options=[c for c in st.session_state.md.columns if len(set(st.session_state.md[c])) > 1],
         key="anova_attribute",
     )
 
@@ -30,15 +26,14 @@ if not st.session_state.data.empty:
     if st.session_state.run_anova:
         st.session_state.df_anova = anova(
             st.session_state.data,
-            "ATTRIBUTE_" + st.session_state.anova_attribute,
+            st.session_state.anova_attribute,
             corrections_map[st.session_state.p_value_correction]
         )
         st.experimental_rerun()
 
     if not st.session_state.df_anova.empty:
         attribute_options = list(
-            set(st.session_state.md["ATTRIBUTE_" +
-                st.session_state.anova_attribute].dropna())
+            set(st.session_state.md[st.session_state.anova_attribute].dropna())
         )
         attribute_options.sort()
 
@@ -59,7 +54,7 @@ if not st.session_state.data.empty:
         if st.session_state.run_tukey:
             st.session_state.df_tukey = tukey(
                 st.session_state.df_anova,
-                "ATTRIBUTE_" + st.session_state.anova_attribute,
+                st.session_state.anova_attribute,
                 st.session_state.tukey_elements,
                 corrections_map[st.session_state.p_value_correction]
             )
