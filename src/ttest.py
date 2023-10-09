@@ -121,22 +121,27 @@ def ttest_boxplot(df_ttest, metabolite):
     else:
         symbol = "***"
 
-    top_y = max(df[metabolite]) + 0.2
+    top_y = max(df[metabolite]) * 1.2
+
+    if isinstance(df["option"][0], str) and isinstance(df["option"][1], str):
+        x0, x1 = 0, 1
+    else:
+        x0, x1 = st.session_state.ttest_options[0], st.session_state.ttest_options[1]
     # horizontal line
     fig.add_shape(
         type="line",
-        x0=0.5 - 0.5,
+        x0=x0,
         y0=top_y,
-        x1=0.5 + 0.5,
+        x1=x1,
         y1=top_y,
         line=dict(width=1, color="#000000"),
     )
     if symbol == "ns":
-        y_margin = 0.2
+        y_margin = max(df[metabolite]) * 0.05
     else:
-        y_margin = 0.05
+        y_margin = max(df[metabolite]) * 0.1
     fig.add_annotation(
-        x=0.5,
+        x=(x1-x0)/2,
         y=top_y + y_margin,
         text=f"<b>{symbol}</b>",
         showarrow=False,
