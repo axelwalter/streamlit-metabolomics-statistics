@@ -24,23 +24,23 @@ Once you have completed the **Data Preparation** step, chose any of the availabl
 ### Data Preparation
 - two tables are required: **Quantification** and **Meta Data**
 - supported formats: `tsv` and `txt` (tab separated), `csv` (comma separated) and `xlsx` (Excel file)
-- if feature table has an optional `metabolite` column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
-- feature index can be automat<ically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
+- if feature table has an optional **metabolite** column that will be taken as index (can be unique ID, contain `m/z` and `RT` information or actual metabolite name)
+- feature index can be automatically generated if columns for `m/z` and `RT` (and optionally `row ID`) are present
 - sample file names need to contain `mzML` file name extensions
 - quantification table needs sample file names as column names
 - meta data table **requires** a `filename` column
-- meta data table can contain columns with attributes (prefixed with `ATTRIBUTE_`)
+- meta data table can contain columns with attributes
 - checkout the **example data** availabe in file selection
 - remove blank features and impute missing values in the **Data Cleanup** section
 
-Example quantification table:
+Example feature table:
 |metabolite|sample1.mzML|sample2.mzML|blank.mzML|
 |---|---|---|---|
 |1|1000|1100|100|
 |2|2000|2200|200|
 
 Example meta data table:
-|filename|ATTRIBUTE_Sample_Type|ATTRIBUTE_Time_Point|
+|filename|Sample_Type|Time_Point|
 |---|---|---|
 |sample1.mzML|Sample|1h|
 |sample2.mzML|Sample|2h|
