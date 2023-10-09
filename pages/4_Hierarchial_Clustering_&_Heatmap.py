@@ -19,19 +19,15 @@ There are a lot of [good videos](https://www.youtube.com/watch?v=7xHsRkOdVwo) an
     st.image("assets/figures/clustering.png")
 
 if not st.session_state.data.empty:
-    t1, t2 = st.tabs(["📈 Clustering", "📊 Heatmap"])
+    t1, t2, t3 = st.tabs(["📈 Clustering", "📊 Heatmap", "📁 Heatmap Data"])
     with t1:
         fig = get_dendrogram(st.session_state.data, "bottom")
         show_fig(fig, "clustering")
     fig, df = get_heatmap(st.session_state.data)
     with t2:
-        st.download_button(
-            f"📁 Download Heatmap Data",
-            df.to_csv(sep="\t").encode("utf-8"),
-            f"heat-map-data.tsv"
-        )
+
         show_fig(fig, "heatmap")
-
-
+    with t3:
+        show_table(df, "heatmap-data")
 else:
     st.warning("Please complete data preparation step first!")
