@@ -6,7 +6,7 @@ import pandas as pd
 
 page_setup()
 
-st.markdown("# Data Preparation")
+st.markdown("# File Selection")
 
 if st.session_state["data_preparation_done"]:
     st.success("Data preparation was successful!")
@@ -81,7 +81,7 @@ else:
     if not ft.empty and not md.empty:
         st.success("Files loaded successfully!")
 
-        st.markdown("### Data Cleanup")
+        st.markdown("# Data Cleanup")
         with st.expander("📖 About"):
             st.markdown("**Removal of blank features**")
             st.image("assets/figures/blank-removal.png")
@@ -100,12 +100,12 @@ else:
         # # check if ft column names and md row names are the same
         md, ft = check_columns(md, ft)
 
-        st.markdown("#### Blank removal")
+        st.markdown("## Blank removal")
 
         blank_removal = st.checkbox("Remove blank features?", False)
         if blank_removal:
             # Select true sample files (excluding blank and pools)
-            st.markdown("**Sample selection**")
+            st.markdown("#### Samples")
             st.markdown(
                 "Select samples (excluding blank and pools) based on the following table."
             )
@@ -131,7 +131,7 @@ else:
             else:
                 v_space(1)
                 # Ask if blank removal should be done
-                st.markdown("**Blank selection**")
+                st.markdown("#### Blanks")
                 st.markdown(
                     "Select blanks (excluding samples and pools) based on the following table."
                 )
@@ -162,8 +162,8 @@ else:
                     0.3,
                     0.05,
                     help="""The recommended cutoff range is between 0.1 and 0.3.
-                    
-    Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
+
+Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
                     """,
                 )
                 (
@@ -178,14 +178,14 @@ else:
         if not ft.empty:
             cutoff_LOD = get_cutoff_LOD(ft)
 
-            st.markdown("##### Imputation")
+            st.markdown("## Imputation")
 
             c1, c2 = st.columns(2)
             c2.metric(
                 f"total missing values",
                 str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
             )
-            imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 0 and {cutoff_LOD} (Limit of Detection) during imputation.")
+            imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 1 and {cutoff_LOD} (Limit of Detection) during imputation.")
             if imputation:
                 if cutoff_LOD > 1:
                     c1, c2 = st.columns(2)
@@ -195,7 +195,7 @@ else:
                 else:
                     st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
 
-            st.markdown("##### Normalization")
+            st.markdown("## Normalization")
             normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 
                                                     # "Probabilistic Quotient Normalization (PQN)", 
                                                     "Total Ion Current (TIC) or sample-centric normalization",
