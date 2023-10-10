@@ -89,11 +89,11 @@ def get_anova_plot(anova):
 @st.cache_resource
 def get_metabolite_boxplot(anova, metabolite):
     attribute = st.session_state.anova_attribute
-    p_value = anova.loc[metabolite, "p"]
+    p_value = anova.loc[metabolite, "p-corrected"]
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
-    title = f"{metabolite}<br>p-value: {str(p_value)}"
+    title = f"{metabolite}<br>corrected p-value: {str(p_value)[:6]}"
     fig = px.box(
         df,
         x=attribute,

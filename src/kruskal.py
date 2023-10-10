@@ -84,11 +84,11 @@ def get_kruskal_plot(kruskal):
 @st.cache_resource
 def get_metabolite_boxplot(kruskal, metabolite):
     attribute = st.session_state.kruskal_attribute
-    p_value = kruskal.set_index("metabolite")._get_value(metabolite, "p")
+    p_value = kruskal.set_index("metabolite")._get_value(metabolite, "p-corrected")
     df = pd.concat([st.session_state.data, st.session_state.md], axis=1)[
         [attribute, metabolite]
     ]
-    title = f"{metabolite}<br>p-value: {str(p_value)}"
+    title = f"{metabolite}<br>corrected p-value: {str(p_value)[:6]}"
     fig = px.box(
         df,
         x=attribute,
