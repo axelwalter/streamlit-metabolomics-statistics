@@ -190,7 +190,7 @@ def normalization(feature_df, meta_data_df, normalization_method):
             "Sample names in feature and metadata table can NOT be compared. Please check your tables!"
         )
 
-    if normalization_method == "Center-Scale":
+    if normalization_method == "Center-Scaling":
         normalized = pd.DataFrame(
             StandardScaler().fit_transform(feature_df),
             index=feature_df.index,
