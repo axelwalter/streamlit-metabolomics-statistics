@@ -51,7 +51,7 @@ Example meta data table:
 - Principle Component Analysis (PCA)
 - Multivariate
     - PERMANOVA & PCoA
-- Hierachial Clustering & Heatmaps
+- Hierachical Clustering & Heatmaps
 - Univariate 
     - One-way ANOVA & Tukey's post hoc test
     - Kruskal-Wallis & Dunn's post hoc test

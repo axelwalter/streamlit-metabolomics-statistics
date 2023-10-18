@@ -4,7 +4,7 @@ from src.clustering import *
 
 page_setup()
 
-st.markdown("# Hierarchial Clustering & Heatmap")
+st.markdown("# Hierarchical Clustering & Heatmap")
 
 with st.expander("📖 About"):
     st.markdown(
