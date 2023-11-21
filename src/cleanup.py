@@ -12,7 +12,9 @@ def clean_up_md(md):
         md.copy()
     )  # storing the files under different names to preserve the original files
     # remove the (front & tail) spaces, if any present, from the rownames of md
-    md.index = [name.strip() for name in md.index]
+    md.index = [str(name).strip() for name in md.index]
+    md = md.dropna(how='all') #if all the values in a row are empty
+    
     # for each col in md
     # 1) removing the spaces (if any)
     # 2) replace the spaces (in the middle) to underscore
