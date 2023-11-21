@@ -68,6 +68,9 @@ else:
             if not st.session_state["md_uploaded"].empty:
                 md = st.session_state["md_uploaded"]
 
+    ft = ft.dropna(how="all")
+    md = md.dropna(how="all")
+
     v_space(2)
     if not ft.empty or not md.empty:
         t1, t2 = st.tabs(["Quantification Table", "Meta Data"])
