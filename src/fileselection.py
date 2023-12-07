@@ -1,5 +1,8 @@
 import streamlit as st
 from .common import *
+from gnpsdata import taskresult
+from gnpsdata import workflow_fbmn
+import urllib
 
 patterns = [
     ["m/z", "mz", "mass over charge"],
@@ -50,51 +53,25 @@ def load_example():
     md = open_df("example-data/MetaData.txt").set_index("filename")
     return ft, md
 
-@st.cache_data()
+@st.cache_data
 def load_from_gnps(task_id, merge_annotations):
-    ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
-    md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
-    an_gnps_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
-    an_analog_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_analogresult/&block=main"
-
-    ft = pd.read_csv(ft_url)
-    ft["metabolite"] = ft.apply(lambda x: str(int(x["row ID"])) + "_" + str(round(x["row m/z"], 4)) + "@" + str(round(x["row retention time"], 2)), axis = 1)
-    ft = ft.set_index("metabolite")
-    ft = ft[[col for col in ft.columns if not "Unnamed" in col]]
-    md = pd.read_csv(md_url, sep = "\t", index_col="filename")
-
+    try: # GNPS2 will run here
+        ft = workflow_fbmn.get_quantification_dataframe(task_id, gnps2=True)
+        md = workflow_fbmn.get_metadata_dataframe(task_id, gnps2=True).set_index("filename")
+        if merge_annotations:
+            an = taskresult.get_gnps2_task_resultfile_dataframe(task_id, "nf_output/library/merged_results_with_gnps.tsv")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
+    except urllib.error.HTTPError: # GNPS1 task IDs can not be retrieved and throw HTTP Error 500
+        ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
+        md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
+        ft = pd.read_csv(ft_url)
+        md = pd.read_csv(md_url, sep = "\t", index_col="filename")
+        if merge_annotations:
+            an_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
+            an = pd.read_csv(an_url, sep = "\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
     if merge_annotations:
-        an_gnps = pd.read_csv(an_gnps_url, sep = "\t")
-        an_analog = pd.read_csv(an_analog_url, sep = "\t")
-
-        # Rename the columns of 'an_analog' with a prefix 'Analog' (excluding the '#Scan#' column)
-        an_analog.columns = ['Analog_' + col if col != '#Scan#' else col for col in an_analog.columns]
-
-        # Merge 'an_analog' with 'an_gnps' using a full join on the '#Scan#' column
-        an_final = pd.merge(an_gnps, an_analog, on='#Scan#', how='outer')
-
-        # Consolidate multiple annotations for a single '#Scan#' into one combined name
-        def combine_names(row):
-            if row['Compound_Name'] == row['Analog_Compound_Name']:
-                return row['Compound_Name']
-            return f"{row['Compound_Name']};{row['Analog_Compound_Name']}"
-
-        an_final_single = an_final.groupby('#Scan#').apply(lambda group: pd.Series({
-            'Combined_Name': combine_names(group.iloc[0])
-        })).reset_index()
-
-        # To get the DataFrame with that exact column name (without automatic renaming)
-        an_final_single.columns = an_final_single.columns.str.replace('.', '_')
-
-        an_final_single = an_final_single.set_index("#Scan#")
-
-        # Annotate metabolites in ft if annotation is available
-        ft["metabolite"] = ft.index
-        ft["metabolite"] = ft["metabolite"].apply(lambda x: ''.join(i for i in str(x)[:80] if ord(i)<128) if int(x.split("_")[0]) not in an_final_single.index else ''.join(i for i in an_final_single.loc[int(x.split("_")[0]), "Combined_Name"].replace("nan;", "").replace('"', "").replace("'", "")[:80]+f"_{x.split('_')[0]}" if ord(i)<128))
-
-        ft = ft.set_index("metabolite")
-
-   
+            ft.index = pd.Index(ft.apply(lambda x: f'{an.loc[x["row ID"], "Compound_Name"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}' if x["row ID"] in an.index else f'{x["row ID"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}', axis=1))
+    else:
+        ft.index = pd.Index(ft.apply(lambda x: f'{x["row ID"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}', axis=1))
     return ft, md
 
 def load_ft(ft_file):

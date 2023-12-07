@@ -21,14 +21,15 @@ else:
     )
     ft, md = pd.DataFrame(), pd.DataFrame()
 
-    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "GNPS task ID", "Example dataset from publication", "Small example dataset for testing"])
+    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "GNPS(2) task ID", "Example dataset from publication", "Small example dataset for testing"])
     # b661d12ba88745639664988329c1363e
     if file_origin == "Small example dataset for testing":
         ft, md = load_example()
 
-    if file_origin == "GNPS task ID" or file_origin == "Example dataset from publication":
+    if file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication":
         if file_origin == "Example dataset from publication":
-            task_id_default = "b661d12ba88745639664988329c1363e"
+            task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
+
             disabled = True
         else:
             task_id_default = ""
@@ -36,7 +37,7 @@ else:
         task_id = st.text_input("GNPS task ID", task_id_default, disabled=disabled)
         c1, c2 = st.columns(2)
         merge_annotations = c1.checkbox("Annotate metabolites", True, help="Merge annotations from GNPS FBMN and analog search if available.")
-        if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0):
+        if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0, use_container_width=True):
             st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, merge_annotations)
         
         if "ft_gnps" in st.session_state:
