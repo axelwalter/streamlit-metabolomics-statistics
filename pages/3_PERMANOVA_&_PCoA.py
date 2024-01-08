@@ -30,16 +30,28 @@ if not st.session_state.data.empty:
     c2.selectbox(
         "distance matrix",
         [
+            "braycurtis",
             "canberra",
             "chebyshev",
+            "cityblock",
             "correlation",
             "cosine",
+            "dice",
             "euclidean",
             "hamming",
             "jaccard",
+            "jensenshannon",
+            "kulczynski1",
+            "mahalanobis",
             "matching",
             "minkowski",
+            "rogerstanimoto",
+            "russellrao",
             "seuclidean",
+            "sokalmichener",
+            "sokalsneath",
+            "sqeuclidean",
+            "yule"
         ],
         key="pcoa_distance_matrix",
     )
