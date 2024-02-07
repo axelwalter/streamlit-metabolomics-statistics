@@ -6,7 +6,7 @@ page_setup()
 
 # pd.concat([st.session_state.md, st.session_state.data], axis=1)
 
-st.markdown("# Principle Component Analysis (PCA)")
+st.markdown("# Principal Component Analysis (PCA)")
 
 with st.expander("📖 About"):
     st.markdown(
@@ -33,7 +33,7 @@ if not st.session_state.data.empty:
         fig = get_pca_scatter_plot(
             pca_df, pca_variance, st.session_state.pca_attribute, st.session_state.md
         )
-        show_fig(fig, "principle-component-analysis")
+        show_fig(fig, "principal-component-analysis")
     with t2:
         fig = get_pca_scree_plot(pca_df, pca_variance)
         show_fig(fig, "pca-variance")

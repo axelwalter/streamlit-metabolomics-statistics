@@ -16,7 +16,7 @@ A web app implementation of the [statistics notebooks](https://github.com/Functi
 `streamlit run Statistics_for_Metabolomics.py`
 
 ## Available Statistics
-- Principle Component Analysis (PCA)
+- Principal Component Analysis (PCA)
 - Multivariate
     - PERMANOVA & PCoA
 - Hierachical Clustering & Heatmaps

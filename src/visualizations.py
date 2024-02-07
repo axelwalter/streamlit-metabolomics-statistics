@@ -163,7 +163,7 @@ def get_metabolite_boxplot(anova, data, metabolite, attribute):
 
 
 def get_pca_scatter_plot(pca_df, pca, attribute, md):
-    title = f"PRINCIPLE COMPONENT ANALYSIS"
+    title = f"PRINCIPAL COMPONENT ANALYSIS"
 
     df = pd.merge(
         pca_df[["PC1", "PC2"]],
@@ -227,7 +227,7 @@ def get_pcoa_scatter_plot(pcoa, md_samples, attribute):
         right_index=True,
     )
 
-    title = f"PRINCIPLE COORDINATE ANALYSIS"
+    title = f"PRINCIPAL COORDINATE ANALYSIS"
     fig = px.scatter(
         df,
         x="PC1",

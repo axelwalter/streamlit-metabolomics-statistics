@@ -37,7 +37,7 @@ def get_pcoa_scatter_plot(pcoa, md_samples, attribute):
         right_index=True,
     )
 
-    title = f"PRINCIPLE COORDINATE ANALYSIS"
+    title = f"PRINCIPAL COORDINATE ANALYSIS"
     fig = px.scatter(
         df,
         x="PC1",

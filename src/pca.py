@@ -18,7 +18,7 @@ def get_pca_df(scaled, n=5):
 
 @st.cache_resource
 def get_pca_scatter_plot(pca_df, pca_variance, attribute, md):
-    title = f"PRINCIPLE COMPONENT ANALYSIS"
+    title = f"PRINCIPAL COMPONENT ANALYSIS"
 
     df = pd.merge(
         pca_df[["PC1", "PC2"]],

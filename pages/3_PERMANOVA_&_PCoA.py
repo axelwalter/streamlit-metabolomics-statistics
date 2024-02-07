@@ -5,7 +5,7 @@ from src.pcoa import *
 page_setup()
 
 st.markdown("# Multivariate Statistics")
-st.markdown("### PERMANOVA & Principle Coordinate Analysis (PCoA)")
+st.markdown("### PERMANOVA & Principal Coordinate Analysis (PCoA)")
 
 with st.expander("📖 About"):
     st.markdown(
@@ -56,7 +56,7 @@ if not st.session_state.data.empty:
         t1, t2, t3 = st.tabs(
             [
                 "📁 PERMANOVA statistics",
-                "📈 Principle Coordinate Analysis",
+                "📈 Principal Coordinate Analysis",
                 "📊 Explained variance",
             ]
         )
@@ -68,7 +68,7 @@ if not st.session_state.data.empty:
                 st.session_state.md,
                 st.session_state.pcoa_attribute,
             )
-            show_fig(fig, "principle-coordinate-analysis")
+            show_fig(fig, "principal-coordinate-analysis")
         with t3:
             fig = get_pcoa_variance_plot(pcoa_result)
             show_fig(fig, "pcoa-variance")

@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import io
 import uuid
+import base64
 
 dataframe_names = ("md",
                    "data",
@@ -57,7 +58,34 @@ def page_setup():
         v_space(1)
         st.image("assets/FBMN-STATS-GUIed_logo2.png", use_column_width=True)
         v_space(1)
-        st.image("assets/vmol-icon.png", use_column_width=True)
+        st.image("assets/vmol-icon.png", use_column_width=True) 
+        v_space(1)
+        st.markdown("## Functional-Metabolomics-Lab")
+        c1, c2, c3 = st.columns(3)
+        c1.markdown(
+            """<a href="https://github.com/Functional-Metabolomics-Lab">
+            <img src="data:image/png;base64,{}" width="50">
+            </a>""".format(
+                base64.b64encode(open("./assets/github-logo.png", "rb").read()).decode()
+            ),
+            unsafe_allow_html=True,
+        )
+        c2.markdown(
+            """<a href="https://www.youtube.com/@functionalmetabolomics">
+            <img src="data:image/png;base64,{}" width="50">
+            </a>""".format(
+                base64.b64encode(open("./assets/youtube-logo.png", "rb").read()).decode()
+            ),
+            unsafe_allow_html=True,
+        )
+        c3.markdown(
+            """<a href="https://twitter.com/func_metabo_lab">
+            <img src="data:image/png;base64,{}" width="50">
+            </a>""".format(
+                base64.b64encode(open("./assets/x-logo.png", "rb").read()).decode()
+            ),
+            unsafe_allow_html=True
+        )
 
 
 def v_space(n, col=None):
