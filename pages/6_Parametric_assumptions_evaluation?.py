@@ -5,7 +5,7 @@ from src.testparametric import *
 
 page_setup()
 
-st.markdown("# How to choose a test?")
+st.markdown("# Parametric assumptions evaluation")
 st.markdown("## Normal distribution and equal variance")
 
 with st.expander("📖 Why is this important?"):
