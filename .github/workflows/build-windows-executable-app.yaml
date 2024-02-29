@@ -64,7 +64,7 @@ jobs:
         cp -r src dist/src
         cp -r assets dist/assets
         cp -r example-data dist/example-data
-        cp app.py dist/
+        cp Statistics_for_Metabolomics.py dist/
     
     - name: Modify .spec file
       shell: bash
