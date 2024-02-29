@@ -16,7 +16,6 @@ a = Analysis(
 	    ("./myenv/Lib/site-packages/pingouin", "./pingouin/"),
         ("./myenv/Lib/site-packages/kaleido", "./kaleido/"),
         ("./myenv/Lib/site-packages/openpyxl", "./openpyxl/"),
-        ("./myenv/Lib/site-packages/scikit-bio", "./scikit-bio/"),
         ("./myenv/Lib/site-packages/scikit-posthocs", "./scikit-posthocs/"),
         ("./myenv/Lib/site-packages/gnpsdata", "./gnpsdata/")
     ],
