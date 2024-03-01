@@ -54,7 +54,7 @@ jobs:
       shell: cmd
       run: |
         call myenv\Scripts\activate.bat 
-        pyinstaller --onefile --additional-hooks-dir ./hooks run_app.py --clean
+        pyinstaller --onefile --additional-hooks-dir ./hooks run.py --clean
 
 
     - name: Copy everything to dist directory
@@ -65,7 +65,7 @@ jobs:
         cp -r assets dist/assets
         cp -r example-data dist/example-data
         cp Statistics_for_Metabolomics.py dist/
-    
+
     - name: Modify .spec file
       shell: bash
       run: |
