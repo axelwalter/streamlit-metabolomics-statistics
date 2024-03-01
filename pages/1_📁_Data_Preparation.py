@@ -27,6 +27,7 @@ else:
         ft, md = load_example()
 
     if file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication":
+        st.warning("💡 This tool only supports task ID from GNPS1 and 2 not from Quickstart GNPS1.")
         if file_origin == "Example dataset from publication":
             task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
 
