@@ -1,2 +1,9 @@
 [theme]
 base="light"
+
+[global]
+developmentMode = false
+
+[server]
+port = 8502
+maxUploadSize=512
