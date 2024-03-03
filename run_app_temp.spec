@@ -18,6 +18,9 @@ a = Analysis(
         ("./myenv/Lib/site-packages/openpyxl", "./openpyxl/"),
         ("./myenv/Lib/site-packages/scikit_posthocs", "./scikit_posthocs/"),
         ("./myenv/Lib/site-packages/gnpsdata", "./gnpsdata/")
+	("./myenv/Lib/site-packages/sklearn", "./sklearn/")
+ 	("./myenv/Lib/site-packages/tabulate", "./tabulate/")
+  	("./myenv/Lib/site-packages/networkx", "./networkx/")
     ],
     hiddenimports=[],
     hookspath=['./hooks'],
