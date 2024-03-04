@@ -18,10 +18,11 @@ a = Analysis(
         ("./myenv/Lib/site-packages/openpyxl", "./openpyxl/"),
         ("./myenv/Lib/site-packages/scikit_posthocs", "./scikit_posthocs/"),
         ("./myenv/Lib/site-packages/gnpsdata", "./gnpsdata/"),
-	    ("./myenv/Lib/site-packages/sklearn", "./scikit_learn/"),
+	    ("./myenv/Lib/site-packages/sklearn", "./sklearn/"),
 	    ("./myenv/Lib/site-packages/networkx", "./networkx/"),
 	    ("./myenv/Lib/site-packages/tabulate", "./tabulate/"),
-
+        ("./myenv/Lib/site-packages/pandas_flavor", "./pandas_flavor/"),
+        ("./myenv/Lib/site-packages/numpy", "./numpy/"),
     ],
     hiddenimports=[],
     hookspath=['./hooks'],
