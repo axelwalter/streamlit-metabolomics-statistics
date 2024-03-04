@@ -18,7 +18,7 @@ a = Analysis(
         ("./myenv/Lib/site-packages/openpyxl", "./openpyxl/"),
         ("./myenv/Lib/site-packages/scikit_posthocs", "./scikit_posthocs/"),
         ("./myenv/Lib/site-packages/gnpsdata", "./gnpsdata/"),
-	    ("./myenv/Lib/site-packages/scikit_learn", "./scikit_learn/"),
+	    ("./myenv/Lib/site-packages/sklearn", "./scikit_learn/"),
 	    ("./myenv/Lib/site-packages/networkx", "./networkx/"),
 	    ("./myenv/Lib/site-packages/tabulate", "./tabulate/"),
 
