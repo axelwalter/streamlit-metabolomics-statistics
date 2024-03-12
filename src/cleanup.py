@@ -203,7 +203,7 @@ def normalization(feature_df, meta_data_df, normalization_method):
     #     normalized = PQN_normalization(feature_df ,ref_norm = "median" , verbose=False)
 
     elif normalization_method == "Total Ion Current (TIC) or sample-centric normalization":
-        normalized = feature_df.apply(lambda x: x/np.sum(x), axis=0)
+        normalized = feature_df.apply(lambda x: x/np.sum(x), axis=1)
     
     else:
         return md_samples, feature_df
