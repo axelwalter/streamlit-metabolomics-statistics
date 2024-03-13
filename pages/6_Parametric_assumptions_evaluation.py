@@ -33,20 +33,20 @@ if not st.session_state.data.empty:
         help="Select two options.",
     )
     if st.session_state.test_attribute and len(st.session_state.test_options) == 2:
-        tabs = st.tabs(["📊 Normal distribution", "📊 Equal variance"])
+        tabs = st.tabs(["📊 Normal distribution (Shapiro-Wilk test)", "📊 Equal variance (Levene test)"])
         with tabs[0]:
-            fig = test_normal_distribution(st.session_state.test_attribute, st.session_state.test_options)
+            fig = test_normal_distribution(st.session_state.test_attribute, st.session_state.test_options, corrections_map[st.session_state.p_value_correction])
             if fig:
                 show_fig(fig, "test-normal-distribution")
         with tabs[1]:
-            fig = test_equal_variance(st.session_state.test_attribute, st.session_state.test_options)
+            fig = test_equal_variance(st.session_state.test_attribute, st.session_state.test_options, corrections_map[st.session_state.p_value_correction])
             show_fig(fig, "test-equal-variance")
 
     st.info(
         """💡 **Interpretation**
 
 In both tests low p-values indicate that data points for a feature are **NOT** normal distributed or have similar variance.
-To meet **parametric** criteria the p-values in the histograms should be equally distributed between 0 and 1.
+To meet **parametric** criteria the p-values in the histograms should not be smaller than 0.05.
 When a larger number of data points indicate low p-values, it would be advisable to opt for a **non-parametric** statistical test.
 """
     )
