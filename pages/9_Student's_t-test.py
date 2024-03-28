@@ -53,7 +53,7 @@ if not st.session_state.data.empty:
             st.session_state.ttest_correction,
             corrections_map[st.session_state.p_value_correction]
         )
-        st.experimental_rerun()
+        st.rerun()
 
     if not st.session_state.df_ttest.empty:
         tabs = st.tabs(

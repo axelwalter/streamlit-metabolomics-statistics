@@ -13,7 +13,7 @@ if st.session_state["data_preparation_done"]:
     if st.button("Re-do the data preparation step now."):
         reset_dataframes()
         st.session_state["data_preparation_done"] = False
-        st.experimental_rerun()
+        st.rerun()
     show_table(pd.concat([st.session_state.md, st.session_state.data], axis=1), title="FeatureMatrix-scaled-centered")
 else:
     st.info(
@@ -21,7 +21,7 @@ else:
     )
     ft, md = pd.DataFrame(), pd.DataFrame()
 
-    file_origin = st.selectbox("File upload", ["Quantification table and meta data files", "GNPS(2) task ID", "Example dataset from publication", "Small example dataset for testing"])
+    file_origin = st.radio("File origin", ["Quantification table and meta data files", "GNPS(2) task ID", "Example dataset from publication", "Small example dataset for testing"])
     # b661d12ba88745639664988329c1363e
     if file_origin == "Small example dataset for testing":
         ft, md = load_example()
@@ -70,12 +70,10 @@ else:
             if not st.session_state["md_uploaded"].empty:
                 md = st.session_state["md_uploaded"]
 
-    v_space(2)
     if not ft.empty or not md.empty:
-        t1, t2 = st.tabs(["Quantification Table", "Meta Data"])
+        t1, t2 = st.tabs(["**Quantification Table**", "**Meta Data**"])
         t1.dataframe(ft)
         t2.dataframe(md)
-
 
     if not ft.index.is_unique:
         st.error("Please upload a feature matrix with unique metabolite names.")
@@ -102,125 +100,126 @@ else:
         # # check if ft column names and md row names are the same
         md, ft = check_columns(md, ft)
 
-        st.markdown("## Blank removal")
-
-        blank_removal = st.checkbox("Remove blank features?", False)
-        if blank_removal:
-            # Select true sample files (excluding blank and pools)
-            st.markdown("#### Samples")
-            st.markdown(
-                "Select samples (excluding blank and pools) based on the following table."
-            )
-            df = inside_levels(md)
-            mask = df.apply(lambda row: len(row['LEVELS']) == 0, axis=1)
-            df = df[~mask]
-            st.dataframe(df)
-            c1, c2 = st.columns(2)
-            sample_column = c1.selectbox(
-                "attribute for sample selection",
-                md.columns,
-            )
-            sample_options = list(set(md[sample_column].dropna()))
-            sample_rows = c2.multiselect("sample selection", sample_options, sample_options[0])
-            samples = ft[md[md[sample_column].isin(sample_rows)].index]
-            samples_md = md.loc[samples.columns]
-
-            with st.expander(f"Selected samples {samples.shape}"):
-                st.dataframe(samples)
-
-            if samples.shape[1] == ft.shape[1]:
-                st.warning("You selected everything as sample type. Blank removal not possible.")
-            else:
-                v_space(1)
-                # Ask if blank removal should be done
-                st.markdown("#### Blanks")
+        tabs = st.tabs(["**Blank Removal**", "**Imputation**", "**Normalization**", "📊 **Summary**"])
+        with tabs[0]:
+            blank_removal = st.checkbox("Remove blank features?", False)
+            if blank_removal:
+                # Select true sample files (excluding blank and pools)
+                st.markdown("#### Samples")
                 st.markdown(
-                    "Select blanks (excluding samples and pools) based on the following table."
+                    "Select samples (excluding blank and pools) based on the following table."
                 )
-                non_samples_md = md.loc[
-                    [index for index in md.index if index not in samples.columns]
-                ]
-                df = inside_levels(non_samples_md)
+                df = inside_levels(md)
                 mask = df.apply(lambda row: len(row['LEVELS']) == 0, axis=1)
                 df = df[~mask]
                 st.dataframe(df)
                 c1, c2 = st.columns(2)
-
-                blank_column = c1.selectbox(
-                    "attribute for blank selection", non_samples_md.columns
+                sample_column = c1.selectbox(
+                    "attribute for sample selection",
+                    md.columns,
                 )
-                blank_options = list(set(non_samples_md[blank_column].dropna()))
-                blank_rows = c2.multiselect("blank selection", blank_options, blank_options[0])
-                blanks = ft[non_samples_md[non_samples_md[blank_column].isin(blank_rows)].index]
-                with st.expander(f"Selected blanks {blanks.shape}"):
-                    st.dataframe(blanks)
+                sample_options = list(set(md[sample_column].dropna()))
+                sample_rows = c2.multiselect("sample selection", sample_options, sample_options[0])
+                samples = ft[md[md[sample_column].isin(sample_rows)].index]
+                samples_md = md.loc[samples.columns]
 
-                # define a cutoff value for blank removal (ratio blank/avg(samples))
-                c1, c2 = st.columns(2)
-                cutoff = c1.number_input(
-                    "cutoff threshold for blank removal",
-                    0.1,
-                    1.0,
-                    0.3,
-                    0.05,
-                    help="""The recommended cutoff range is between 0.1 and 0.3.
+                with st.expander(f"Selected samples preview (n={samples.shape[1]})"):
+                    st.dataframe(samples.head())
 
-Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
-                    """,
-                )
-                (
-                    ft,
-                    n_background_features,
-                    n_real_features,
-                ) = remove_blank_features(blanks, samples, cutoff)
-                c2.metric("background or noise features", n_background_features)
-                with st.expander(f"Feature table after removing blanks {ft.shape}"):
-                    show_table(ft, "blank-features-removed")
-        
-        if not ft.empty:
-            cutoff_LOD = get_cutoff_LOD(ft)
-
-            st.markdown("## Imputation")
-
-            c1, c2 = st.columns(2)
-            c2.metric(
-                f"total missing values",
-                str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
-            )
-            imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 1 and {cutoff_LOD} (Limit of Detection) during imputation.")
-            if imputation:
-                if cutoff_LOD > 1:
-                    c1, c2 = st.columns(2)
-                    ft = impute_missing_values(ft, cutoff_LOD)
-                    with st.expander(f"Imputed data {ft.shape}"):
-                        show_table(ft, "imputed")
+                if samples.shape[1] == ft.shape[1]:
+                    st.warning("You selected everything as sample type. Blank removal not possible.")
                 else:
-                    st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
+                    v_space(1)
+                    # Ask if blank removal should be done
+                    st.markdown("#### Blanks")
+                    st.markdown(
+                        "Select blanks (excluding samples and pools) based on the following table."
+                    )
+                    non_samples_md = md.loc[
+                        [index for index in md.index if index not in samples.columns]
+                    ]
+                    df = inside_levels(non_samples_md)
+                    mask = df.apply(lambda row: len(row['LEVELS']) == 0, axis=1)
+                    df = df[~mask]
+                    st.dataframe(df)
+                    c1, c2 = st.columns(2)
 
-            st.markdown("## Normalization")
-            normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 
-                                                    # "Probabilistic Quotient Normalization (PQN)", 
-                                                    "Total Ion Current (TIC) or sample-centric normalization",
-                                                    "None"])
-            v_space(2)
-            _, c1, _ = st.columns(3)
-            if c1.button("**Submit Data for Statistics!**", type="primary"):
-                st.session_state["md"], st.session_state["data"] = normalization(
-                    ft, md, normalization_method
-                )
-                st.session_state["data_preparation_done"] = True
-                st.experimental_rerun()
-            v_space(2)
+                    blank_column = c1.selectbox(
+                        "attribute for blank selection", non_samples_md.columns
+                    )
+                    blank_options = list(set(non_samples_md[blank_column].dropna()))
+                    blank_rows = c2.multiselect("blank selection", blank_options, blank_options[0])
+                    blanks = ft[non_samples_md[non_samples_md[blank_column].isin(blank_rows)].index]
+                    with st.expander(f"Selected blanks preview (n={blanks.shape[1]})"):
+                        st.dataframe(blanks.head())
 
-            tab1, tab2 = st.tabs(
-                ["📊 Feature intensity frequency", "📊 Missing values per feature"]
+                    # define a cutoff value for blank removal (ratio blank/avg(samples))
+                    c1, c2 = st.columns(2)
+                    cutoff = c1.number_input(
+                        "cutoff threshold for blank removal",
+                        0.1,
+                        1.0,
+                        0.3,
+                        0.05,
+                        help="""The recommended cutoff range is between 0.1 and 0.3.
+
+    Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
+                        """,
+                    )
+                    (
+                        ft,
+                        n_background_features,
+                        n_real_features,
+                    ) = remove_blank_features(blanks, samples, cutoff)
+                    c2.metric("background or noise features", n_background_features)
+                    with st.expander(f"Feature table after removing blanks - features: {ft.shape[0]}, samples: {ft.shape[1]}"):
+                        show_table(ft, "blank-features-removed")
+            
+            if not ft.empty:
+                cutoff_LOD = get_cutoff_LOD(ft)
+
+                with tabs[1]:
+
+                    c1, c2 = st.columns(2)
+                    c2.metric(
+                        f"total missing values",
+                        str((ft == 0).to_numpy().mean() * 100)[:4] + " %",
+                    )
+                    imputation = c1.checkbox("Impute missing values?", False, help=f"These values will be filled with random number between 1 and {cutoff_LOD} (Limit of Detection) during imputation.")
+                    if imputation:
+                        if cutoff_LOD > 1:
+                            c1, c2 = st.columns(2)
+                            ft = impute_missing_values(ft, cutoff_LOD)
+                            with st.expander(f"Imputed data - features: {ft.shape[0]}, samples: {ft.shape[1]}"):
+                                show_table(ft.head(), "imputed")
+                        else:
+                            st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
+
+                with tabs[2]:
+                    normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 
+                                                            # "Probabilistic Quotient Normalization (PQN)", 
+                                                            "Total Ion Current (TIC) or sample-centric normalization",
+                                                            "None"])
+
+                with tabs[3]:
+                    tab1, tab2 = st.tabs(
+                        ["📊 Feature intensity frequency", "📊 Missing values per feature"]
+                    )
+                    with tab1:
+                        fig = get_feature_frequency_fig(ft)
+                        show_fig(fig, "feature-intensity-frequency")
+                    with tab2:
+                        fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
+                        show_fig(fig, "missing-values")
+
+            
+            else:
+                st.error("No features left after blank removal!")
+
+        _, c1, _ = st.columns(3)
+        if c1.button("**Submit Data for Statistics!**", type="primary"):
+            st.session_state["md"], st.session_state["data"] = normalization(
+                ft, md, normalization_method
             )
-            with tab1:
-                fig = get_feature_frequency_fig(ft)
-                show_fig(fig, "feature-intensity-frequency")
-            with tab2:
-                fig = get_missing_values_per_feature_fig(ft, cutoff_LOD)
-                show_fig(fig, "missing-values")
-        
-        else:
-            st.error("No features left after blank removal!")
+            st.session_state["data_preparation_done"] = True
+            st.rerun()
