@@ -124,13 +124,6 @@ def show_table(df, title="", col="", download=True):
         col = col
     else:
         col = st
-    if download:
-        col.download_button(
-            f"Download Table",
-            df.to_csv(sep="\t").encode("utf-8"),
-            title.replace(" ", "-") + ".tsv",
-            key=uuid.uuid1(),
-        )
     col.dataframe(df, use_container_width=True)
 
 
