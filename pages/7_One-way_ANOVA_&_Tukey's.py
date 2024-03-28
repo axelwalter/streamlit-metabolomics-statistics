@@ -29,7 +29,7 @@ if not st.session_state.data.empty:
             st.session_state.anova_attribute,
             corrections_map[st.session_state.p_value_correction]
         )
-        st.experimental_rerun()
+        st.rerun()
 
     if not st.session_state.df_anova.empty:
         attribute_options = list(
@@ -58,7 +58,7 @@ if not st.session_state.data.empty:
                 st.session_state.tukey_elements,
                 corrections_map[st.session_state.p_value_correction]
             )
-            st.experimental_rerun()
+            st.rerun()
 
     tab_options = [
         "📈 ANOVA: plot",

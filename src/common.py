@@ -14,7 +14,8 @@ dataframe_names = ("md",
                    "df_important_features",
                    "df_oob",
                    "ft_gnps",
-                   "md_gnps")
+                   "md_gnps",
+                   "df_gnps_annotations")
 
 corrections_map = {"Bonferroni": "bonf",
                    "Sidak": "sidak",

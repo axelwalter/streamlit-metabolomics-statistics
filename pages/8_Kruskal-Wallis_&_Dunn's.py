@@ -28,7 +28,7 @@ if not st.session_state.data.empty:
             st.session_state.data, st.session_state.kruskal_attribute,
             corrections_map[st.session_state.p_value_correction]
         )
-        st.experimental_rerun()
+        st.rerun()
 
     if not st.session_state.df_kruskal.empty:
         if any(st.session_state.df_kruskal["significant"]):
@@ -58,7 +58,7 @@ if not st.session_state.data.empty:
                     st.session_state.dunn_elements,
                     corrections_map[st.session_state.p_value_correction]
                 )
-                st.experimental_rerun()
+                st.rerun()
         else:
             st.warning("No significant metabolites found in Kruskal Wallis test after p-value correction.")
 
