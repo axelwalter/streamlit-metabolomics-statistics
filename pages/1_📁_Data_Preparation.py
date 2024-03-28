@@ -36,10 +36,9 @@ else:
             task_id_default = ""
             disabled = False
         task_id = st.text_input("GNPS task ID", task_id_default, disabled=disabled)
-        c1, c2 = st.columns(2)
-        merge_annotations = c1.checkbox("Annotate metabolites", True, help="Merge annotations from GNPS FBMN and analog search if available.")
+        _, c2, _ = st.columns(3)
         if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0, use_container_width=True):
-            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, merge_annotations)
+            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id)
         
         if "ft_gnps" in st.session_state:
             if not st.session_state["ft_gnps"].empty:
