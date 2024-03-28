@@ -196,11 +196,10 @@ else:
                             st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
 
                 with tabs[2]:
-                    normalization_method = st.selectbox("data normalization method", ["Center-Scaling", 
+                    normalization_method = st.radio("data normalization method", ["None",
+                                                            "Center-Scaling", 
                                                             # "Probabilistic Quotient Normalization (PQN)", 
-                                                            "Total Ion Current (TIC) or sample-centric normalization",
-                                                            "None"])
-
+                                                            "Total Ion Current (TIC) or sample-centric normalization"])
                 with tabs[3]:
                     tab1, tab2 = st.tabs(
                         ["📊 Feature intensity frequency", "📊 Missing values per feature"]
