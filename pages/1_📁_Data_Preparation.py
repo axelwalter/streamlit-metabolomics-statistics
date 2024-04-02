@@ -21,24 +21,41 @@ else:
     )
     ft, md = pd.DataFrame(), pd.DataFrame()
 
-    file_origin = st.radio("File origin", ["Quantification table and meta data files", "GNPS(2) task ID", "Example dataset from publication", "Small example dataset for testing"])
+    file_origin = st.radio("File origin", 
+                           ["Quantification table and meta data files", 
+                            "GNPS(2) task ID", 
+                            "Example dataset from publication", 
+                            "Small example dataset for testing",
+                            "GNPS2 classical molecular networking (CMN)"])
+    
     # b661d12ba88745639664988329c1363e
     if file_origin == "Small example dataset for testing":
         ft, md = load_example()
 
-    if file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication":
+    if file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication" or "GNPS2 classical molecular networking (CMN)":
         st.warning("💡 This tool only supports task ID from GNPS1 and 2 not from Quickstart GNPS1.")
         if file_origin == "Example dataset from publication":
             task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
-
+            disabled = True
+        elif file_origin == "GNPS2 classical molecular networking (CMN)":
+            task_id_default = "2a65f90094654235a4c8d337fdca11e1" # 63e8b3da08df41fe95031e4710e0476b
             disabled = True
         else:
             task_id_default = ""
             disabled = False
         task_id = st.text_input("GNPS task ID", task_id_default, disabled=disabled)
         _, c2, _ = st.columns(3)
+        
         if c2.button("Load filed from GNPS", type="primary", disabled=len(task_id) == 0, use_container_width=True):
-            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id)
+            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, cmn=True)
+            
+        if md.empty:
+            st.warning("Meta data is empty. Please upload one.")
+            
+            md_file = st.file_uploader("Meta Data Table")
+            if md_file:
+                md = load_md(md_file)
+                st.success("Meta data was loaded successfully!")
         
         if "ft_gnps" in st.session_state:
             if not st.session_state["ft_gnps"].empty:
