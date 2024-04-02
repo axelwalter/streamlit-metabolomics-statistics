@@ -54,25 +54,37 @@ def load_example():
     return ft, md
 
 @st.cache_data
-def load_from_gnps(task_id):
+def load_from_gnps(task_id, cmn=False):
     try: # GNPS2 will run here
         ft = workflow_fbmn.get_quantification_dataframe(task_id, gnps2=True)
         md = workflow_fbmn.get_metadata_dataframe(task_id, gnps2=True).set_index("filename")
         an = taskresult.get_gnps2_task_resultfile_dataframe(task_id, "nf_output/library/merged_results_with_gnps.tsv")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
     except urllib.error.HTTPError: # GNPS1 task IDs can not be retrieved and throw HTTP Error 500
-        ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
-        md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
+        if cmn:
+            ft_url = f"https://gnps2.org/resultfile?task={task_id}&file=nf_output/clustering/featuretable_reformatted_precursorintensity.csv"
+            md_url = f"https://gnps2.org/resultfile?task={task_id}&file=nf_output/metadata/merged_metadata.tsv"
+        else:
+            ft_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=quantification_table_reformatted/&block=main"
+            md_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=metadata_merged/&block=main"
         ft = pd.read_csv(ft_url)
-        md = pd.read_csv(md_url, sep = "\t", index_col="filename")
-        an_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
-        an = pd.read_csv(an_url, sep = "\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
-    
-    index_with_annotations = pd.Index(ft.apply(lambda x: f'{x["row ID"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}', axis=1))
-    ft.index = index_with_annotations
-    st.session_state["df_gnps_annotations"].index = index_with_annotations
-    st.session_state["df_gnps_annotations"]["GNPS annotation"] = ft["row ID"].apply(lambda x: an.loc[x, "Compound_Name"] if x in an.index else pd.NA)
-    st.session_state["df_gnps_annotations"].dropna(inplace=True)
+        try:
+            md = pd.read_csv(md_url, sep = "\t", index_col="filename")
+        except pd.errors.EmptyDataError:
+            md = pd.DataFrame()
+        if not cmn:
+            an_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
+            an = pd.read_csv(an_url, sep = "\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
+    if cmn:
+        ft.index = ft["row ID"]
+        ft = ft.drop(columns=["row m/z", "row retention time", "row ID"])
+    else:
+        index_with_mz_RT = pd.Index(ft.apply(lambda x: f'{x["row ID"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}', axis=1))
+        ft.index = index_with_mz_RT
+        st.session_state["df_gnps_annotations"].index = index_with_mz_RT
+        st.session_state["df_gnps_annotations"]["GNPS annotation"] = ft["row ID"].apply(lambda x: an.loc[x, "Compound_Name"] if x in an.index else pd.NA)
+        st.session_state["df_gnps_annotations"].dropna(inplace=True)
     return ft, md
+
 
 def load_ft(ft_file):
     ft = open_df(ft_file)
