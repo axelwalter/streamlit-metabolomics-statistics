@@ -36,24 +36,17 @@ def get_heatmap(data):
     # Create dataframe with sorted features
     ord_ft = ord_samp.T.reset_index()
     ord_ft = ord_ft.reindex(cluster_ft["leaves"])
-    ord_ft.rename(columns={"index": "metabolite"}, inplace=True)
 
-    # ord_ft.set_index("metabolite", inplace=True)
+    ord_ft.drop(columns=["row ID"], inplace=True)
+    # Append string prefix to numeric indeces
+    ord_ft.index = pd.Index(["m_"+x if x.isnumeric() else x for x in ord_ft.index.astype(str)])
 
-    # if we have numerical values convert them to strings to have even spacing
-    # try: 
-    #     float(ord_ft.index[0])
-    #     y_ticks = ["m_"+str(m) for m in ord_ft.index]
-    # except ValueError:
-    #     y_ticks = list(ord_ft.index)
-    ord_ft["metabolite"] = ord_ft["metabolite"].astype(str).apply(lambda x: "m_"+x if x.isnumeric() else x)
-    ord_ft.set_index("metabolite", inplace=True)
-
-    y_ticks = ord_ft.index.tolist()
+    st.dataframe(ord_ft)
+    
     # Heatmap
     fig = px.imshow(
         ord_ft,
-        y=y_ticks,
+        y=ord_ft.index.tolist(),
         x=list(ord_ft.columns),
         text_auto=False,
         aspect="auto",

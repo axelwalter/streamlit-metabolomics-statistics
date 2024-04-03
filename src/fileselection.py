@@ -75,7 +75,7 @@ def load_from_gnps(task_id, cmn=False):
             an_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
             an = pd.read_csv(an_url, sep = "\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
     if cmn:
-        ft.index = ft["row ID"]
+        ft.index = ft["row ID"].astype(str)
         ft = ft.drop(columns=["row m/z", "row retention time", "row ID"])
     else:
         index_with_mz_RT = pd.Index(ft.apply(lambda x: f'{x["row ID"]}_{round(x["row m/z"], 4)}_{round(x["row retention time"], 2)}', axis=1))
