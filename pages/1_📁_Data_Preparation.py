@@ -38,8 +38,8 @@ else:
             task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
             disabled = True
         elif file_origin == "GNPS2 classical molecular networking (CMN)":
-            task_id_default = "2a65f90094654235a4c8d337fdca11e1" # 63e8b3da08df41fe95031e4710e0476b
-            disabled = True
+            task_id_default = "" # 63e8b3da08df41fe95031e4710e0476b
+            disabled = False
         else:
             task_id_default = ""
             disabled = False
