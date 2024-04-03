@@ -40,8 +40,6 @@ def get_heatmap(data):
     ord_ft.drop(columns=["row ID"], inplace=True)
     # Append string prefix to numeric indeces
     ord_ft.index = pd.Index(["m_"+x if x.isnumeric() else x for x in ord_ft.index.astype(str)])
-
-    st.dataframe(ord_ft)
     
     # Heatmap
     fig = px.imshow(
