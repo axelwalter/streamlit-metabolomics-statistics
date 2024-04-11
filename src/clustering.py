@@ -37,7 +37,8 @@ def get_heatmap(data):
     ord_ft = ord_samp.T.reset_index()
     ord_ft = ord_ft.reindex(cluster_ft["leaves"])
 
-    ord_ft.drop(columns=["row ID"], inplace=True)
+    ord_ft.drop(columns=["metabolite"], inplace=True)
+    
     # Append string prefix to numeric indeces
     ord_ft.index = pd.Index(["m_"+x if x.isnumeric() else x for x in ord_ft.index.astype(str)])
     
@@ -48,8 +49,8 @@ def get_heatmap(data):
         x=list(ord_ft.columns),
         text_auto=False,
         aspect="auto",
-        color_continuous_scale="PuOr_r",
-        range_color=[ord_ft.min().min(), ord_ft.max().max()],
+        color_continuous_scale="PuOr_r"
+        #range_color=[ord_ft.min().min(), ord_ft.max().max()],
     )
 
     fig.update_layout(

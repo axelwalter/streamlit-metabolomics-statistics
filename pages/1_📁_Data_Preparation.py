@@ -32,7 +32,7 @@ else:
     if file_origin == "Small example dataset for testing":
         ft, md = load_example()
 
-    if file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication" or "GNPS2 classical molecular networking (CMN)":
+    elif file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication" or file_origin == "GNPS2 classical molecular networking (CMN)":
         st.warning("💡 This tool only supports task ID from GNPS1 and 2 not from Quickstart GNPS1.")
         if file_origin == "Example dataset from publication":
             task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
@@ -65,7 +65,7 @@ else:
             if not st.session_state["md_gnps"].empty:
                 md = st.session_state["md_gnps"]
 
-    elif file_origin == "Quantification table and meta data files":
+    if file_origin == "Quantification table and meta data files":
         st.info("💡 Upload tables in txt (tab separated), tsv, csv or xlsx (Excel) format.")
         c1, c2 = st.columns(2)
         # Feature Quantification Table
@@ -115,6 +115,17 @@ else:
 
         # # check if ft column names and md row names are the same
         md, ft = check_columns(md, ft)
+
+        # Initialize the process flags at the start of your Streamlit app if they don't already exist
+        if 'blank_removal_done' not in st.session_state:
+            st.session_state['blank_removal_done'] = False
+
+        if 'imputation_done' not in st.session_state:
+            st.session_state['imputation_done'] = False
+
+        # Use a string to track the normalization method used; 'None' indicates no normalization done
+        if 'normalization_method_used' not in st.session_state:
+            st.session_state['normalization_method_used'] = 'None'
 
         tabs = st.tabs(["**Blank Removal**", "**Imputation**", "**Normalization**", "📊 **Summary**"])
         with tabs[0]:
@@ -178,8 +189,7 @@ else:
                         0.3,
                         0.05,
                         help="""The recommended cutoff range is between 0.1 and 0.3.
-
-    Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
+                        Features with intensity ratio of (blank mean)/(sample mean) above the threshold (e.g. 30%) are considered noise/background features.
                         """,
                     )
                     (
@@ -190,6 +200,8 @@ else:
                     c2.metric("background or noise features", n_background_features)
                     with st.expander(f"Feature table after removing blanks - features: {ft.shape[0]}, samples: {ft.shape[1]}"):
                         show_table(ft, "blank-features-removed")
+            
+                st.session_state['blank_removal_done'] = True
             
             if not ft.empty:
                 cutoff_LOD = get_cutoff_LOD(ft)
@@ -210,13 +222,35 @@ else:
                                 show_table(ft.head(), "imputed")
                         else:
                             st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
+                        
+                        st.session_state['imputation_done'] = True
 
                 with tabs[2]:
                     normalization_method = st.radio("data normalization method", ["None",
                                                             "Center-Scaling", 
                                                             # "Probabilistic Quotient Normalization (PQN)", 
                                                             "Total Ion Current (TIC) or sample-centric normalization"])
+                    st.session_state['normalization_method_used'] = normalization_method
+                
                 with tabs[3]:
+                    # Summary tab content
+                    st.markdown("## Process Summary")
+                    if st.session_state['blank_removal_done']:
+                        st.success("Blank removal done.")
+                    else:
+                        st.warning("Blank removal not done.")
+
+                    if st.session_state['imputation_done']:
+                        st.success("Imputation done.")
+                    else:
+                        st.warning("Imputation not done.")
+
+                    # Check which normalization method was used
+                    if st.session_state['normalization_method_used'] != 'None':
+                        st.success(f"Normalization done using {st.session_state['normalization_method_used']} method.")
+                    else:
+                        st.warning("Normalization not done.")
+
                     tab1, tab2 = st.tabs(
                         ["📊 Feature intensity frequency", "📊 Missing values per feature"]
                     )
