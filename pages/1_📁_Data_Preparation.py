@@ -32,22 +32,25 @@ else:
     if file_origin == "Small example dataset for testing":
         ft, md = load_example()
 
-    elif file_origin == "GNPS(2) task ID" or file_origin == "Example dataset from publication" or file_origin == "GNPS2 classical molecular networking (CMN)":
+    elif file_origin in ["GNPS(2) task ID", "Example dataset from publication", "GNPS2 classical molecular networking (CMN)"]:
         st.warning("💡 This tool only supports task ID from GNPS1 and 2 not from Quickstart GNPS1.")
         if file_origin == "Example dataset from publication":
             task_id_default = "b661d12ba88745639664988329c1363e" # 63e8b3da08df41fe95031e4710e0476b
             disabled = True
+            cmn_flag = False
         elif file_origin == "GNPS2 classical molecular networking (CMN)":
             task_id_default = "" # 2a65f90094654235a4c8d337fdca11e1
             disabled = False
+            cmn_flag = True
         else:
             task_id_default = ""
             disabled = False
+            cmn_flag = False
         task_id = st.text_input("GNPS task ID", task_id_default, disabled=disabled)
         _, c2, _ = st.columns(3)
         
         if c2.button("Load files from GNPS", type="primary", disabled=len(task_id) == 0, use_container_width=True):
-            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, cmn=True)   
+            st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, cmn= cmn_flag)   
         
         if not st.session_state["ft_gnps"].empty and st.session_state["md_gnps"].empty:
             st.warning("Meta data is empty. Please upload one.")
@@ -202,6 +205,8 @@ else:
                         show_table(ft, "blank-features-removed")
             
                 st.session_state['blank_removal_done'] = True
+            else:
+                st.session_state['blank_removal_done'] = False
             
             if not ft.empty:
                 cutoff_LOD = get_cutoff_LOD(ft)
@@ -224,6 +229,8 @@ else:
                             st.warning(f"Can't impute with random values between 1 and lowest value, which is {cutoff_LOD} (rounded).")
                         
                         st.session_state['imputation_done'] = True
+                    else:
+                        st.session_state['imputation_done'] = False
 
                 with tabs[2]:
                     normalization_method = st.radio("data normalization method", ["None",
