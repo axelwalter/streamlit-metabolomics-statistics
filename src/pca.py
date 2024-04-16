@@ -7,10 +7,19 @@ import numpy as np
 
 @st.cache_data
 def get_pca_df(scaled, n=5):
+<<<<<<< HEAD
     # calculating Principal components
     pca = PCA(n_components=n)
     pca_df = pd.DataFrame(
         data=pca.fit_transform(scaled), columns=[f"PC{x}" for x in range(1, n + 1)]
+=======
+    
+    # calculating Principal components
+    pca = PCA(n_components=n)
+    pca_df = pd.DataFrame(
+        data=pca.fit_transform(scaled), 
+        columns=[f"PC{x}" for x in range(1, n + 1)]
+>>>>>>> efdd76467755ddb96598832b0740cb7149a9cefb
     )
     pca_df.index = scaled.index
     return pca.explained_variance_ratio_, pca_df
