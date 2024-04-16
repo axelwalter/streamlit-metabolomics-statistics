@@ -80,6 +80,8 @@ def get_anova_plot(anova):
         yaxis_title="-log(p)",
         showlegend=False
     )
+    fig.update_yaxes(title_standoff=10)
+  
     # fig.update_yaxes(title_font_size=20)
     # fig.update_xaxes(title_font_size=20)
 

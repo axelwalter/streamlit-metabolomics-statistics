@@ -3,12 +3,11 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils import class_weight
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix, accuracy_score
-from io import StringIO
 
 @st.cache_data
 def run_random_forest(attribute, n_trees, random_seed=None):
@@ -36,13 +35,16 @@ def run_random_forest(attribute, n_trees, random_seed=None):
     # Extract the feature intensities as np 2D array
     features = np.array(st.session_state.data)
 
+    # Determine the smallest class size and adjust test_size accordingly
+    unique, counts = np.unique(labels, return_counts=True)
+    min_class_count = min(counts)
+    min_test_size = float(len(unique)) / len(labels)
 
-    # Split the data into training and test sets
-    train_features, test_features, train_labels, test_labels = train_test_split(features, 
-                                                                                labels, 
-                                                                                test_size=0.25, 
-                                                                                random_state= random_seed,
-                                                                                stratify=labels)
+    # Adjust test size to be larger of the calculated min_test_size or the initial_test_size
+    adjusted_test_size = max(min_test_size, 0.25)
+    
+    train_features, test_features, train_labels, test_labels = train_test_split(
+        features, labels, test_size= adjusted_test_size, random_state=random_seed, stratify=labels)
 
     # Collecting info about feature and label shapes for logging
     log += f"Training Features Shape: {train_features.shape}\n"
@@ -61,7 +63,7 @@ def run_random_forest(attribute, n_trees, random_seed=None):
         weights[w] = sklearn_weights[i]
 
     # Set up the random forest classifier with 100 tress, balanded weights, and a random state to make it reproducible
-    rf = RandomForestClassifier(n_estimators=n_trees, class_weight='balanced', random_state=random_seed)
+    rf = RandomForestClassifier(n_estimators=n_trees, class_weight= weights, random_state=random_seed)
    
     # Fit the classifier to the training set
     rf.fit(train_features, train_labels)
@@ -106,8 +108,9 @@ def run_random_forest(attribute, n_trees, random_seed=None):
     df_important_features = pd.DataFrame(rf.feature_importances_, 
                                          index=st.session_state.data.columns).sort_values(by=0, ascending=False)
     df_important_features.columns = ["importance"]
-
+    
     return df_oob, df_important_features, log, class_report, label_mapping, test_confusion_df, train_confusion_df, test_accuracy, train_accuracy
+
 
 def get_oob_fig(df):
     return px.line(df, x="n trees", y="error rate", title="out-of-bag (OOB) error")

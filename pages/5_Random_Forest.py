@@ -28,16 +28,19 @@ if not st.session_state.data.empty:
     random_seed = 123 if use_random_seed else None
 
     if c2.button("Run supervised learning", type="primary"):
-        df_oob, df_important_features, log, class_report, label_mapping, test_confusion_df, train_confusion_df, test_accuracy, train_accuracy = run_random_forest(st.session_state.rf_attribute, st.session_state.rf_n_trees, random_seed)
-        st.session_state['df_oob'] = df_oob
-        st.session_state['df_important_features'] = df_important_features
-        st.session_state['log'] = log
-        st.session_state['class_report'] = class_report
-        st.session_state['label_mapping'] = label_mapping
-        st.session_state['test_confusion_df'] = test_confusion_df
-        st.session_state['train_confusion_df'] = train_confusion_df
-        st.session_state['test_accuracy'] = test_accuracy
-        st.session_state['train_accuracy'] = train_accuracy
+        try:
+            df_oob, df_important_features, log, class_report, label_mapping, test_confusion_df, train_confusion_df, test_accuracy, train_accuracy = run_random_forest(st.session_state.rf_attribute, st.session_state.rf_n_trees, random_seed)
+            st.session_state['df_oob'] = df_oob
+            st.session_state['df_important_features'] = df_important_features
+            st.session_state['log'] = log
+            st.session_state['class_report'] = class_report
+            st.session_state['label_mapping'] = label_mapping
+            st.session_state['test_confusion_df'] = test_confusion_df
+            st.session_state['train_confusion_df'] = train_confusion_df
+            st.session_state['test_accuracy'] = test_accuracy
+            st.session_state['train_accuracy'] = train_accuracy
+        except Exception as e:
+            st.error(f"Failed to run model due to: {str(e)}")
 
 if 'df_important_features' in st.session_state and not st.session_state.df_important_features.empty:
     tabs = st.tabs(["📈 Analyze optimum number of trees", 
