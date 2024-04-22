@@ -6,7 +6,7 @@ import skbio
 from scipy.spatial import distance
 
 
-# can not hash pcoa
+@st.cache(allow_output_mutation=True)
 def permanova_pcoa(scaled, distance_matrix, attribute):
     # Create the distance matrix from the original data
     distance_matrix = skbio.stats.distance.DistanceMatrix(
@@ -23,7 +23,8 @@ def permanova_pcoa(scaled, distance_matrix, attribute):
     # perfom PCoA
     pcoa = skbio.stats.ordination.pcoa(distance_matrix)
 
-    return permanova, pcoa
+    #return permanova, pcoa
+    return pcoa.samples, pcoa.proportion_explained
 
 
 # can not hash pcoa
