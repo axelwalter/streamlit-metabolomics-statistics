@@ -1,10 +1,10 @@
 streamlit==1.29.0
 pandas
-numpy
+numpy == 1.24.4
 plotly
 pingouin
 kaleido
 openpyxl
 scikit-posthocs
-scikit-bio
+scikit-bio == 0.5.6
 git+https://github.com/Wang-Bioinformatics-Lab/GNPSDataPackage.git
