@@ -1,5 +1,5 @@
 streamlit==1.29.0
-pandas
+pandas==1.2.4
 numpy
 plotly
 pingouin
