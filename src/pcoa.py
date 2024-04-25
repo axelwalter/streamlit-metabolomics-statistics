@@ -2,27 +2,27 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import skbio
+#import skbio
 from scipy.spatial import distance
 
 
-def permanova_pcoa(scaled, distance_matrix, attribute):
-    # Create the distance matrix from the original data
-    distance_matrix = skbio.stats.distance.DistanceMatrix(
-        distance.squareform(distance.pdist(scaled.values, distance_matrix))
-    )
-    # perform PERMANOVA test
-    permanova = skbio.stats.distance.permanova(distance_matrix, attribute)
-    permanova["R2"] = 1 - 1 / (
-        1
-        + permanova["test statistic"]
-        * permanova["number of groups"]
-        / (permanova["sample size"] - permanova["number of groups"] - 1)
-    )
-    # perfom PCoA
-    pcoa = skbio.stats.ordination.pcoa(distance_matrix)
-
-    return permanova, pcoa
+#def permanova_pcoa(scaled, distance_matrix, attribute):
+#    # Create the distance matrix from the original data
+#    distance_matrix = skbio.stats.distance.DistanceMatrix(
+#        distance.squareform(distance.pdist(scaled.values, distance_matrix))
+#    )
+#    # perform PERMANOVA test
+#    permanova = skbio.stats.distance.permanova(distance_matrix, attribute)
+#    permanova["R2"] = 1 - 1 / (
+#       1
+#       + permanova["test statistic"]
+#       * permanova["number of groups"]
+#       / (permanova["sample size"] - permanova["number of groups"] - 1)
+#    )
+#    # perfom PCoA
+#    pcoa = skbio.stats.ordination.pcoa(distance_matrix)
+#
+#    return permanova, pcoa
 
 
 # can not hash pcoa
