@@ -55,23 +55,23 @@ try:
         )
 
         if not permanova.empty:
-            t1, t2, t3 = st.tabs(
+            t1, t2 = st.tabs(
                 [
-                    "📁 PERMANOVA statistics",
+                 #   "📁 PERMANOVA statistics",
                     "📈 Principal Coordinate Analysis",
                     "📊 Explained variance",
                 ]
             )
+           # with t1:
+           #     show_table(permanova, "PERMANOVA-statistics")
             with t1:
-                show_table(permanova, "PERMANOVA-statistics")
-            with t2:
                 fig = get_pcoa_scatter_plot(
                     pcoa_result,
                     st.session_state.md,
                     st.session_state.pcoa_attribute,
                 )
                 show_fig(fig, "principal-coordinate-analysis")
-            with t3:
+            with t2:
                 fig = get_pcoa_variance_plot(pcoa_result)
                 show_fig(fig, "pcoa-variance")
 
