@@ -59,6 +59,7 @@ jobs:
 
     - name: Copy everything to dist directory
       run: |
+        cp -r .streamlit dist/.streamlit
         cp -r pages dist/pages
         cp -r src dist/src
         cp -r assets dist/assets
