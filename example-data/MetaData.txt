@@ -11,4 +11,4 @@ DOM_Interlab-LCMS_Lab1_A45M_Pos_MS2_rep3.mzML	A45M	Sample	45
 DOM_Interlab-LCMS_Lab1_M_Pos_MS2_rep1.mzML	M	Sample	0
 DOM_Interlab-LCMS_Lab1_M_Pos_MS2_rep2.mzML	M	Sample	0
 DOM_Interlab-LCMS_Lab1_M_Pos_MS2_rep3.mzML	M	Sample	0
-DOM_Interlab-LCMS_Lab1_PPL_blank_Pos_MS2.mzML	PPL	Process_Blank	NA
+DOM_Interlab-LCMS_Lab1_PPL_blank_Pos_MS2.mzML	PPL	Process_Blank	PPL
