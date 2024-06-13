@@ -37,10 +37,10 @@ jobs:
     - name: Install Required Packages
       run: .\python-${{ env.PYTHON_VERSION }}\python -m pip install --force-reinstall -r requirements-windows.txt --no-warn-script-location
 
-    - name: Create run_app.bat file
+    - name: Create FBmn-STATS-GUIde.bat file
       run: |
-        echo '@echo off' > run_app.bat
-        echo '.\\python-${{ env.PYTHON_VERSION }}\\python -m streamlit run app.py local' >> run_app.bat
+        echo '@echo off' > FBmn-STATS-GUIde.bat
+        echo '.\\python-${{ env.PYTHON_VERSION }}\\python -m streamlit run Statistics_for_Metabolomics.py' >> FBmn-STATS-GUIde.bat
       
     - name: Create All-in-one executable folder
       run: |
