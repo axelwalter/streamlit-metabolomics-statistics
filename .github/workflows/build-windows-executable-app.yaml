@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup python embeddable version
       run: |
@@ -60,7 +60,7 @@ jobs:
         7z a FBmn-STATS-GUIde.zip ./streamlit_exe/* -r
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: FBmn-STATS-GUIde
         path: FBmn-STATS-GUIde.zip
