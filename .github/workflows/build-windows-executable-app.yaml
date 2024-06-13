@@ -46,7 +46,7 @@ jobs:
       run: |
         mkdir streamlit_exe
         mv python-${{ env.PYTHON_VERSION }} streamlit_exe
-        mv run_app.bat streamlit_exe
+        mv FBmn-STATS-GUIde.bat streamlit_exe
         cp -r src streamlit_exe
         cp -r pages streamlit_exe
         cp -r assets streamlit_exe
