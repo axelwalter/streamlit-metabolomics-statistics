@@ -4,6 +4,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build-executable:
@@ -14,71 +15,52 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Setup virtual environment
-      shell: cmd
+    - name: Setup python embeddable version
       run: |
-        python -m venv myenv
+        mkdir python-${{ env.PYTHON_VERSION }}
+        curl -O https://www.python.org/ftp/python/${{ env.PYTHON_VERSION }}/python-${{ env.PYTHON_VERSION }}-embed-amd64.zip
+        unzip python-${{ env.PYTHON_VERSION }}-embed-amd64.zip -d python-${{ env.PYTHON_VERSION }}
+        rm python-${{ env.PYTHON_VERSION }}-embed-amd64.zip
 
-        call myenv\Scripts\activate.bat   
-
-        pip install -r requirements.txt
-
-        pip install pyinstaller
-
-    - name: Write function to cli.py
-      shell: bash
+    - name: Install pip
       run: |
-        dir D:/a/streamlit-metabolomics-statistics/streamlit-metabolomics-statistics/myenv/Lib/site-packages
-        head -n -2 D:/a/streamlit-metabolomics-statistics/streamlit-metabolomics-statistics/myenv/Lib/site-packages/streamlit/web/cli.py > temp_cli.py
+        curl -O https://bootstrap.pypa.io/get-pip.py
+        ./python-${{ env.PYTHON_VERSION }}/python get-pip.py --no-warn-script-location
+        rm get-pip.py
 
-        cat << EOF >> temp_cli.py
-        def _main_run_clExplicit(file, command_line, args=[], flag_options=[]):
-            main._is_running_with_streamlit = True
-            bootstrap.run(file, command_line, args, flag_options)
-
-
-        if __name__ == "__main__":
-            main()
-        EOF
-
-        mv temp_cli.py D:/a/streamlit-metabolomics-statistics/streamlit-metabolomics-statistics/myenv/Lib/site-packages/streamlit/web/cli.py  
-
-    - name: Compile app with pyinstaller
-      shell: cmd
+    - name: Uncomment 'import site' in python311._pth file
       run: |
-        call myenv\Scripts\activate.bat 
-        pyinstaller --onefile --additional-hooks-dir ./hooks run.py --clean
+        sed -i 's/#import site/import site/' python-${{ env.PYTHON_VERSION }}/python311._pth
 
+    - name: Install Required Packages
+      run: .\python-${{ env.PYTHON_VERSION }}\python -m pip install --force-reinstall -r requirements-windows.txt --no-warn-script-location
 
-    - name: Copy everything to dist directory
+    - name: Create FBmn-STATS-GUIde.bat file
       run: |
-        cp -r .streamlit dist/.streamlit
-        cp -r pages dist/pages
-        cp -r src dist/src
-        cp -r assets dist/assets
-        cp -r example-data dist/example-data
-        cp Statistics_for_Metabolomics.py dist/
-
-    - name: Modify .spec file
-      shell: bash
+        echo '@echo off' > FBmn-STATS-GUIde.bat
+        echo '.\\python-${{ env.PYTHON_VERSION }}\\python -m streamlit run Statistics_for_Metabolomics.py' >> FBmn-STATS-GUIde.bat
+      
+    - name: Create All-in-one executable folder
       run: |
-        cp run_app_temp.spec run_app.spec
+        mkdir streamlit_exe
+        mv python-${{ env.PYTHON_VERSION }} streamlit_exe
+        mv FBmn-STATS-GUIde.bat streamlit_exe
+        cp -r src streamlit_exe
+        cp -r pages streamlit_exe
+        cp -r assets streamlit_exe
+        cp -r example-data streamlit_exe
+        cp -r .streamlit streamlit_exe
+        cp Statistics_for_Metabolomics.py streamlit_exe
 
-    - name: Make executable
-      shell: cmd
+          
+    - name: Compress streamlit_exe folder to FBmn-STATS-GUIde.zip
       run: |
-        call myenv\Scripts\activate.bat
-        pyinstaller run_app.spec --clean
+        7z a FBmn-STATS-GUIde.zip ./streamlit_exe/* -r
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: FBMN-Stats-App
-        path: dist
+        name: FBmn-STATS-GUIde
+        path: FBmn-STATS-GUIde.zip

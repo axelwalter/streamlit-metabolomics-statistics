@@ -1,0 +1,9 @@
+streamlit
+numpy
+pandas
+plotly
+pingouin
+kaleido
+openpyxl
+scikit-posthocs
+git+https://github.com/Wang-Bioinformatics-Lab/GNPSDataPackage.git
