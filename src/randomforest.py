@@ -9,7 +9,6 @@ from sklearn.utils import class_weight
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix, accuracy_score
 
-@st.cache_data
 def run_random_forest(attribute, n_trees, random_seed=None):
     # initialize a log to print out in the app later
     log = ""

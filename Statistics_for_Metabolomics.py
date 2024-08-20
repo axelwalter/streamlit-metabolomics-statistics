@@ -10,8 +10,8 @@ st.markdown("""
 ## Quickstart Guide
 
 Welcome to the FBMN-STATS, a web app implementation of the [statistics notebooks](https://github.com/Functional-Metabolomics-Lab/Statistical-analysis-of-non-targeted-LC-MSMS-data) for metabolomics by the [Functional Metabolomics Lab](https://github.com/Functional-Metabolomics-Lab).
-             as part of the article '[The Hitchhiker’s Guide to Statistical Analysis of Feature-based Molecular Networks from Non-Targeted Metabolomics Data](https://doi.org/10.26434/chemrxiv-2023-wwbt0)'. 
-            These notebooks are developed by the Virtual Multi Omics Lab ([VMOL](https://vmol.org/)).
+             as part of the article '[The Statistical Analysis of Feature-based Molecular Networking Results from Non-Targeted Metabolomics Data](https://doi.org/10.26434/chemrxiv-2023-wwbt0)'. 
+            These notebooks are developed by the Virtual MultiOmics Lab ([VMOL](https://vmol.org/)).
             This app facilitates downstream statistical analysis of Feature-Based Molecular Networking data, simplifying the process for researchers.       
 
 ### Getting Started
@@ -81,7 +81,7 @@ st.markdown("""
 
 st.subheader('Settings Panel')
 st.markdown("""
-1. **P-value Correction:** These are FDR (False Disovery Rate) corrections applied for multiple univariate tests. Available options include Bonferroni, Sidak, Benjamini-Hochberg (BH), Benjamini-Yekutieli (BY), and an option for no correction, with Bonferroni set as the default.  
+1. **P-value Correction:** These are FDR (False Disovery Rate) corrections applied for multiple univariate tests. Available options include Bonferroni, Sidak, Benjamini-Hochberg (BH), Benjamini-Yekutieli (BY), and an option for no correction.  
             While Bonferroni is known for controlling false positives, it may inadvertently increase false negatives. Advanced methods like BH and BY aim to balance true discoveries against false positives more effectively. We recommend BH for FDR correction to optimize analysis outcomes.
             
     Note that changing the p-value correction settings does not automatically update the corrected p-values. To update results re-run the analysis.
@@ -98,7 +98,7 @@ st.markdown("""
 
 st.subheader('Citation and Resources')
 st.markdown("""
-For citations and further resources, please refer to our [article](https://doi.org/10.26434/chemrxiv-2023-wwbt0).
+For citations and further resources, please refer to our [article](https://doi.org/10.26434/chemrxiv-2023-wwbt0). You can download the Windows executables of the app from our [homepage](https://www.functional-metabolomics.com/resources).
 """)
 
 
@@ -123,18 +123,18 @@ c1.markdown(
     unsafe_allow_html=True,
 )
 c2.markdown(
-    """<a href="https://www.youtube.com/@functionalmetabolomics">
+    """<a href="https://www.functional-metabolomics.com/">
     <img src="data:image/png;base64,{}" width="100">
     </a>""".format(
-        base64.b64encode(open("./assets/youtube-logo.png", "rb").read()).decode()
+        base64.b64encode(open("./assets/fmlab_logo_colored.png", "rb").read()).decode()
     ),
     unsafe_allow_html=True,
 )
 c3.markdown(
-    """<a href="https://twitter.com/func_metabo_lab">
+    """<a href="https://www.youtube.com/@functionalmetabolomics">
     <img src="data:image/png;base64,{}" width="100">
     </a>""".format(
-        base64.b64encode(open("./assets/x-logo.png", "rb").read()).decode()
+        base64.b64encode(open("./assets/youtube-logo.png", "rb").read()).decode()
     ),
     unsafe_allow_html=True,
 )
