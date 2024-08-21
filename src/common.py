@@ -17,9 +17,9 @@ dataframe_names = ("md",
                    "md_gnps",
                    "df_gnps_annotations")
 
-corrections_map = {"Bonferroni": "bonf",
+corrections_map = {"Benjamini/Hochberg FDR": "fdr_bh",
                    "Sidak": "sidak",
-                   "Benjamini/Hochberg FDR": "fdr_bh",
+                   "Bonferroni": "bonf",
                    "Benjamini/Yekutieli FDR": "fdr_by",
                    "no correction": "none"}
 
@@ -28,6 +28,14 @@ def reset_dataframes():
     for key in dataframe_names:
         st.session_state[key] = pd.DataFrame()
 
+def clear_cache_button():
+   if st.button("Clear Cache"):
+        # Clear cache for both newer and older Streamlit versions
+        if hasattr(st, "cache_data"):
+            st.cache_data.clear()
+        if hasattr(st, "cache_resource"):
+            st.cache_resource.clear()
+        st.success("Cache cleared!")
 
 def page_setup():
     # streamlit configs
@@ -56,11 +64,42 @@ def page_setup():
                 ["svg", "png", "jpeg", "webp"],
                 key="image_format",
             )
+
+            # Add the clear cache button
+            v_space(1)
+            clear_cache_button()
+
+        # Display two images side by side in the sidebar
         v_space(1)
-        st.image("assets/FBMN-STATS-GUIed_logo2.png", use_column_width=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(
+                f'<a href="https://github.com/Functional-Metabolomics-Lab/FBMN-STATS" target="_blank">'
+                f'<img src="data:image/png;base64,{base64.b64encode(open("assets/FBMN-STATS-GUIed_logo2.png", "rb").read()).decode()}" width="130">'
+                '</a>',
+                unsafe_allow_html=True,
+            )
+        with col2:
+             st.markdown(
+                f'<a href="https://gnps2.org/homepage" target="_blank">'
+                f'<img src="data:image/png;base64,{base64.b64encode(open("assets/GNPS2_logo.png", "rb").read()).decode()}" width="150">'
+                '</a>',
+                unsafe_allow_html=True,
+            )
+            
+           # st.image("assets/GNPS2_logo.png", use_column_width=True)
+
         v_space(1)
-        st.image("assets/vmol-icon.png", use_column_width=True) 
+
+        #st.image("assets/vmol-icon.png", use_column_width=True)
+        st.markdown(
+                f'<a href="https://vmol.org/ " target="_blank">'
+                f'<img src="data:image/png;base64,{base64.b64encode(open("assets/vmol-icon.png", "rb").read()).decode()}" width="300">'
+                '</a>',
+                unsafe_allow_html=True,
+            )
         v_space(1)
+
         st.markdown("## Functional-Metabolomics-Lab")
         c1, c2, c3 = st.columns(3)
         c1.markdown(
@@ -72,20 +111,20 @@ def page_setup():
             unsafe_allow_html=True,
         )
         c2.markdown(
+            """<a href="https://www.functional-metabolomics.com/">
+            <img src="data:image/png;base64,{}" width="50">
+            </a>""".format(
+                base64.b64encode(open("./assets/fmlab_logo_colored.png", "rb").read()).decode()
+            ),
+            unsafe_allow_html=True,
+        )
+        c3.markdown(
             """<a href="https://www.youtube.com/@functionalmetabolomics">
             <img src="data:image/png;base64,{}" width="50">
             </a>""".format(
                 base64.b64encode(open("./assets/youtube-logo.png", "rb").read()).decode()
             ),
             unsafe_allow_html=True,
-        )
-        c3.markdown(
-            """<a href="https://twitter.com/func_metabo_lab">
-            <img src="data:image/png;base64,{}" width="50">
-            </a>""".format(
-                base64.b64encode(open("./assets/x-logo.png", "rb").read()).decode()
-            ),
-            unsafe_allow_html=True
         )
 
 

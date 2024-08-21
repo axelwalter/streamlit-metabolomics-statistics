@@ -5,7 +5,7 @@ import plotly.express as px
 import skbio
 from scipy.spatial import distance
 
-
+@st.cache_data
 def permanova_pcoa(scaled, distance_matrix, attribute):
     # Create the distance matrix from the original data
     distance_matrix = skbio.stats.distance.DistanceMatrix(

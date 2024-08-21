@@ -133,3 +133,8 @@ def download_plotly_figure(fig, col=None, filename=""):
             file_name=filename,
             mime="application/png",
         )
+
+# Button to clear the cache
+if st.button("Clear Cache"):
+    st.cache_data.clear()
+    st.success("Cache cleared!")

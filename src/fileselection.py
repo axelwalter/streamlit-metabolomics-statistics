@@ -53,7 +53,7 @@ def load_example():
     md = open_df("example-data/MetaData.txt").set_index("filename")
     return ft, md
 
-@st.cache_data
+
 def load_from_gnps(task_id, cmn=False):
 
     try: # GNPS2 will run here
