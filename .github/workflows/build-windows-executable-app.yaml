@@ -195,10 +195,10 @@ jobs:
       run: |
         ./wix/candle.exe streamlit_exe.wxs streamlit_exe_files.wxs
 
-    - name: Debug: Output streamlit_exe_files.wxs
+    - name: Output streamlit_exe_files.wxs
       run: cat streamlit_exe_files.wxs
 
-    - name: Debug: Check for non-ASCII characters
+    - name: Check for non-ASCII characters
       run: grep --color='auto' -P -n "[^\x00-\x7F]" streamlit_exe_files.wxs || echo "No non-ASCII characters found"
 
     - name: Link .wixobj file into .msi with light.exe
