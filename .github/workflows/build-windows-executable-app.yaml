@@ -195,12 +195,6 @@ jobs:
       run: |
         ./wix/candle.exe streamlit_exe.wxs streamlit_exe_files.wxs
 
-    - name: Output streamlit_exe_files.wxs
-      run: cat streamlit_exe_files.wxs
-
-    - name: Check for non-ASCII characters
-      run: grep --color='auto' -P -n "[^\x00-\x7F]" streamlit_exe_files.wxs || echo "No non-ASCII characters found"
-
     - name: Link .wixobj file into .msi with light.exe
       run: |
         ./wix/light.exe -ext WixUIExtension -sice:ICE60 -o ${{ env.APP_NAME }}.msi streamlit_exe_files.wixobj streamlit_exe.wixobj
