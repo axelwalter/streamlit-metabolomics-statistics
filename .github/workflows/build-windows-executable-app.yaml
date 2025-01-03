@@ -120,7 +120,7 @@ jobs:
         cat <<EOF > streamlit_exe.wxs
         <?xml version="1.0"?>
         <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-          <Product Id="1ec8b822-5005-4a98-95ee-38cede795aae" Name="${{ env.APP_NAME }}" Language="1033" Version="1.0.0.0" Codepage="65001" Manufacturer="Functional Metabolomics Lab" UpgradeCode="2482e972-0c2d-416b-b72e-4d063ee23b61">
+          <Product Id="1ec8b822-5005-4a98-95ee-38cede795aae" Name="${{ env.APP_NAME }}" Language="1033" Version="1.0.0.0" Codepage="1252" Manufacturer="Functional Metabolomics Lab" UpgradeCode="2482e972-0c2d-416b-b72e-4d063ee23b61">
             <Package Id="*" InstallerVersion="300" Compressed="yes" InstallPrivileges="elevated" Platform="x64" />
             <Media Id="1" Cabinet="streamlit.cab" EmbedCab="yes" />
 
