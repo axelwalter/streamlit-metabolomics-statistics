@@ -111,8 +111,7 @@ jobs:
         cp ShowSuccessMessage.vbs SourceDir
         cp assets/app_license.rtf SourceDir
         # Logo of app
-        cp assets/icon.png SourceDir
-
+        cp assets/app_icon.ico SourceDir
 
     - name: Generate WiX XML file
       shell: bash
@@ -161,7 +160,7 @@ jobs:
             </Component>
 
             <!-- Provide icon here; it should exist in the SourceDir folder -->
-            <Icon Id="AppIcon" SourceFile="SourceDir/icon.png" />
+            <Icon Id="AppIcon" SourceFile="SourceDir/app_icon.ico" />
 
             <!-- Run app directly after installation -->
             <!-- <CustomAction Id="RunApp" Directory="AppSubFolder" Execute="deferred" Return="asyncNoWait" Impersonate="no"
