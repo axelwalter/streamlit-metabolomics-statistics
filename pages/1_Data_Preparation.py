@@ -53,7 +53,7 @@ else:
             st.session_state["ft_gnps"], st.session_state["md_gnps"] = load_from_gnps(task_id, cmn= cmn_flag)   
         
         if not st.session_state["ft_gnps"].empty and st.session_state["md_gnps"].empty:
-            st.warning("Meta data is empty. Please upload one.")
+            st.warning("⚠️ **Metadata file is missing.** The metadata is essential for performing statistical analysis and understanding the context of your data. Please upload one.")
             
             md_file = st.file_uploader("Meta Data Table")
             if md_file:
