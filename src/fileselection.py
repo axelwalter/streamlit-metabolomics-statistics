@@ -78,10 +78,17 @@ def load_from_gnps(task_id, cmn=False):
             an_url = f"https://proteomics2.ucsd.edu/ProteoSAFe/DownloadResultFile?task={task_id}&file=DB_result/&block=main"
 
             ft = pd.read_csv(ft_url)
-            md = pd.read_csv(md_url, sep="\t", index_col="filename")
-            an = pd.read_csv(an_url, sep = "\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
+            try:
+                md = pd.read_csv(md_url, sep="\t", index_col="filename")
+            except (urllib.error.HTTPError, FileNotFoundError, KeyError, pd.errors.EmptyDataError):
+                md = pd.DataFrame()
+                
+            try:
+                an = pd.read_csv(an_url, sep="\t")[["#Scan#", "Compound_Name"]].set_index("#Scan#")
+            except (pd.errors.EmptyDataError, FileNotFoundError, KeyError):
+                an = pd.DataFrame()
 
-    if md.empty: # Handle empty metadata
+    if not isinstance(md, pd.DataFrame): # Handle empty metadata
         md = pd.DataFrame()
 
     if cmn:

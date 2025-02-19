@@ -17,11 +17,12 @@ dataframe_names = ("md",
                    "md_gnps",
                    "df_gnps_annotations")
 
-corrections_map = {"Benjamini/Hochberg FDR": "fdr_bh",
+corrections_map = {"no correction": "none",
+                   "Benjamini/Hochberg FDR": "fdr_bh",
                    "Sidak": "sidak",
                    "Bonferroni": "bonf",
                    "Benjamini/Yekutieli FDR": "fdr_by",
-                   "no correction": "none"}
+                   }
 
 
 def reset_dataframes():
@@ -41,7 +42,7 @@ def page_setup():
     # streamlit configs
     st.set_page_config(
         page_title="Statistics for Metabolomics",
-        page_icon="assets/icon.png",
+        page_icon="assets/app_icon.ico",
         # layout="wide",
         initial_sidebar_state="auto",
         menu_items=None,
